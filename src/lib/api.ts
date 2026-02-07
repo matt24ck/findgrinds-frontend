@@ -79,6 +79,7 @@ export const tutors = {
     minPrice?: number;
     maxPrice?: number;
     minRating?: number;
+    sortBy?: string;
     page?: number;
     pageSize?: number;
   }) => {
