@@ -322,7 +322,7 @@ export default function TutorDashboard() {
     if (!uploadForm.title.trim()) { setUploadError('Title is required'); return; }
     if (!uploadFile) { setUploadError('Please select a file'); return; }
     const priceNum = Number(uploadForm.price);
-    if (!uploadForm.price || isNaN(priceNum) || priceNum <= 0) { setUploadError('Please enter a valid price'); return; }
+    if (!uploadForm.price || isNaN(priceNum) || priceNum < 0.50) { setUploadError('Price must be at least €0.50'); return; }
     if (Math.round(priceNum * 100) !== priceNum * 100) { setUploadError('Price must have at most 2 decimal places'); return; }
 
     setUploadLoading(true);
@@ -1338,7 +1338,7 @@ export default function TutorDashboard() {
                   <input
                     type="number"
                     step="0.01"
-                    min="0.01"
+                    min="0.50"
                     value={uploadForm.price}
                     onChange={(e) => setUploadForm({ ...uploadForm, price: e.target.value })}
                     className="w-full px-3 py-2 border border-[#D5DBDB] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2D9B6E]"
