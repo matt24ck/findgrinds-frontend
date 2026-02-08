@@ -2,7 +2,7 @@
 
 import { clsx } from 'clsx';
 import { HTMLAttributes, forwardRef } from 'react';
-import { Star, CheckCircle } from 'lucide-react';
+import { Star, Check } from 'lucide-react';
 
 interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
   variant?: 'default' | 'primary' | 'featured' | 'professional' | 'enterprise' | 'success' | 'warning' | 'error' | 'info';
@@ -40,7 +40,7 @@ export const Badge = forwardRef<HTMLSpanElement, BadgeProps>(
         {...props}
       >
         {variant === 'featured' && <Star className="w-3 h-3 fill-current" />}
-        {(variant === 'professional' || variant === 'enterprise') && <CheckCircle className="w-3 h-3 fill-current" />}
+        {(variant === 'professional' || variant === 'enterprise') && <Check className="w-3 h-3" strokeWidth={3} />}
         {children}
       </span>
     );
