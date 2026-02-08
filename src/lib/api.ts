@@ -212,6 +212,11 @@ export const resources = {
 
   reportStatus: (id: string) =>
     fetchAPI<{ success: boolean; data: { reported: boolean } }>(`/api/resources/${id}/report-status`),
+
+  delete: (id: string) =>
+    fetchAPI<{ success: boolean; message: string }>(`/api/resources/${id}`, {
+      method: 'DELETE',
+    }),
 };
 
 // ============ PAYMENTS ============
@@ -448,7 +453,7 @@ export const adminApi = {
       `/api/admin/resources/reports?status=${status}`
     ),
 
-  actionResourceReport: (reportId: string, action: 'refund' | 'dismiss' | 'suspend') =>
+  actionResourceReport: (reportId: string, action: 'refund' | 'dismiss' | 'suspend' | 'delete') =>
     fetchAPI<{ success: boolean; message: string }>(`/api/admin/resources/reports/${reportId}/action`, {
       method: 'POST',
       body: JSON.stringify({ action }),

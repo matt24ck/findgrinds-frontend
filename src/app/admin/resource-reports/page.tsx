@@ -18,6 +18,7 @@ import {
   RotateCcw,
   Ban,
   DollarSign,
+  Trash2,
 } from 'lucide-react';
 import { adminApi } from '@/lib/api';
 
@@ -71,7 +72,7 @@ export default function AdminResourceReportsPage() {
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<'PENDING' | 'REFUNDED' | 'DISMISSED'>('PENDING');
   const [counts, setCounts] = useState({ pending: 0, refunded: 0, dismissed: 0 });
-  const [confirmAction, setConfirmAction] = useState<{ reportId: string; action: 'refund' | 'dismiss' | 'suspend' } | null>(null);
+  const [confirmAction, setConfirmAction] = useState<{ reportId: string; action: 'refund' | 'dismiss' | 'suspend' | 'delete' } | null>(null);
 
   useEffect(() => {
     fetchReports();
@@ -111,7 +112,7 @@ export default function AdminResourceReportsPage() {
     fetchCounts();
   }, []);
 
-  const handleAction = async (reportId: string, action: 'refund' | 'dismiss' | 'suspend') => {
+  const handleAction = async (reportId: string, action: 'refund' | 'dismiss' | 'suspend' | 'delete') => {
     setActionLoading(reportId);
     setConfirmAction(null);
     try {
@@ -134,6 +135,7 @@ export default function AdminResourceReportsPage() {
     refund: 'Refund this purchase? The buyer will receive their money back.',
     dismiss: 'Dismiss this report? No refund will be issued.',
     suspend: 'Suspend this resource and refund? The resource will be removed from the marketplace and the buyer refunded.',
+    delete: 'Delete this resource and refund? The resource will be permanently removed from the marketplace and the buyer refunded.',
   };
 
   return (
@@ -316,6 +318,16 @@ export default function AdminResourceReportsPage() {
                         <Button
                           size="sm"
                           variant="outline"
+                          onClick={() => setConfirmAction({ reportId: report.id, action: 'delete' })}
+                          isLoading={actionLoading === report.id}
+                          className="!text-red-600 !border-red-200 hover:!bg-red-50"
+                        >
+                          <Trash2 className="w-4 h-4 mr-1" />
+                          Delete & Refund
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
                           onClick={() => setConfirmAction({ reportId: report.id, action: 'dismiss' })}
                           isLoading={actionLoading === report.id}
                           className="text-[#5D6D7E]"
@@ -352,7 +364,7 @@ export default function AdminResourceReportsPage() {
                 onClick={() => handleAction(confirmAction.reportId, confirmAction.action)}
                 className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium text-white transition-colors ${
                   confirmAction.action === 'dismiss' ? 'bg-gray-500 hover:bg-gray-600' :
-                  confirmAction.action === 'suspend' ? 'bg-red-500 hover:bg-red-600' :
+                  confirmAction.action === 'suspend' || confirmAction.action === 'delete' ? 'bg-red-500 hover:bg-red-600' :
                   'bg-[#2D9B6E] hover:bg-[#258a5e]'
                 }`}
               >

@@ -29,6 +29,7 @@ import {
   ExternalLink,
   AlertCircle,
   X,
+  Trash2,
 } from 'lucide-react';
 import { AvailabilityEditor } from '@/components/dashboard/AvailabilityEditor';
 import { AccountSection } from '@/components/dashboard/AccountSection';
@@ -67,6 +68,10 @@ export default function TutorDashboard() {
   const [recentReviews, setRecentReviews] = useState<any[]>([]);
   const [tutorProfile, setTutorProfile] = useState<any>(null);
   const [dashboardLoading, setDashboardLoading] = useState(true);
+
+  // Delete resource state
+  const [deleteResourceId, setDeleteResourceId] = useState<string | null>(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   // Upload resource state
   const [showUploadModal, setShowUploadModal] = useState(false);
@@ -766,12 +771,22 @@ export default function TutorDashboard() {
                           <div className="text-xs text-[#95A5A6]">Revenue</div>
                         </div>
                       </div>
-                      <Link href={`/resources/${resource.id}`}>
-                        <Button variant="outline" size="sm" className="w-full">
-                          <Eye className="w-4 h-4 mr-1" />
-                          View
+                      <div className="flex gap-2">
+                        <Link href={`/resources/${resource.id}`} className="flex-1">
+                          <Button variant="outline" size="sm" className="w-full">
+                            <Eye className="w-4 h-4 mr-1" />
+                            View
+                          </Button>
+                        </Link>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setDeleteResourceId(resource.id)}
+                          className="!text-red-500 !border-red-200 hover:!bg-red-50"
+                        >
+                          <Trash2 className="w-4 h-4" />
                         </Button>
-                      </Link>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -1239,6 +1254,41 @@ export default function TutorDashboard() {
                 }}
               >
                 Cancel Session
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Resource Confirmation Modal */}
+      {deleteResourceId && (
+        <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl shadow-xl p-6 max-w-sm w-full">
+            <h3 className="text-lg font-bold text-[#2C3E50] mb-2">Delete Resource?</h3>
+            <p className="text-sm text-[#5D6D7E] mb-4">
+              This will remove the resource from the marketplace. Existing buyers will retain access to their downloads.
+            </p>
+            <div className="flex gap-3">
+              <Button variant="outline" className="flex-1" onClick={() => setDeleteResourceId(null)} disabled={deleteLoading}>
+                Keep Resource
+              </Button>
+              <Button
+                className="flex-1 !bg-red-600 hover:!bg-red-700"
+                isLoading={deleteLoading}
+                onClick={async () => {
+                  setDeleteLoading(true);
+                  try {
+                    await resourcesApi.delete(deleteResourceId);
+                    setMyResources(prev => prev.filter(r => r.id !== deleteResourceId));
+                    setDeleteResourceId(null);
+                  } catch (err) {
+                    alert(err instanceof Error ? err.message : 'Failed to delete resource');
+                  } finally {
+                    setDeleteLoading(false);
+                  }
+                }}
+              >
+                Delete Resource
               </Button>
             </div>
           </div>
