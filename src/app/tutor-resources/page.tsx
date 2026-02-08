@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/Button';
 import {
   FileText,
   Upload,
-  DollarSign,
+  Euro,
   TrendingUp,
   CheckCircle,
   BookOpen,
@@ -49,7 +49,7 @@ const resourceTypes = [
 
 const benefits = [
   {
-    icon: DollarSign,
+    icon: Euro,
     title: 'Earn Passive Income',
     description: 'Create once, sell unlimited times. Build a library of resources that generates ongoing revenue.',
   },
@@ -174,7 +174,7 @@ export default function TutorResourcesPage() {
 
               <div className="text-center">
                 <div className="w-16 h-16 bg-[#F0F7F4] rounded-2xl flex items-center justify-center mx-auto mb-4">
-                  <DollarSign className="w-8 h-8 text-[#2D9B6E]" />
+                  <Euro className="w-8 h-8 text-[#2D9B6E]" />
                 </div>
                 <div className="w-8 h-8 bg-[#2D9B6E] text-white rounded-full flex items-center justify-center mx-auto mb-4 font-bold">
                   3

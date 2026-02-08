@@ -16,7 +16,6 @@ import {
   Laptop,
   TrendingUp,
   Users,
-  DollarSign,
   Briefcase,
   Leaf,
   Home,

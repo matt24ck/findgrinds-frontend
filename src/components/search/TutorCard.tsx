@@ -50,11 +50,11 @@ export function TutorCard({ tutor }: TutorCardProps) {
 
   return (
     <Link href={`/tutors/${tutor.id}`}>
-      <div className={`bg-white rounded-xl border p-5 hover:shadow-lg hover:-translate-y-1 transition-all duration-200 h-full ${isFeatured ? 'border-[#D4A574] ring-1 ring-[#D4A574]/20' : 'border-[#ECF0F1]'}`}>
+      <div className={`bg-white rounded-xl border p-5 hover:shadow-lg hover:-translate-y-1 transition-all duration-200 h-full ${tutor.featuredTier === 'ENTERPRISE' ? 'border-[#D4A574] ring-1 ring-[#D4A574]/20' : tutor.featuredTier === 'PROFESSIONAL' ? 'border-[#2D9B6E] ring-1 ring-[#2D9B6E]/20' : 'border-[#ECF0F1]'}`}>
         {/* Featured Banner */}
         {isFeatured && (
           <div className="flex justify-end mb-2 -mt-2 -mr-2">
-            <Badge variant="featured">
+            <Badge variant={tutor.featuredTier === 'ENTERPRISE' ? 'enterprise' : 'professional'}>
               {tutor.featuredTier === 'ENTERPRISE' ? 'Enterprise Tutor' : 'Professional'}
             </Badge>
           </div>

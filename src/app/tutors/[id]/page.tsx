@@ -233,7 +233,7 @@ export default function TutorProfilePage() {
               <div className="flex-1 text-center md:text-left">
                 <div className="flex items-center justify-center md:justify-start gap-2 mb-2">
                   {isFeatured && (
-                    <Badge variant="featured">
+                    <Badge variant={tutor.featuredTier === 'ENTERPRISE' ? 'enterprise' : 'professional'}>
                       {tutor.featuredTier === 'ENTERPRISE' ? 'Enterprise Tutor' : 'Professional'}
                     </Badge>
                   )}

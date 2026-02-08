@@ -14,7 +14,7 @@ import {
   FileText,
   Upload,
   Star,
-  DollarSign,
+  Euro,
   TrendingUp,
   Users,
   Settings,
@@ -385,7 +385,7 @@ export default function TutorDashboard() {
     { id: 'sessions', label: 'Sessions', icon: Calendar },
     { id: 'availability', label: 'Availability', icon: Clock },
     { id: 'resources', label: 'Resources', icon: FileText },
-    { id: 'earnings', label: 'Earnings', icon: DollarSign },
+    { id: 'earnings', label: 'Earnings', icon: Euro },
     { id: 'settings', label: 'Settings', icon: Settings },
   ];
 
@@ -535,7 +535,7 @@ export default function TutorDashboard() {
                 <div className="bg-white rounded-xl shadow-sm p-6">
                   <div className="flex items-center gap-3 mb-3">
                     <div className="w-10 h-10 bg-[#F0F7F4] rounded-lg flex items-center justify-center">
-                      <DollarSign className="w-5 h-5 text-[#2D9B6E]" />
+                      <Euro className="w-5 h-5 text-[#2D9B6E]" />
                     </div>
                     <span className="text-sm text-[#5D6D7E]">This Month</span>
                   </div>

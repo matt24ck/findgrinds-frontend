@@ -6,13 +6,13 @@ const features = [
   {
     icon: CreditCard,
     title: 'Secure Payments',
-    description: 'Pay securely through Stripe. No hidden fees for students, reliable weekly payouts for tutors.',
+    description: 'All payments and identity verification are handled securely by Stripe. FindGrinds never processes your payment details or personal ID.',
     color: '#2D9B6E',
   },
   {
     icon: Users,
-    title: 'Professional Tutors',
-    description: 'Browse qualified tutors across all Junior and Leaving Cert subjects. Read reviews and find the right fit.',
+    title: 'ID-Verified Tutors',
+    description: 'Every tutor is verified through Stripe\'s identity checks. Browse qualified tutors across all Junior and Leaving Cert subjects.',
     color: '#3498DB',
   },
   {

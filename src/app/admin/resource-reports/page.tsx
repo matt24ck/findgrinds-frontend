@@ -17,7 +17,7 @@ import {
   ArrowLeft,
   RotateCcw,
   Ban,
-  DollarSign,
+  Euro,
   Trash2,
 } from 'lucide-react';
 import { adminApi } from '@/lib/api';
@@ -302,7 +302,7 @@ export default function AdminResourceReportsPage() {
                           onClick={() => setConfirmAction({ reportId: report.id, action: 'refund' })}
                           isLoading={actionLoading === report.id}
                         >
-                          <DollarSign className="w-4 h-4 mr-1" />
+                          <Euro className="w-4 h-4 mr-1" />
                           Refund
                         </Button>
                         <Button

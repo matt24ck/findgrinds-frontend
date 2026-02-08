@@ -46,7 +46,8 @@ function TutorCard({ tutor }: { tutor: any }) {
 
         {/* Badges */}
         <div className="flex flex-wrap gap-2 mb-4">
-          {featured && <Badge variant="featured">Featured</Badge>}
+          {tutor.featuredTier === 'ENTERPRISE' && <Badge variant="enterprise">Enterprise Tutor</Badge>}
+          {tutor.featuredTier === 'PROFESSIONAL' && <Badge variant="professional">Professional</Badge>}
           {level && <Badge variant="primary">{levelLabels[level] || level}</Badge>}
           {tutor.subjects?.slice(0, 2).map((subject: string) => (
             <Badge key={subject} variant="default">{subject}</Badge>

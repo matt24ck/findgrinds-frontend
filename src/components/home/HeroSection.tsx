@@ -1,12 +1,12 @@
 'use client';
 
 import { SearchBar } from './SearchBar';
-import { CheckCircle, CreditCard, Users, BookOpen } from 'lucide-react';
+import { CheckCircle, CreditCard, Shield, BookOpen } from 'lucide-react';
 
 export function HeroSection() {
   const trustPoints = [
     { icon: CreditCard, label: 'Secure Payments via Stripe' },
-    { icon: Users, label: 'Professional & Vetted Tutors' },
+    { icon: Shield, label: 'Every Tutor is ID-Verified' },
     { icon: BookOpen, label: 'Buy & Sell Study Resources' },
   ];
 
