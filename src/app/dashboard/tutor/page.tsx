@@ -43,6 +43,8 @@ interface StripeStatus {
   onboarded: boolean;
   payoutsEnabled: boolean;
   chargesEnabled: boolean;
+  requiresAction: boolean;
+  currentDeadline: number | null;
 }
 
 export default function TutorDashboard() {
@@ -213,10 +215,8 @@ export default function TutorDashboard() {
 
   // Fetch all dashboard data on mount
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('stripe') === 'success' || params.get('stripe') === 'refresh') {
-      fetchStripeStatus();
-    }
+    // Fetch Stripe status (always needed for requirements banner)
+    fetchStripeStatus();
 
     const fetchDashboardData = async () => {
       setDashboardLoading(true);
@@ -492,6 +492,40 @@ export default function TutorDashboard() {
                   >
                     <Eye className="w-4 h-4 mr-1" />
                     Go Visible
+                  </Button>
+                </div>
+              )}
+
+              {/* Stripe Requirements Banner */}
+              {stripeStatus?.onboarded && stripeStatus?.requiresAction && (
+                <div className="p-4 bg-red-50 border border-red-200 rounded-xl flex items-start gap-3">
+                  <AlertCircle className="w-6 h-6 text-red-600 flex-shrink-0 mt-0.5" />
+                  <div className="flex-1">
+                    <p className="font-semibold text-red-800">Payment Account Action Required</p>
+                    <p className="text-sm text-red-700 mt-1">
+                      Stripe needs additional information to keep your payouts active.
+                      {stripeStatus.currentDeadline && (
+                        <> Complete by{' '}
+                          <strong>
+                            {new Date(stripeStatus.currentDeadline * 1000).toLocaleDateString('en-IE', {
+                              day: 'numeric',
+                              month: 'long',
+                              year: 'numeric',
+                            })}
+                          </strong>
+                          {' '}to avoid payout interruptions.
+                        </>
+                      )}
+                    </p>
+                  </div>
+                  <Button
+                    size="sm"
+                    onClick={handleStripeOnboard}
+                    isLoading={stripeLoading}
+                    className="!bg-red-600 hover:!bg-red-700 flex-shrink-0"
+                  >
+                    <CreditCard className="w-4 h-4 mr-1" />
+                    Complete
                   </Button>
                 </div>
               )}
@@ -869,21 +903,52 @@ export default function TutorDashboard() {
                   </>
                 ) : stripeStatus?.onboarded ? (
                   <>
-                    <div className="p-4 bg-[#F0F7F4] rounded-lg mb-4 flex items-start gap-3">
-                      <CheckCircle className="w-5 h-5 text-[#2D9B6E] flex-shrink-0 mt-0.5" />
-                      <div>
-                        <p className="font-medium text-[#2C3E50]">Payments Active</p>
-                        <p className="text-sm text-[#5D6D7E]">
-                          {stripeStatus.payoutsEnabled
-                            ? 'You can receive payments and payouts are enabled.'
-                            : 'Account is set up but payouts may still be pending verification.'}
-                        </p>
+                    {stripeStatus.requiresAction ? (
+                      <div className="p-4 bg-red-50 border border-red-200 rounded-lg mb-4 flex items-start gap-3">
+                        <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+                        <div>
+                          <p className="font-medium text-red-800">Action Required</p>
+                          <p className="text-sm text-red-700">
+                            Stripe needs additional information to keep your payouts active.
+                            {stripeStatus.currentDeadline && (
+                              <> Complete by{' '}
+                                <strong>
+                                  {new Date(stripeStatus.currentDeadline * 1000).toLocaleDateString('en-IE', {
+                                    day: 'numeric',
+                                    month: 'long',
+                                    year: 'numeric',
+                                  })}
+                                </strong>.
+                              </>
+                            )}
+                          </p>
+                        </div>
                       </div>
+                    ) : (
+                      <div className="p-4 bg-[#F0F7F4] rounded-lg mb-4 flex items-start gap-3">
+                        <CheckCircle className="w-5 h-5 text-[#2D9B6E] flex-shrink-0 mt-0.5" />
+                        <div>
+                          <p className="font-medium text-[#2C3E50]">Payments Active</p>
+                          <p className="text-sm text-[#5D6D7E]">
+                            {stripeStatus.payoutsEnabled
+                              ? 'You can receive payments and payouts are enabled.'
+                              : 'Account is set up but payouts may still be pending verification.'}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                    <div className="flex gap-3">
+                      {stripeStatus.requiresAction && (
+                        <Button onClick={handleStripeOnboard} isLoading={stripeLoading} className="flex-1">
+                          <CreditCard className="w-4 h-4 mr-2" />
+                          Complete Requirements
+                        </Button>
+                      )}
+                      <Button variant="outline" onClick={handleStripeDashboard} isLoading={stripeLoading} className={stripeStatus.requiresAction ? 'flex-1' : 'w-full'}>
+                        <ExternalLink className="w-4 h-4 mr-2" />
+                        View Payment Dashboard
+                      </Button>
                     </div>
-                    <Button variant="outline" onClick={handleStripeDashboard} isLoading={stripeLoading} className="w-full">
-                      <ExternalLink className="w-4 h-4 mr-2" />
-                      View Payment Dashboard
-                    </Button>
                   </>
                 ) : (
                   <>
