@@ -49,7 +49,7 @@ interface TutorProfile {
 
 interface Subscription {
   id: string;
-  tier: 'FREE' | 'VERIFIED' | 'PROFESSIONAL';
+  tier: 'FREE' | 'PROFESSIONAL' | 'ENTERPRISE';
   isAdminGranted: boolean;
   adminGrantedReason?: string;
   status: string;
@@ -206,8 +206,8 @@ export default function AdminUserDetailPage() {
   const getTierBadge = (tier: string, isAdminGranted: boolean) => {
     const colors: Record<string, string> = {
       FREE: 'bg-gray-100 text-gray-800',
-      VERIFIED: 'bg-green-100 text-green-800',
-      PROFESSIONAL: 'bg-yellow-100 text-yellow-800',
+      PROFESSIONAL: 'bg-green-100 text-green-800',
+      ENTERPRISE: 'bg-yellow-100 text-yellow-800',
     };
     return (
       <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium ${colors[tier]}`}>
@@ -499,8 +499,8 @@ export default function AdminUserDetailPage() {
                   className="w-full px-3 py-2 border border-[#D5DBDB] rounded-lg"
                 >
                   <option value="">Select a tier...</option>
-                  <option value="VERIFIED">Verified (€19/mo value)</option>
-                  <option value="PROFESSIONAL">Professional (€99/mo value)</option>
+                  <option value="PROFESSIONAL">Professional (€19/mo value)</option>
+                  <option value="ENTERPRISE">Enterprise (€99/mo value)</option>
                 </select>
               </div>
 

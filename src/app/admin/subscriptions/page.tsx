@@ -22,7 +22,7 @@ import {
 interface Subscription {
   id: string;
   tutorId: string;
-  tier: 'FREE' | 'VERIFIED' | 'PROFESSIONAL';
+  tier: 'FREE' | 'PROFESSIONAL' | 'ENTERPRISE';
   isAdminGranted: boolean;
   adminGrantedReason?: string;
   stripeSubscriptionId?: string;
@@ -93,13 +93,13 @@ export default function AdminSubscriptionsPage() {
   const getTierBadge = (tier: string, isAdminGranted: boolean) => {
     const colors: Record<string, string> = {
       FREE: 'bg-gray-100 text-gray-800',
-      VERIFIED: 'bg-green-100 text-green-800',
-      PROFESSIONAL: 'bg-yellow-100 text-yellow-800',
+      PROFESSIONAL: 'bg-green-100 text-green-800',
+      ENTERPRISE: 'bg-yellow-100 text-yellow-800',
     };
     return (
       <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium ${colors[tier]}`}>
-        {tier === 'PROFESSIONAL' && <Crown className="w-3 h-3" />}
-        {tier === 'VERIFIED' && <CheckCircle className="w-3 h-3" />}
+        {tier === 'ENTERPRISE' && <Crown className="w-3 h-3" />}
+        {tier === 'PROFESSIONAL' && <CheckCircle className="w-3 h-3" />}
         {tier}
         {isAdminGranted && <Gift className="w-3 h-3 ml-1 text-purple-600" />}
       </span>
@@ -107,8 +107,8 @@ export default function AdminSubscriptionsPage() {
   };
 
   const adminGrantedCount = subscriptions.filter(s => s.isAdminGranted).length;
-  const verifiedCount = subscriptions.filter(s => s.tier === 'VERIFIED').length;
   const professionalCount = subscriptions.filter(s => s.tier === 'PROFESSIONAL').length;
+  const enterpriseCount = subscriptions.filter(s => s.tier === 'ENTERPRISE').length;
 
   return (
     <AdminGuard>
@@ -142,12 +142,12 @@ export default function AdminSubscriptionsPage() {
               <p className="text-sm text-[#5D6D7E]">Total</p>
             </Card>
             <Card className="p-4 text-center">
-              <p className="text-2xl font-bold text-green-600">{verifiedCount}</p>
-              <p className="text-sm text-[#5D6D7E]">Verified</p>
+              <p className="text-2xl font-bold text-green-600">{professionalCount}</p>
+              <p className="text-sm text-[#5D6D7E]">Professional</p>
             </Card>
             <Card className="p-4 text-center">
-              <p className="text-2xl font-bold text-yellow-600">{professionalCount}</p>
-              <p className="text-sm text-[#5D6D7E]">Professional</p>
+              <p className="text-2xl font-bold text-yellow-600">{enterpriseCount}</p>
+              <p className="text-sm text-[#5D6D7E]">Enterprise</p>
             </Card>
             <Card className="p-4 text-center">
               <p className="text-2xl font-bold text-purple-600">{adminGrantedCount}</p>
@@ -166,8 +166,8 @@ export default function AdminSubscriptionsPage() {
               >
                 <option value="">All Tiers</option>
                 <option value="FREE">Free</option>
-                <option value="VERIFIED">Verified</option>
                 <option value="PROFESSIONAL">Professional</option>
+                <option value="ENTERPRISE">Enterprise</option>
               </select>
 
               <select
