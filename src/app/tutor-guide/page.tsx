@@ -51,27 +51,31 @@ const sections = [
   {
     id: 'payments',
     icon: CreditCard,
-    title: 'Setting Up Payments',
+    title: 'Stripe Onboarding for Tutors',
     content: [
       {
-        title: 'Navigate to Your Dashboard',
-        description: 'Go to your tutor dashboard and click the "Set Up Payments" or "Connect Stripe" button to begin the onboarding process.',
+        title: 'Navigate to Payment Setup',
+        description: 'Go to your tutor dashboard, click the Settings tab, and press \'Set Up Payment Processing\'. You\'ll be redirected to Stripe to complete onboarding.',
       },
       {
-        title: 'Create or Connect a Stripe Account',
-        description: 'You\'ll be redirected to Stripe to create an account (or connect an existing one). Enter your personal details, bank account information, and verify your identity.',
+        title: 'Personal Details',
+        description: 'Enter your full name, email address, home address, and phone number. Make sure these match your official ID documents.',
       },
       {
-        title: 'Complete Identity Verification',
-        description: 'Stripe requires identity verification for all accounts. Upload a government-issued ID and provide your date of birth and address. This is a one-time process.',
+        title: 'Business Details',
+        description: 'When asked for your industry, select \'Other Educational Services\'. If you don\'t have a website, add a short business description such as \'I provide tutoring and sell educational resources\'.',
       },
       {
-        title: 'Add Your Bank Account',
-        description: 'Enter your Irish bank account details (IBAN) where you\'d like to receive payouts. Stripe will send a small test deposit to verify your account.',
+        title: 'Bank Details',
+        description: 'Enter your Irish bank account IBAN where you\'d like to receive payouts. Earnings are paid out directly to this account.',
       },
       {
-        title: 'Start Accepting Payments',
-        description: 'Once verified, you\'re ready to accept bookings and resource purchases. Earnings are paid out weekly directly to your bank account.',
+        title: 'Start Earning',
+        description: 'Once your details are submitted, you\'re ready to accept session bookings and resource purchases. Earnings are paid out directly to your bank account.',
+      },
+      {
+        title: 'Identity Verification (Later)',
+        description: 'After some time, Stripe will require you to verify your identity by uploading a government-issued photo ID and proof of address. When this happens, you\'ll see a warning on your Tutor Dashboard with a link to complete it. Make sure to do this promptly to avoid any interruption to your payouts.',
       },
     ],
   },
@@ -293,7 +297,7 @@ export default function TutorGuidePage() {
                   'Listed qualifications and experience',
                   'Selected subjects and levels',
                   'Set competitive hourly rates',
-                  'Connected Stripe for payments',
+                  'Completed Stripe onboarding (bank account added)',
                   'Added availability to calendar',
                   'Uploaded qualifications (if available)',
                   'Read and understood the terms of service',
