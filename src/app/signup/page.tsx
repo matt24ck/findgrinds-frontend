@@ -19,7 +19,7 @@ const SUBJECTS = [
   'ART', 'MUSIC', 'HOME_ECONOMICS', 'RELIGIOUS_EDUCATION',
 ];
 
-const LEVELS = ['JC', 'LC', 'BOTH'];
+const LEVELS = ['JC', 'LC'];
 
 export default function SignupPage() {
   const [step, setStep] = useState(1);
