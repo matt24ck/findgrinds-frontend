@@ -408,6 +408,14 @@ export function AvailabilityEditor({ tutorId, onSave }: AvailabilityEditorProps)
         })}
       </div>
 
+      {/* In-Person travel time hint */}
+      {selectedMedium === 'IN_PERSON' && (
+        <div className="p-3 rounded-lg bg-blue-50 border border-blue-200 flex items-start gap-2 text-sm text-blue-700">
+          <Clock className="w-4 h-4 flex-shrink-0 mt-0.5" />
+          <span>Leave gaps between in-person availability slots for travel time!</span>
+        </div>
+      )}
+
       {/* Group Settings (only visible for GROUP medium) */}
       {selectedMedium === 'GROUP' && (
         <div className="bg-white border border-[#ECF0F1] rounded-xl p-4">

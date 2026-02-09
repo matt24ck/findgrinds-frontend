@@ -411,7 +411,12 @@ export default function BookingPage() {
                       {sessionTypes.map((st) => (
                         <button
                           key={st.type}
-                          onClick={() => setSessionType(st.type)}
+                          onClick={() => {
+                            setSessionType(st.type);
+                            setDurationMins(st.type === 'IN_PERSON' ? 60 : 30);
+                            setSelectedDate(null);
+                            setSelectedTime(null);
+                          }}
                           className={`p-4 rounded-xl border-2 text-center transition-all ${
                             sessionType === st.type
                               ? 'border-[#2D9B6E] bg-[#F0F7F4]'
@@ -536,14 +541,15 @@ export default function BookingPage() {
                   {selectedDate && selectedTime && (() => {
                     const daySlots = availability.find(d => d.date === selectedDate)?.slots || [];
                     const maxDuration = getMaxConsecutiveDuration(daySlots, selectedTime);
+                    const minDuration = sessionType === 'IN_PERSON' ? 60 : 30;
 
                     return (
                       <div className="mt-6">
                         <label className="block text-sm font-medium text-[#2C3E50] mb-3">Session Duration</label>
                         <div className="flex items-center justify-center gap-5 py-4 bg-[#F8F9FA] rounded-xl">
                           <button
-                            onClick={() => setDurationMins(Math.max(30, durationMins - 30))}
-                            disabled={durationMins <= 30}
+                            onClick={() => setDurationMins(Math.max(minDuration, durationMins - 30))}
+                            disabled={durationMins <= minDuration}
                             className="w-10 h-10 rounded-full border-2 border-[#ECF0F1] flex items-center justify-center text-[#2C3E50] hover:border-[#2D9B6E] hover:text-[#2D9B6E] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                           >
                             <Minus className="w-5 h-5" />
