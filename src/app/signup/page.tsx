@@ -49,8 +49,8 @@ export default function SignupPage() {
     {
       type: 'PARENT' as UserType,
       icon: Users,
-      title: 'Parent',
-      description: 'Manage your child\'s grinds',
+      title: 'Parent/Guardian',
+      description: 'Monitor and manage your child\'s grinds',
     },
     {
       type: 'TUTOR' as UserType,

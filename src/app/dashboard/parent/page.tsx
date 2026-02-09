@@ -293,7 +293,7 @@ export default function ParentDashboard() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header */}
           <div className="mb-6">
-            <h1 className="text-3xl font-bold text-[#2C3E50] mb-2">Parent Dashboard</h1>
+            <h1 className="text-3xl font-bold text-[#2C3E50] mb-2">Parent/Guardian Dashboard</h1>
             <p className="text-[#5D6D7E]">Monitor your child's learning and manage bookings.</p>
           </div>
 
@@ -696,7 +696,7 @@ export default function ParentDashboard() {
                           {/* Send on behalf */}
                           <div className="border-t border-[#E5E7EB] p-4">
                             <p className="text-xs text-[#95A5A6] mb-2">
-                              Messaging as parent on behalf of {selectedStudent.firstName}
+                              Messaging as parent/guardian on behalf of {selectedStudent.firstName}
                             </p>
                             <div className="flex gap-2">
                               <input

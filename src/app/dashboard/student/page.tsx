@@ -25,6 +25,7 @@ import {
   Check,
   X,
   Loader2,
+  Shield,
 } from 'lucide-react';
 
 type TabType = 'overview' | 'sessions' | 'resources' | 'settings';
@@ -296,6 +297,36 @@ export default function StudentDashboard() {
             <>
               {/* Overview Tab */}
               {activeTab === 'overview' && (
+                <div className="space-y-0">
+                  {/* U18 Parent/Guardian Linking Banner */}
+                  {(() => {
+                    if (!userData?.dateOfBirth || linkedParents.length > 0) return null;
+                    const dob = new Date(userData.dateOfBirth);
+                    const today = new Date();
+                    let age = today.getFullYear() - dob.getFullYear();
+                    const m = today.getMonth() - dob.getMonth();
+                    if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) age--;
+                    if (age >= 18) return null;
+                    return (
+                      <div className="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-xl flex items-start gap-3">
+                        <Shield className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                        <div>
+                          <p className="font-semibold text-amber-800">Link a Parent/Guardian Account</p>
+                          <p className="text-sm text-amber-700 mt-1">
+                            As you&apos;re under 18, we strongly recommend linking a parent or guardian to your account.
+                            They&apos;ll be able to monitor your sessions and messages for your safety.
+                          </p>
+                          <button
+                            onClick={() => setActiveTab('settings')}
+                            className="mt-2 text-sm font-medium text-amber-800 underline hover:text-amber-900"
+                          >
+                            Go to Settings to generate a link code
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })()}
+
                 <div className="grid lg:grid-cols-3 gap-6">
                   {/* Upcoming Sessions */}
                   <div className="lg:col-span-2 bg-white rounded-xl shadow-sm p-6">
@@ -440,6 +471,7 @@ export default function StudentDashboard() {
                       </div>
                     )}
                   </div>
+                </div>
                 </div>
               )}
 
@@ -633,10 +665,10 @@ export default function StudentDashboard() {
                   <div className="bg-white rounded-xl shadow-sm p-6">
                     <div className="flex items-center gap-2 mb-4">
                       <Users className="w-5 h-5 text-[#2D9B6E]" />
-                      <h2 className="text-lg font-bold text-[#2C3E50]">Parent Access</h2>
+                      <h2 className="text-lg font-bold text-[#2C3E50]">Parent/Guardian Access</h2>
                     </div>
                     <p className="text-sm text-[#5D6D7E] mb-4">
-                      Generate a link code for your parent so they can view your sessions, resources, and book on your behalf.
+                      Generate a link code for your parent/guardian so they can view your sessions, resources, and book on your behalf.
                     </p>
 
                     {parentCode ? (
@@ -663,13 +695,13 @@ export default function StudentDashboard() {
                       </div>
                     ) : (
                       <Button onClick={handleGenerateCode} variant="secondary" size="sm" isLoading={codeLoading}>
-                        Generate Parent Code
+                        Generate Link Code
                       </Button>
                     )}
 
                     {linkedParents.length > 0 && (
                       <div className="mt-4 pt-4 border-t border-[#ECF0F1]">
-                        <h3 className="text-sm font-semibold text-[#2C3E50] mb-2">Linked Parents</h3>
+                        <h3 className="text-sm font-semibold text-[#2C3E50] mb-2">Linked Parent/Guardian</h3>
                         <div className="space-y-2">
                           {linkedParents.map(p => (
                             <div key={p.linkId} className="flex items-center gap-3 p-2 rounded-lg bg-[#F8F9FA]">
