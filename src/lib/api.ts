@@ -286,7 +286,7 @@ export const availability = {
 
   getSlots: (tutorId: string, params: { medium: string; startDate: string; endDate: string }) => {
     const searchParams = new URLSearchParams(params);
-    return fetchAPI<{ success: boolean; data: any[] }>(
+    return fetchAPI<{ success: boolean; data: { tutorId: string; slots: any[] } }>(
       `/api/availability/${tutorId}/slots?${searchParams.toString()}`
     );
   },
