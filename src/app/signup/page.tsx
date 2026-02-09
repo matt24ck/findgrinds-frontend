@@ -6,7 +6,8 @@ import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
-import { BookOpen, Mail, Lock, User, GraduationCap, Users, Calendar } from 'lucide-react';
+import { BookOpen, Mail, Lock, User, GraduationCap, Users, Calendar, MapPin } from 'lucide-react';
+import { AREAS_BY_COUNTY } from '@/lib/constants';
 
 type UserType = 'STUDENT' | 'PARENT' | 'TUTOR';
 
@@ -33,6 +34,7 @@ export default function SignupPage() {
     dateOfBirth: '',
     subjects: [] as string[],
     levels: [] as string[],
+    area: '',
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -86,6 +88,7 @@ export default function SignupPage() {
           dateOfBirth: formData.dateOfBirth || undefined,
           subjects: formData.subjects,
           levels: formData.levels,
+          area: formData.area || undefined,
           userType,
         }),
       });
@@ -261,6 +264,31 @@ export default function SignupPage() {
 
                 {userType === 'TUTOR' && (
                   <>
+                    {/* Area Selection */}
+                    <div>
+                      <label className="block text-sm font-medium text-[#2C3E50] mb-2">
+                        <MapPin className="w-4 h-4 inline mr-1" />
+                        Your Area
+                      </label>
+                      <select
+                        value={formData.area}
+                        onChange={(e) => setFormData({ ...formData, area: e.target.value })}
+                        className="w-full px-4 py-3 rounded-lg border border-[#D5DBDB] focus:border-[#2D9B6E] focus:outline-none"
+                      >
+                        <option value="">Select your area...</option>
+                        {AREAS_BY_COUNTY.map((group) => (
+                          <optgroup key={group.county} label={group.county}>
+                            {group.areas.map((a) => (
+                              <option key={a.value} value={a.value}>{a.label}</option>
+                            ))}
+                          </optgroup>
+                        ))}
+                      </select>
+                      <p className="text-xs text-[#95A5A6] mt-1">
+                        Shown on your profile so students know your area for in-person sessions
+                      </p>
+                    </div>
+
                     {/* Subject Selection */}
                     <div>
                       <label className="block text-sm font-medium text-[#2C3E50] mb-2">

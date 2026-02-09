@@ -35,6 +35,7 @@ import {
 import { AvailabilityEditor } from '@/components/dashboard/AvailabilityEditor';
 import { AccountSection } from '@/components/dashboard/AccountSection';
 import { resources as resourcesApi, upload, sessions as sessionsApi, tutors as tutorsApi, auth } from '@/lib/api';
+import { AREAS_BY_COUNTY } from '@/lib/constants';
 import { Loader2 } from 'lucide-react';
 
 type TabType = 'overview' | 'sessions' | 'availability' | 'resources' | 'earnings' | 'settings';
@@ -1062,18 +1063,38 @@ export default function TutorDashboard() {
                       id="profile-bio"
                     />
                   </div>
+                  <div>
+                    <label className="block text-sm font-medium text-[#2C3E50] mb-1">Area</label>
+                    <select
+                      defaultValue={tutorProfile?.area || ''}
+                      key={`area-${tutorProfile?.area}`}
+                      className="w-full px-4 py-2 rounded-lg border border-[#D5DBDB] focus:border-[#2D9B6E] focus:outline-none"
+                      id="profile-area"
+                    >
+                      <option value="">Select your area...</option>
+                      {AREAS_BY_COUNTY.map((group) => (
+                        <optgroup key={group.county} label={group.county}>
+                          {group.areas.map((a) => (
+                            <option key={a.value} value={a.value}>{a.label}</option>
+                          ))}
+                        </optgroup>
+                      ))}
+                    </select>
+                    <p className="text-xs text-[#95A5A6] mt-1">Shown to students so they know your area for in-person sessions</p>
+                  </div>
                   <Button
                     onClick={async () => {
                       const headline = (document.getElementById('profile-headline') as HTMLInputElement)?.value;
                       const baseHourlyRate = Number((document.getElementById('profile-rate') as HTMLInputElement)?.value);
                       const bio = (document.getElementById('profile-bio') as HTMLTextAreaElement)?.value;
+                      const area = (document.getElementById('profile-area') as HTMLSelectElement)?.value;
                       try {
                         const token = localStorage.getItem('token');
                         const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
                         const res = await fetch(`${apiUrl}/api/tutors/me`, {
                           method: 'PUT',
                           headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-                          body: JSON.stringify({ headline, baseHourlyRate, bio }),
+                          body: JSON.stringify({ headline, baseHourlyRate, bio, area: area || undefined }),
                         });
                         if (res.ok) alert('Profile updated!');
                         else alert('Failed to update profile.');

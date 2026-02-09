@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { ChevronDown, X } from 'lucide-react';
 import { Button } from '../ui/Button';
+import { AREAS_BY_COUNTY } from '@/lib/constants';
 
 interface FilterSidebarProps {
   onFiltersChange: (filters: FilterState) => void;
@@ -12,6 +13,7 @@ interface FilterSidebarProps {
 export interface FilterState {
   subjects: string[];
   level: string;
+  area: string;
   minPrice: number;
   maxPrice: number;
   minRating: number;
@@ -46,6 +48,7 @@ export function FilterSidebar({ onFiltersChange, initialFilters }: FilterSidebar
   const [filters, setFilters] = useState<FilterState>(initialFilters || {
     subjects: [],
     level: '',
+    area: '',
     minPrice: 0,
     maxPrice: 150,
     minRating: 0,
@@ -56,6 +59,7 @@ export function FilterSidebar({ onFiltersChange, initialFilters }: FilterSidebar
   const [expandedSections, setExpandedSections] = useState({
     subjects: true,
     level: true,
+    area: true,
     price: true,
     rating: true,
     availability: false,
@@ -82,6 +86,7 @@ export function FilterSidebar({ onFiltersChange, initialFilters }: FilterSidebar
     const clearedFilters: FilterState = {
       subjects: [],
       level: '',
+      area: '',
       minPrice: 0,
       maxPrice: 150,
       minRating: 0,
@@ -94,6 +99,7 @@ export function FilterSidebar({ onFiltersChange, initialFilters }: FilterSidebar
 
   const hasActiveFilters = filters.subjects.length > 0 ||
     filters.level !== '' ||
+    filters.area !== '' ||
     filters.minPrice > 0 ||
     filters.maxPrice < 150 ||
     filters.minRating > 0 ||
@@ -170,6 +176,33 @@ export function FilterSidebar({ onFiltersChange, initialFilters }: FilterSidebar
               </label>
             ))}
           </div>
+        )}
+      </div>
+
+      {/* Area */}
+      <div className="border-b border-[#ECF0F1] pb-4 mb-4">
+        <button
+          onClick={() => toggleSection('area')}
+          className="flex items-center justify-between w-full text-left mb-3"
+        >
+          <span className="font-semibold text-[#2C3E50]">Area</span>
+          <ChevronDown className={`w-5 h-5 text-[#95A5A6] transition-transform ${expandedSections.area ? 'rotate-180' : ''}`} />
+        </button>
+        {expandedSections.area && (
+          <select
+            value={filters.area}
+            onChange={(e) => updateFilter('area', e.target.value)}
+            className="w-full px-3 py-2 rounded-lg border border-[#D5DBDB] text-sm focus:border-[#2D9B6E] focus:outline-none"
+          >
+            <option value="">All Areas</option>
+            {AREAS_BY_COUNTY.map((group) => (
+              <optgroup key={group.county} label={group.county}>
+                {group.areas.map((a) => (
+                  <option key={a.value} value={a.value}>{a.label}</option>
+                ))}
+              </optgroup>
+            ))}
+          </select>
         )}
       </div>
 

@@ -20,14 +20,17 @@ import {
   Send,
   X,
   AlertTriangle,
+  MapPin,
 } from 'lucide-react';
 import { messages, tutors as tutorsApi, resources, availability as availabilityApi } from '@/lib/api';
+import { AREA_LABELS } from '@/lib/constants';
 
 interface TutorData {
   id: string;
   userId: string;
   bio?: string;
   headline?: string;
+  area?: string;
   qualifications: string[];
   subjects: string[];
   levels: string[];
@@ -239,6 +242,12 @@ export default function TutorProfilePage() {
                     <Users className="w-4 h-4" />
                     <span>{tutor.totalBookings || 0} sessions</span>
                   </div>
+                  {tutor.area && (
+                    <div className="flex items-center gap-1 text-[#5D6D7E]">
+                      <MapPin className="w-4 h-4" />
+                      <span>{AREA_LABELS[tutor.area] || tutor.area}</span>
+                    </div>
+                  )}
                   {tutor.teachesInIrish && (
                     <span className="text-xs bg-[#169B62] text-white px-2 py-1 rounded font-medium">
                       Gaeilge

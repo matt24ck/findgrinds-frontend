@@ -9,6 +9,7 @@ import { TutorGrid } from '@/components/search/TutorGrid';
 import { TutorCardData } from '@/components/search/TutorCard';
 import { Filter, X } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
+import { AREA_LABELS } from '@/lib/constants';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
@@ -32,6 +33,7 @@ function TutorsPageContent() {
   const [filters, setFilters] = useState<FilterState>({
     subjects: searchParams.get('subject') ? [searchParams.get('subject')!] : [],
     level: searchParams.get('level') || '',
+    area: searchParams.get('area') || '',
     minPrice: 0,
     maxPrice: 150,
     minRating: 0,
@@ -65,6 +67,9 @@ function TutorsPageContent() {
         if (filters.minRating > 0) {
           params.set('minRating', filters.minRating.toString());
         }
+        if (filters.area) {
+          params.set('area', filters.area);
+        }
         if (filters.teachesInIrish) {
           params.set('teachesInIrish', 'true');
         }
@@ -83,7 +88,7 @@ function TutorsPageContent() {
             rating: Number(tutor.rating) || 0,
             reviewCount: tutor.reviewCount || 0,
             hourlyRate: Number(tutor.baseHourlyRate) || 0,
-            location: 'Ireland', // Location not in model yet
+            location: tutor.area ? (AREA_LABELS[tutor.area] || tutor.area) : 'Ireland',
             featuredTier: tutor.featuredTier || 'FREE',
             verified: tutor.User?.gardaVettingVerified || false,
             totalBookings: tutor.totalBookings || 0,

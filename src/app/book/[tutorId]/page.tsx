@@ -24,6 +24,7 @@ import {
   Plus,
   Info,
 } from 'lucide-react';
+import { AREA_LABELS } from '@/lib/constants';
 
 type SessionType = 'VIDEO' | 'IN_PERSON' | 'GROUP';
 
@@ -66,6 +67,7 @@ interface TutorData {
   baseHourlyRate: number;
   groupHourlyRate?: number;
   maxGroupSize?: number;
+  area?: string;
   rating: number;
   reviewCount: number;
   stripeConnectOnboarded: boolean;
@@ -427,6 +429,34 @@ export default function BookingPage() {
                     </div>
                   </div>
 
+                  {/* In-Person Location Banner */}
+                  {sessionType === 'IN_PERSON' && tutor?.area && (
+                    <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg flex items-start gap-3">
+                      <MapPin className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                      <div>
+                        <p className="font-medium text-blue-800">
+                          This tutor is based in {AREA_LABELS[tutor.area] || tutor.area}
+                        </p>
+                        <p className="text-sm text-blue-700">
+                          In-person sessions take place in the tutor&apos;s area. Make sure this location works for you before booking.
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                  {sessionType === 'IN_PERSON' && !tutor?.area && (
+                    <div className="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-3">
+                      <MapPin className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                      <div>
+                        <p className="font-medium text-amber-800">
+                          Location not specified
+                        </p>
+                        <p className="text-sm text-amber-700">
+                          This tutor hasn&apos;t set their area yet. Contact them before booking to confirm location.
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
                   {/* Calendar */}
                   <div className="mb-6">
                     <label className="block text-sm font-medium text-[#2C3E50] mb-3">Select a Date</label>
@@ -652,6 +682,14 @@ export default function BookingPage() {
                       <span className="text-[#5D6D7E]">Duration</span>
                       <span className="font-medium text-[#2C3E50]">{formatDuration(durationMins)}</span>
                     </div>
+                    {sessionType === 'IN_PERSON' && (
+                      <div className="flex items-center justify-between py-3 border-b border-[#ECF0F1]">
+                        <span className="text-[#5D6D7E]">Location</span>
+                        <span className="font-medium text-[#2C3E50]">
+                          {tutor?.area ? (AREA_LABELS[tutor.area] || tutor.area) : 'Not specified'}
+                        </span>
+                      </div>
+                    )}
                   </div>
 
                   <div className="bg-[#F0F7F4] rounded-lg p-4 mb-6">
