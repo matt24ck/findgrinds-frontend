@@ -119,7 +119,7 @@ export default function TutorProfilePage() {
           startDate: startDate.toISOString().split('T')[0],
           endDate: endDate.toISOString().split('T')[0],
         });
-        setAvailabilitySlots(slotsRes.data || []);
+        setAvailabilitySlots(slotsRes.data?.slots || []);
       } catch {
         // Tutor may not have availability configured
       }
