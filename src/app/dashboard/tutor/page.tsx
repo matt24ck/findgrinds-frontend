@@ -30,6 +30,7 @@ import {
   AlertCircle,
   X,
   Trash2,
+  Flag,
 } from 'lucide-react';
 import { AvailabilityEditor } from '@/components/dashboard/AvailabilityEditor';
 import { AccountSection } from '@/components/dashboard/AccountSection';
@@ -70,6 +71,12 @@ export default function TutorDashboard() {
   const [recentReviews, setRecentReviews] = useState<any[]>([]);
   const [tutorProfile, setTutorProfile] = useState<any>(null);
   const [dashboardLoading, setDashboardLoading] = useState(true);
+
+  // Flag review state
+  const [flagReviewId, setFlagReviewId] = useState<string | null>(null);
+  const [flagReason, setFlagReason] = useState('');
+  const [flagDetails, setFlagDetails] = useState('');
+  const [flagLoading, setFlagLoading] = useState(false);
 
   // Delete resource state
   const [deleteResourceId, setDeleteResourceId] = useState<string | null>(null);
@@ -319,6 +326,22 @@ export default function TutorDashboard() {
       fetchStripeStatus();
     }
   }, [activeTab]);
+
+  const handleFlagReview = async () => {
+    if (!flagReviewId || !flagReason) return;
+    setFlagLoading(true);
+    try {
+      await sessionsApi.reportReview(flagReviewId, flagReason, flagDetails || undefined);
+      setFlagReviewId(null);
+      setFlagReason('');
+      setFlagDetails('');
+      alert('Review reported successfully. An admin will review it.');
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Failed to report review');
+    } finally {
+      setFlagLoading(false);
+    }
+  };
 
   const handleUploadResource = async () => {
     if (uploadLoading) return;
@@ -651,13 +674,22 @@ export default function TutorDashboard() {
                         <div key={review.id} className="pb-4 border-b border-[#ECF0F1] last:border-0">
                           <div className="flex items-center justify-between mb-2">
                             <span className="font-medium text-[#2C3E50]">{review.studentName}</span>
-                            <div className="flex">
-                              {[1, 2, 3, 4, 5].map(star => (
-                                <Star
-                                  key={star}
-                                  className={`w-4 h-4 ${star <= review.rating ? 'text-yellow-400 fill-yellow-400' : 'text-[#D5DBDB]'}`}
-                                />
-                              ))}
+                            <div className="flex items-center gap-2">
+                              <div className="flex">
+                                {[1, 2, 3, 4, 5].map(star => (
+                                  <Star
+                                    key={star}
+                                    className={`w-4 h-4 ${star <= review.rating ? 'text-yellow-400 fill-yellow-400' : 'text-[#D5DBDB]'}`}
+                                  />
+                                ))}
+                              </div>
+                              <button
+                                onClick={() => { setFlagReviewId(review.id); setFlagReason(''); setFlagDetails(''); }}
+                                className="p-1 text-[#95A5A6] hover:text-red-500 transition-colors"
+                                title="Flag this review"
+                              >
+                                <Flag className="w-3.5 h-3.5" />
+                              </button>
                             </div>
                           </div>
                           <p className="text-sm text-[#5D6D7E]">{review.text}</p>
@@ -1479,6 +1511,68 @@ export default function TutorDashboard() {
               <Button className="flex-1" onClick={handleUploadResource} isLoading={uploadLoading}>
                 <Upload className="w-4 h-4 mr-2" />
                 Publish Resource
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Flag Review Modal */}
+      {flagReviewId && (
+        <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl shadow-xl p-6 max-w-md w-full">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold text-[#2C3E50]">Flag Review</h3>
+              <button onClick={() => setFlagReviewId(null)} className="text-[#95A5A6] hover:text-[#2C3E50]">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <p className="text-sm text-[#5D6D7E] mb-4">
+              Why are you flagging this review? An admin will investigate.
+            </p>
+
+            <div className="space-y-2 mb-4">
+              {[
+                { value: 'inappropriate', label: 'Inappropriate content' },
+                { value: 'harassment', label: 'Harassment or bullying' },
+                { value: 'false_claims', label: 'False or misleading claims' },
+                { value: 'other', label: 'Other' },
+              ].map(opt => (
+                <label key={opt.value} className="flex items-center gap-3 p-3 rounded-lg border border-[#ECF0F1] cursor-pointer hover:bg-[#F8F9FA]">
+                  <input
+                    type="radio"
+                    name="flagReason"
+                    value={opt.value}
+                    checked={flagReason === opt.value}
+                    onChange={e => setFlagReason(e.target.value)}
+                    className="accent-[#2D9B6E]"
+                  />
+                  <span className="text-sm text-[#2C3E50]">{opt.label}</span>
+                </label>
+              ))}
+            </div>
+
+            <textarea
+              value={flagDetails}
+              onChange={e => setFlagDetails(e.target.value)}
+              rows={2}
+              placeholder="Additional details (optional)"
+              className="w-full px-4 py-3 border border-[#E5E7EB] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2D9B6E] resize-none mb-4 text-sm"
+            />
+
+            <div className="flex gap-3">
+              <Button variant="outline" className="flex-1" onClick={() => setFlagReviewId(null)}>
+                Cancel
+              </Button>
+              <Button
+                className="flex-1 !bg-red-600 hover:!bg-red-700"
+                disabled={!flagReason}
+                isLoading={flagLoading}
+                onClick={handleFlagReview}
+              >
+                <Flag className="w-4 h-4 mr-1" />
+                Submit Report
               </Button>
             </div>
           </div>

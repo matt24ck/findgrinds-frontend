@@ -21,7 +21,7 @@ import {
   X,
   AlertTriangle,
 } from 'lucide-react';
-import { messages } from '@/lib/api';
+import { messages, tutors as tutorsApi, resources, availability as availabilityApi } from '@/lib/api';
 
 interface TutorData {
   id: string;
@@ -46,58 +46,6 @@ interface TutorData {
     gardaVettingVerified: boolean;
   };
 }
-
-const mockReviews = [
-  {
-    id: '1',
-    studentName: 'James M.',
-    rating: 5,
-    text: 'Excellent tutor! Really helped me understand the material.',
-    date: '2026-01-15',
-    subject: 'Maths',
-  },
-  {
-    id: '2',
-    studentName: 'Emma K.',
-    rating: 5,
-    text: 'Very patient and always well-prepared for sessions.',
-    date: '2026-01-10',
-    subject: 'Physics',
-  },
-];
-
-const mockResources: { id: string; title: string; price: number; rating: number; salesCount: number; type: string }[] = [];
-
-// Generate mock availability
-const generateAvailability = () => {
-  const slots = [];
-  const today = new Date();
-
-  for (let day = 0; day < 14; day++) {
-    const date = new Date(today);
-    date.setDate(today.getDate() + day);
-
-    if (date.getDay() === 0) continue; // Skip Sundays
-
-    const daySlots = [];
-    for (let hour = 17; hour < 21; hour++) {
-      daySlots.push({
-        time: `${hour}:00`,
-        available: Math.random() > 0.4,
-      });
-    }
-
-    slots.push({
-      date: date.toISOString().split('T')[0],
-      dayName: date.toLocaleDateString('en-IE', { weekday: 'short' }),
-      dayNum: date.getDate(),
-      month: date.toLocaleDateString('en-IE', { month: 'short' }),
-      slots: daySlots,
-    });
-  }
-
-  return slots;
-};
 
 const subjectLabels: Record<string, string> = {
   MATHS: 'Maths',
@@ -124,10 +72,14 @@ export default function TutorProfilePage() {
   const params = useParams();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<TabType>('about');
-  const [availability, setAvailability] = useState<ReturnType<typeof generateAvailability>>([]);
   const [tutor, setTutor] = useState<TutorData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Real data state
+  const [reviews, setReviews] = useState<any>(null);
+  const [availabilitySlots, setAvailabilitySlots] = useState<any[]>([]);
+  const [tutorResources, setTutorResources] = useState<any[]>([]);
 
   // Message modal state
   const [showMessageModal, setShowMessageModal] = useState(false);
@@ -141,9 +93,40 @@ export default function TutorProfilePage() {
     ? JSON.parse(localStorage.getItem('user') || 'null')
     : null;
 
+  // Fetch reviews, availability, and resources when tutor loads
   useEffect(() => {
-    setAvailability(generateAvailability());
-  }, []);
+    if (!tutor) return;
+
+    const fetchExtras = async () => {
+      try {
+        const [reviewsRes, resourcesRes] = await Promise.all([
+          tutorsApi.getReviews(params.id as string),
+          resources.getByTutor(tutor.id),
+        ]);
+        setReviews(reviewsRes.data);
+        setTutorResources(resourcesRes.data || []);
+      } catch (err) {
+        console.error('Failed to fetch tutor extras:', err);
+      }
+
+      // Fetch availability slots for next 7 days
+      try {
+        const startDate = new Date();
+        const endDate = new Date();
+        endDate.setDate(endDate.getDate() + 6);
+        const slotsRes = await availabilityApi.getSlots(tutor.id, {
+          medium: 'IN_PERSON',
+          startDate: startDate.toISOString().split('T')[0],
+          endDate: endDate.toISOString().split('T')[0],
+        });
+        setAvailabilitySlots(slotsRes.data || []);
+      } catch {
+        // Tutor may not have availability configured
+      }
+    };
+
+    fetchExtras();
+  }, [tutor, params.id]);
 
   useEffect(() => {
     const fetchTutor = async () => {
@@ -417,16 +400,16 @@ export default function TutorProfilePage() {
               <div className="bg-white rounded-xl p-6 shadow-sm">
                 <div className="flex items-center gap-8">
                   <div className="text-center">
-                    <div className="text-5xl font-bold text-[#2C3E50]">{tutor.rating}</div>
+                    <div className="text-5xl font-bold text-[#2C3E50]">{reviews?.averageRating?.toFixed(1) || tutor.rating}</div>
                     <div className="flex justify-center my-2">
                       {[1, 2, 3, 4, 5].map(star => (
                         <Star
                           key={star}
-                          className={`w-5 h-5 ${star <= Math.round(tutor.rating) ? 'text-yellow-400 fill-yellow-400' : 'text-[#D5DBDB]'}`}
+                          className={`w-5 h-5 ${star <= Math.round(reviews?.averageRating || tutor.rating) ? 'text-yellow-400 fill-yellow-400' : 'text-[#D5DBDB]'}`}
                         />
                       ))}
                     </div>
-                    <div className="text-sm text-[#95A5A6]">{tutor.reviewCount} reviews</div>
+                    <div className="text-sm text-[#95A5A6]">{reviews?.total || tutor.reviewCount} reviews</div>
                   </div>
                   <div className="flex-1">
                     {[5, 4, 3, 2, 1].map(rating => (
@@ -436,7 +419,7 @@ export default function TutorProfilePage() {
                         <div className="flex-1 h-2 bg-[#ECF0F1] rounded-full overflow-hidden">
                           <div
                             className="h-full bg-yellow-400 rounded-full"
-                            style={{ width: `${rating === 5 ? 75 : rating === 4 ? 20 : 5}%` }}
+                            style={{ width: `${reviews?.ratingBreakdown?.[rating] || 0}%` }}
                           />
                         </div>
                       </div>
@@ -446,96 +429,139 @@ export default function TutorProfilePage() {
               </div>
 
               {/* Reviews List */}
-              {mockReviews.map(review => (
-                <div key={review.id} className="bg-white rounded-xl p-6 shadow-sm">
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex items-center gap-3">
-                      <Avatar size="sm" fallback={review.studentName} />
-                      <div>
-                        <div className="font-semibold text-[#2C3E50]">{review.studentName}</div>
-                        <div className="text-sm text-[#95A5A6]">{review.subject}</div>
+              {!reviews?.items?.length ? (
+                <div className="bg-white rounded-xl p-12 shadow-sm text-center">
+                  <Star className="w-12 h-12 text-[#D5DBDB] mx-auto mb-4" />
+                  <p className="text-[#5D6D7E]">No reviews yet</p>
+                  <p className="text-sm text-[#95A5A6] mt-1">Be the first to review this tutor after a session!</p>
+                </div>
+              ) : (
+                reviews.items.map((review: any) => (
+                  <div key={review.id} className="bg-white rounded-xl p-6 shadow-sm">
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex items-center gap-3">
+                        <Avatar size="sm" fallback={review.studentName} />
+                        <div>
+                          <div className="font-semibold text-[#2C3E50]">{review.studentName}</div>
+                          <div className="text-sm text-[#95A5A6]">{review.subject}</div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        {[1, 2, 3, 4, 5].map(star => (
+                          <Star
+                            key={star}
+                            className={`w-4 h-4 ${star <= review.rating ? 'text-yellow-400 fill-yellow-400' : 'text-[#D5DBDB]'}`}
+                          />
+                        ))}
                       </div>
                     </div>
-                    <div className="flex items-center gap-1">
-                      {[1, 2, 3, 4, 5].map(star => (
-                        <Star
-                          key={star}
-                          className={`w-4 h-4 ${star <= review.rating ? 'text-yellow-400 fill-yellow-400' : 'text-[#D5DBDB]'}`}
-                        />
-                      ))}
+                    {review.text && <p className="text-[#5D6D7E]">{review.text}</p>}
+                    <div className="text-sm text-[#95A5A6] mt-3">
+                      {new Date(review.date).toLocaleDateString('en-IE', { year: 'numeric', month: 'long', day: 'numeric' })}
                     </div>
                   </div>
-                  <p className="text-[#5D6D7E]">{review.text}</p>
-                  <div className="text-sm text-[#95A5A6] mt-3">{review.date}</div>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           )}
 
           {/* Resources Tab */}
           {activeTab === 'resources' && (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {mockResources.map(resource => (
-                <div key={resource.id} className="bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-start gap-3 mb-3">
-                    <div className="w-12 h-12 bg-[#F0F7F4] rounded-lg flex items-center justify-center">
-                      <BookOpen className="w-6 h-6 text-[#2D9B6E]" />
+            tutorResources.length === 0 ? (
+              <div className="bg-white rounded-xl p-12 shadow-sm text-center">
+                <BookOpen className="w-12 h-12 text-[#D5DBDB] mx-auto mb-4" />
+                <p className="text-[#5D6D7E]">This tutor hasn&apos;t published any resources yet.</p>
+              </div>
+            ) : (
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {tutorResources.map((resource: any) => (
+                  <Link key={resource.id} href={`/tutor-resources/${resource.id}`}>
+                    <div className="bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow">
+                      <div className="flex items-start gap-3 mb-3">
+                        <div className="w-12 h-12 bg-[#F0F7F4] rounded-lg flex items-center justify-center">
+                          <BookOpen className="w-6 h-6 text-[#2D9B6E]" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-semibold text-[#2C3E50] line-clamp-2">{resource.title}</h3>
+                          <Badge variant="default" size="sm">{resource.resourceType}</Badge>
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between text-sm mb-4">
+                        <div className="flex items-center gap-1">
+                          <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+                          <span className="font-medium text-[#2C3E50]">{resource.rating || '—'}</span>
+                        </div>
+                        <span className="text-[#95A5A6]">{resource.salesCount || 0} sold</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-xl font-bold text-[#2D9B6E]">
+                          {resource.price > 0 ? `€${resource.price}` : 'Free'}
+                        </span>
+                        <span className="text-sm text-[#2D9B6E] font-medium flex items-center">
+                          View <ChevronRight className="w-4 h-4 ml-1" />
+                        </span>
+                      </div>
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-[#2C3E50] line-clamp-2">{resource.title}</h3>
-                      <Badge variant="default" size="sm">{resource.type}</Badge>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between text-sm mb-4">
-                    <div className="flex items-center gap-1">
-                      <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-                      <span className="font-medium text-[#2C3E50]">{resource.rating}</span>
-                    </div>
-                    <span className="text-[#95A5A6]">{resource.salesCount} sold</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-xl font-bold text-[#2D9B6E]">€{resource.price}</span>
-                    <Button variant="secondary" size="sm">
-                      View <ChevronRight className="w-4 h-4 ml-1" />
-                    </Button>
-                  </div>
-                </div>
-              ))}
-            </div>
+                  </Link>
+                ))}
+              </div>
+            )
           )}
 
           {/* Availability Tab */}
           {activeTab === 'availability' && (
             <div className="bg-white rounded-xl p-6 shadow-sm">
               <h2 className="text-xl font-bold text-[#2C3E50] mb-6">Available Sessions</h2>
-              <div className="overflow-x-auto">
-                <div className="flex gap-4 min-w-max">
-                  {availability.map(day => (
-                    <div key={day.date} className="w-24">
-                      <div className="text-center mb-3">
-                        <div className="text-sm text-[#95A5A6]">{day.dayName}</div>
-                        <div className="text-lg font-bold text-[#2C3E50]">{day.dayNum}</div>
-                        <div className="text-xs text-[#95A5A6]">{day.month}</div>
-                      </div>
-                      <div className="space-y-2">
-                        {day.slots.map(slot => (
-                          <button
-                            key={slot.time}
-                            disabled={!slot.available}
-                            className={`w-full py-2 rounded-lg text-sm font-medium transition-all ${
-                              slot.available
-                                ? 'bg-[#F0F7F4] text-[#2D9B6E] hover:bg-[#2D9B6E] hover:text-white'
-                                : 'bg-[#ECF0F1] text-[#95A5A6] cursor-not-allowed'
-                            }`}
-                          >
-                            {slot.time}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
+              {availabilitySlots.filter((s: any) => s.available).length === 0 ? (
+                <div className="text-center py-8">
+                  <Calendar className="w-12 h-12 text-[#D5DBDB] mx-auto mb-4" />
+                  <p className="text-[#5D6D7E]">This tutor hasn&apos;t set up their availability yet.</p>
+                  <p className="text-sm text-[#95A5A6] mt-1">Contact them to arrange a session.</p>
                 </div>
-              </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <div className="flex gap-4 min-w-max">
+                    {(() => {
+                      // Group available slots by date
+                      const availableSlots = availabilitySlots.filter((s: any) => s.available);
+                      const grouped: Record<string, any[]> = {};
+                      availableSlots.forEach((slot: any) => {
+                        if (!grouped[slot.date]) grouped[slot.date] = [];
+                        grouped[slot.date].push(slot);
+                      });
+                      const sortedDates = Object.keys(grouped).sort();
+
+                      return sortedDates.map(date => {
+                        const d = new Date(date + 'T00:00:00');
+                        const dayName = d.toLocaleDateString('en-IE', { weekday: 'short' });
+                        const dayNum = d.getDate();
+                        const month = d.toLocaleDateString('en-IE', { month: 'short' });
+
+                        return (
+                          <div key={date} className="w-24">
+                            <div className="text-center mb-3">
+                              <div className="text-sm text-[#95A5A6]">{dayName}</div>
+                              <div className="text-lg font-bold text-[#2C3E50]">{dayNum}</div>
+                              <div className="text-xs text-[#95A5A6]">{month}</div>
+                            </div>
+                            <div className="space-y-2">
+                              {grouped[date].map((slot: any) => (
+                                <button
+                                  key={slot.startTime}
+                                  className="w-full py-2 rounded-lg text-sm font-medium transition-all bg-[#F0F7F4] text-[#2D9B6E] hover:bg-[#2D9B6E] hover:text-white"
+                                  onClick={() => router.push(`/book/${tutor.id}`)}
+                                >
+                                  {slot.startTime.slice(0, 5)}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        );
+                      });
+                    })()}
+                  </div>
+                </div>
+              )}
               <div className="mt-6 pt-6 border-t border-[#ECF0F1]">
                 <Link href={`/book/${tutor.id}`}>
                   <Button size="lg">

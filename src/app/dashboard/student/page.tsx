@@ -39,8 +39,16 @@ export default function StudentDashboard() {
   const [cancelSessionId, setCancelSessionId] = useState<string | null>(null);
   const [cancelLoading, setCancelLoading] = useState(false);
 
+  // Review modal state
+  const [reviewSessionId, setReviewSessionId] = useState<string | null>(null);
+  const [reviewRating, setReviewRating] = useState(0);
+  const [reviewHover, setReviewHover] = useState(0);
+  const [reviewText, setReviewText] = useState('');
+  const [reviewLoading, setReviewLoading] = useState(false);
+
   // Real data state
   const [upcomingSessions, setUpcomingSessions] = useState<any[]>([]);
+  const [pastSessions, setPastSessions] = useState<any[]>([]);
   const [purchasedResources, setPurchasedResources] = useState<any[]>([]);
   const [recentTutors, setRecentTutors] = useState<any[]>([]);
   const [userData, setUserData] = useState<any>(null);
@@ -97,8 +105,10 @@ export default function StudentDashboard() {
           };
         }));
 
-        // Derive recent tutors from all sessions (unique tutors)
+        // Derive recent tutors and past sessions from all sessions
         const tutorMap = new Map();
+        const now = new Date();
+        const past: any[] = [];
         (allSessionsRes.data || []).forEach((s: any) => {
           if (s.tutor && !tutorMap.has(s.tutor.id)) {
             const tutorUser = s.tutor?.User;
@@ -112,8 +122,23 @@ export default function StudentDashboard() {
               hourlyRate: Number(s.tutor.baseHourlyRate) || 0,
             });
           }
+          // Past sessions: CONFIRMED/COMPLETED and scheduledAt in the past
+          if ((s.status === 'CONFIRMED' || s.status === 'COMPLETED') && new Date(s.scheduledAt) < now) {
+            const tutorUser = s.tutor?.User;
+            past.push({
+              id: s.id,
+              tutorId: s.tutor?.id,
+              tutorName: tutorUser ? `${tutorUser.firstName} ${tutorUser.lastName}` : (s.tutor?.headline || 'Tutor'),
+              subject: s.subject,
+              date: s.scheduledAt,
+              duration: s.durationMins,
+              rating: s.rating || null,
+              reviewText: s.reviewText || '',
+            });
+          }
         });
         setRecentTutors(Array.from(tutorMap.values()).slice(0, 5));
+        setPastSessions(past.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
       } catch (error) {
         console.error('Failed to load dashboard data:', error);
       } finally {
@@ -202,6 +227,25 @@ export default function StudentDashboard() {
       alert('Failed to cancel session.');
     } finally {
       setCancelLoading(false);
+    }
+  };
+
+  const handleSubmitReview = async () => {
+    if (!reviewSessionId || reviewRating === 0) return;
+    setReviewLoading(true);
+    try {
+      await sessions.review(reviewSessionId, reviewRating, reviewText);
+      // Update the local past sessions state
+      setPastSessions(prev => prev.map(s =>
+        s.id === reviewSessionId ? { ...s, rating: reviewRating, reviewText } : s
+      ));
+      setReviewSessionId(null);
+      setReviewRating(0);
+      setReviewText('');
+    } catch {
+      alert('Failed to submit review. Please try again.');
+    } finally {
+      setReviewLoading(false);
     }
   };
 
@@ -401,51 +445,111 @@ export default function StudentDashboard() {
 
               {/* Sessions Tab */}
               {activeTab === 'sessions' && (
-                <div className="bg-white rounded-xl shadow-sm p-6">
-                  <h2 className="text-lg font-bold text-[#2C3E50] mb-6">All Sessions</h2>
-                  {upcomingSessions.length > 0 ? (
-                    <div className="space-y-4">
-                      {upcomingSessions.map(session => (
-                        <div key={session.id} className="flex items-center gap-4 p-4 rounded-lg border border-[#ECF0F1]">
-                          <Avatar size="md" fallback={session.tutorName} />
-                          <div className="flex-1">
-                            <div className="font-semibold text-[#2C3E50]">{session.tutorName}</div>
-                            <div className="text-sm text-[#5D6D7E]">{session.subject} - {session.duration} minutes</div>
-                          </div>
-                          <Badge variant="primary">Upcoming</Badge>
-                          <div className="text-right">
-                            <div className="text-[#2C3E50]">
-                              {new Date(session.date).toLocaleDateString('en-IE')} at {session.time}
+                <div className="space-y-6">
+                  {/* Upcoming Sessions */}
+                  <div className="bg-white rounded-xl shadow-sm p-6">
+                    <h2 className="text-lg font-bold text-[#2C3E50] mb-6">Upcoming Sessions</h2>
+                    {upcomingSessions.length > 0 ? (
+                      <div className="space-y-4">
+                        {upcomingSessions.map(session => (
+                          <div key={session.id} className="flex items-center gap-4 p-4 rounded-lg border border-[#ECF0F1]">
+                            <Avatar size="md" fallback={session.tutorName} />
+                            <div className="flex-1">
+                              <div className="font-semibold text-[#2C3E50]">{session.tutorName}</div>
+                              <div className="text-sm text-[#5D6D7E]">{session.subject} - {session.duration} minutes</div>
                             </div>
+                            <Badge variant="primary">Upcoming</Badge>
+                            <div className="text-right">
+                              <div className="text-[#2C3E50]">
+                                {new Date(session.date).toLocaleDateString('en-IE')} at {session.time}
+                              </div>
+                            </div>
+                            {session.type === 'VIDEO' && (
+                              <a href={session.meetingLink} target="_blank" rel="noopener noreferrer">
+                                <Button size="sm">
+                                  <Video className="w-4 h-4 mr-1" />
+                                  Join
+                                </Button>
+                              </a>
+                            )}
+                            <button
+                              onClick={() => setCancelSessionId(session.id)}
+                              className="text-xs text-red-500 hover:text-red-700 px-2 py-1 rounded hover:bg-red-50"
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
                           </div>
-                          {session.type === 'VIDEO' && (
-                            <a href={session.meetingLink} target="_blank" rel="noopener noreferrer">
-                              <Button size="sm">
-                                <Video className="w-4 h-4 mr-1" />
-                                Join
-                              </Button>
-                            </a>
-                          )}
-                          <button
-                            onClick={() => setCancelSessionId(session.id)}
-                            className="text-xs text-red-500 hover:text-red-700 px-2 py-1 rounded hover:bg-red-50"
-                          >
-                            <X className="w-4 h-4" />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-center py-12">
-                      <Calendar className="w-12 h-12 text-[#D5DBDB] mx-auto mb-3" />
-                      <p className="text-[#5D6D7E]">No upcoming sessions</p>
-                      <Link href="/tutors">
-                        <Button variant="secondary" size="sm" className="mt-4">
-                          Find a Tutor
-                        </Button>
-                      </Link>
-                    </div>
-                  )}
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-8">
+                        <Calendar className="w-12 h-12 text-[#D5DBDB] mx-auto mb-3" />
+                        <p className="text-[#5D6D7E]">No upcoming sessions</p>
+                        <Link href="/tutors">
+                          <Button variant="secondary" size="sm" className="mt-4">
+                            Find a Tutor
+                          </Button>
+                        </Link>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Past Sessions */}
+                  <div className="bg-white rounded-xl shadow-sm p-6">
+                    <h2 className="text-lg font-bold text-[#2C3E50] mb-6">Past Sessions</h2>
+                    {pastSessions.length > 0 ? (
+                      <div className="space-y-4">
+                        {pastSessions.map(session => (
+                          <div key={session.id} className="p-4 rounded-lg border border-[#ECF0F1]">
+                            <div className="flex items-center gap-4">
+                              <Avatar size="md" fallback={session.tutorName} />
+                              <div className="flex-1">
+                                <div className="font-semibold text-[#2C3E50]">{session.tutorName}</div>
+                                <div className="text-sm text-[#5D6D7E]">{session.subject} - {session.duration} minutes</div>
+                              </div>
+                              <div className="text-right text-sm text-[#95A5A6]">
+                                {new Date(session.date).toLocaleDateString('en-IE', { day: 'numeric', month: 'short', year: 'numeric' })}
+                              </div>
+                            </div>
+                            {/* Review section */}
+                            {session.rating ? (
+                              <div className="mt-3 pt-3 border-t border-[#ECF0F1]">
+                                <div className="flex items-center gap-1 mb-1">
+                                  <span className="text-xs text-[#95A5A6] mr-1">Your review:</span>
+                                  {[1, 2, 3, 4, 5].map(star => (
+                                    <Star key={star} className={`w-4 h-4 ${star <= session.rating ? 'text-yellow-400 fill-yellow-400' : 'text-[#D5DBDB]'}`} />
+                                  ))}
+                                </div>
+                                {session.reviewText && (
+                                  <p className="text-sm text-[#5D6D7E] italic">&ldquo;{session.reviewText}&rdquo;</p>
+                                )}
+                              </div>
+                            ) : (
+                              <div className="mt-3 pt-3 border-t border-[#ECF0F1]">
+                                <Button
+                                  variant="secondary"
+                                  size="sm"
+                                  onClick={() => {
+                                    setReviewSessionId(session.id);
+                                    setReviewRating(0);
+                                    setReviewText('');
+                                  }}
+                                >
+                                  <Star className="w-4 h-4 mr-1" />
+                                  Leave a Review
+                                </Button>
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-8">
+                        <Star className="w-12 h-12 text-[#D5DBDB] mx-auto mb-3" />
+                        <p className="text-[#5D6D7E]">No past sessions yet</p>
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
 
@@ -589,6 +693,71 @@ export default function StudentDashboard() {
           )}
         </div>
       </main>
+
+      {/* Review Modal */}
+      {reviewSessionId && (
+        <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl shadow-xl p-6 max-w-md w-full">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold text-[#2C3E50]">Leave a Review</h3>
+              <button onClick={() => { setReviewSessionId(null); setReviewRating(0); setReviewText(''); }} className="text-[#95A5A6] hover:text-[#2C3E50]">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <p className="text-sm text-[#5D6D7E] mb-4">
+              How was your session with {pastSessions.find(s => s.id === reviewSessionId)?.tutorName}?
+            </p>
+
+            {/* Star Rating */}
+            <div className="flex items-center gap-1 mb-4">
+              {[1, 2, 3, 4, 5].map(star => (
+                <button
+                  key={star}
+                  onMouseEnter={() => setReviewHover(star)}
+                  onMouseLeave={() => setReviewHover(0)}
+                  onClick={() => setReviewRating(star)}
+                  className="p-1"
+                >
+                  <Star className={`w-8 h-8 transition-colors ${
+                    star <= (reviewHover || reviewRating)
+                      ? 'text-yellow-400 fill-yellow-400'
+                      : 'text-[#D5DBDB]'
+                  }`} />
+                </button>
+              ))}
+              {reviewRating > 0 && (
+                <span className="ml-2 text-sm text-[#5D6D7E]">
+                  {reviewRating === 5 ? 'Excellent' : reviewRating === 4 ? 'Great' : reviewRating === 3 ? 'Good' : reviewRating === 2 ? 'Fair' : 'Poor'}
+                </span>
+              )}
+            </div>
+
+            {/* Review Text */}
+            <textarea
+              value={reviewText}
+              onChange={e => setReviewText(e.target.value)}
+              rows={3}
+              placeholder="Tell others about your experience (optional)"
+              className="w-full px-4 py-3 border border-[#E5E7EB] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2D9B6E] resize-none mb-4"
+            />
+
+            <div className="flex gap-3">
+              <Button variant="outline" className="flex-1" onClick={() => { setReviewSessionId(null); setReviewRating(0); setReviewText(''); }}>
+                Cancel
+              </Button>
+              <Button
+                className="flex-1"
+                disabled={reviewRating === 0}
+                isLoading={reviewLoading}
+                onClick={handleSubmitReview}
+              >
+                Submit Review
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Cancel Session Confirmation Modal */}
       {cancelSessionId && (

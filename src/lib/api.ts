@@ -144,6 +144,12 @@ export const sessions = {
       method: 'POST',
       body: JSON.stringify({ rating, reviewText }),
     }),
+
+  reportReview: (id: string, reason: string, details?: string) =>
+    fetchAPI<{ success: boolean; data: any }>(`/api/sessions/${id}/review/report`, {
+      method: 'POST',
+      body: JSON.stringify({ reason, details }),
+    }),
 };
 
 // ============ RESOURCES ============
@@ -217,6 +223,9 @@ export const resources = {
     fetchAPI<{ success: boolean; message: string }>(`/api/resources/${id}`, {
       method: 'DELETE',
     }),
+
+  getByTutor: (tutorId: string) =>
+    fetchAPI<{ success: boolean; data: any[] }>(`/api/resources/tutor/${tutorId}`),
 };
 
 // ============ PAYMENTS ============
@@ -456,6 +465,17 @@ export const adminApi = {
   actionResourceReport: (reportId: string, action: 'refund' | 'dismiss' | 'suspend' | 'delete') =>
     fetchAPI<{ success: boolean; message: string }>(`/api/admin/resources/reports/${reportId}/action`, {
       method: 'POST',
+      body: JSON.stringify({ action }),
+    }),
+
+  getReviewReports: (status = 'PENDING') =>
+    fetchAPI<{ success: boolean; data: any[] }>(
+      `/api/admin/review-reports?status=${status}`
+    ),
+
+  actionReviewReport: (reportId: string, action: 'dismiss' | 'remove_review') =>
+    fetchAPI<{ success: boolean; data: any }>(`/api/admin/review-reports/${reportId}`, {
+      method: 'PUT',
       body: JSON.stringify({ action }),
     }),
 };
