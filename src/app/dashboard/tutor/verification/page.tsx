@@ -16,6 +16,7 @@ import {
   FileText,
   ArrowLeft
 } from 'lucide-react';
+import { upload } from '@/lib/api';
 
 interface Verification {
   id: string;
@@ -95,10 +96,14 @@ export default function TutorVerificationPage() {
     setSuccess('');
 
     try {
-      // In a real app, you'd upload to cloud storage (S3, etc.) first
-      // For now, we'll simulate with a placeholder URL
-      const documentUrl = `/uploads/garda-vetting/${Date.now()}-${selectedFile.name}`;
+      // 1. Get presigned URL from backend
+      const presignedRes = await upload.getGardaDocumentUrl(selectedFile.name, selectedFile.type);
+      const { uploadUrl, key } = presignedRes.data;
 
+      // 2. Upload file to S3
+      await upload.uploadToS3(uploadUrl, selectedFile);
+
+      // 3. Save S3 key to database
       const token = localStorage.getItem('token');
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/verification/garda-vetting/upload`,
@@ -109,7 +114,7 @@ export default function TutorVerificationPage() {
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
-            documentUrl,
+            documentUrl: key,
             documentName: selectedFile.name,
           }),
         }

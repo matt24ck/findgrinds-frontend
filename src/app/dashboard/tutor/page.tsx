@@ -31,6 +31,7 @@ import {
   X,
   Trash2,
   Flag,
+  Camera,
 } from 'lucide-react';
 import { AvailabilityEditor } from '@/components/dashboard/AvailabilityEditor';
 import { AccountSection } from '@/components/dashboard/AccountSection';
@@ -89,6 +90,10 @@ export default function TutorDashboard() {
   const [uploadFile, setUploadFile] = useState<File | null>(null);
   const [uploadLoading, setUploadLoading] = useState(false);
   const [uploadError, setUploadError] = useState('');
+
+  // Profile photo state
+  const [profilePhotoUrl, setProfilePhotoUrl] = useState<string | null>(null);
+  const [photoUploading, setPhotoUploading] = useState(false);
 
   // Fetch Stripe Connect status on mount
   const fetchStripeStatus = async () => {
@@ -239,6 +244,7 @@ export default function TutorDashboard() {
           const u = (userRes as any).data || userRes;
           setIsAdmin(!!u.isAdmin);
           if (u.email) setUserEmail(u.email);
+          if (u.profilePhotoUrl) setProfilePhotoUrl(u.profilePhotoUrl);
         }
 
         // Now that fetchAvailabilityStatus set tutorId, fetch dependent data
@@ -1033,6 +1039,45 @@ export default function TutorDashboard() {
               <div className="bg-white rounded-xl shadow-sm p-6">
                 <h2 className="text-lg font-bold text-[#2C3E50] mb-6">Profile Settings</h2>
                 <div className="space-y-4">
+                  {/* Profile Photo */}
+                  <div className="flex items-center gap-4">
+                    <Avatar size="xl" src={profilePhotoUrl || undefined} fallback={userEmail} />
+                    <div>
+                      <input
+                        type="file"
+                        id="profile-photo-input"
+                        className="hidden"
+                        accept="image/jpeg,image/png,image/webp"
+                        onChange={async (e) => {
+                          const file = e.target.files?.[0];
+                          if (!file) return;
+                          setPhotoUploading(true);
+                          try {
+                            const presignedRes = await upload.getProfilePhotoUrl(file.name, file.type);
+                            const { uploadUrl, key } = presignedRes.data;
+                            await upload.uploadToS3(uploadUrl, file);
+                            const confirmRes = await upload.confirmProfilePhoto(key);
+                            const displayUrl = (confirmRes as any).data?.displayUrl;
+                            if (displayUrl) setProfilePhotoUrl(displayUrl);
+                          } catch {
+                            alert('Failed to upload photo.');
+                          } finally {
+                            setPhotoUploading(false);
+                            e.target.value = '';
+                          }
+                        }}
+                      />
+                      <button
+                        onClick={() => document.getElementById('profile-photo-input')?.click()}
+                        disabled={photoUploading}
+                        className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-[#2D9B6E] border border-[#2D9B6E] rounded-lg hover:bg-[#F0F7F4] disabled:opacity-50"
+                      >
+                        {photoUploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Camera className="w-4 h-4" />}
+                        {photoUploading ? 'Uploading...' : 'Change Photo'}
+                      </button>
+                      <p className="text-xs text-[#95A5A6] mt-1">JPG, PNG or WebP. Max 5MB.</p>
+                    </div>
+                  </div>
                   <div>
                     <label className="block text-sm font-medium text-[#2C3E50] mb-1">Headline</label>
                     <input
