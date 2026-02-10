@@ -27,7 +27,7 @@ interface Stats {
     suspended: number;
   };
   subscriptions: {
-    verified: number;
+    enterprise: number;
     professional: number;
     adminGranted: number;
   };
@@ -184,7 +184,7 @@ export default function AdminDashboardPage() {
                   </div>
                   <div>
                     <p className="text-2xl font-bold text-[#2C3E50]">
-                      {stats.subscriptions.verified + stats.subscriptions.professional}
+                      {stats.subscriptions.professional + stats.subscriptions.enterprise}
                     </p>
                     <p className="text-sm text-[#5D6D7E]">Paid Subscriptions</p>
                   </div>
