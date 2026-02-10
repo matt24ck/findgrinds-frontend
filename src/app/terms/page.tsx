@@ -105,11 +105,11 @@ export default function TermsOfServicePage() {
               </p>
 
               <h3 className="text-xl font-semibold text-[#2C3E50] mt-6 mb-3">5.2 Cancellation Policy</h3>
-              <ul className="list-disc pl-6 space-y-2">
-                <li><strong>24+ hours notice:</strong> Full refund</li>
-                <li><strong>12-24 hours notice:</strong> 50% refund</li>
-                <li><strong>Less than 12 hours:</strong> No refund</li>
-              </ul>
+              <p>
+                Each tutor sets their own cancellation policy, including the required notice period and
+                refund percentage for late cancellations. You can view a tutor&apos;s cancellation policy
+                on their profile before booking a session.
+              </p>
               <p className="mt-4">
                 Tutors who cancel sessions repeatedly may have their accounts suspended.
               </p>

@@ -7,7 +7,7 @@ import { Footer } from '@/components/layout/Footer';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { Avatar } from '@/components/ui/Avatar';
-import { parentApi, auth, sessions, resources } from '@/lib/api';
+import { parentApi, auth, sessions, resources, upload } from '@/lib/api';
 import { AccountSection } from '@/components/dashboard/AccountSection';
 import {
   Calendar,
@@ -26,6 +26,9 @@ import {
   X,
   Loader2,
   Shield,
+  AlertTriangle,
+  Upload,
+  Paperclip,
 } from 'lucide-react';
 
 type TabType = 'overview' | 'sessions' | 'resources' | 'settings';
@@ -46,6 +49,16 @@ export default function StudentDashboard() {
   const [reviewHover, setReviewHover] = useState(0);
   const [reviewText, setReviewText] = useState('');
   const [reviewLoading, setReviewLoading] = useState(false);
+
+  // Dispute modal state
+  const [disputeSessionId, setDisputeSessionId] = useState<string | null>(null);
+  const [disputeReason, setDisputeReason] = useState('');
+  const [disputeDetails, setDisputeDetails] = useState('');
+  const [disputeEvidenceKeys, setDisputeEvidenceKeys] = useState<string[]>([]);
+  const [disputeEvidenceNames, setDisputeEvidenceNames] = useState<string[]>([]);
+  const [disputeUploading, setDisputeUploading] = useState(false);
+  const [disputeLoading, setDisputeLoading] = useState(false);
+  const [disputedSessionIds, setDisputedSessionIds] = useState<Set<string>>(new Set());
 
   // Real data state
   const [upcomingSessions, setUpcomingSessions] = useState<any[]>([]);
@@ -139,7 +152,21 @@ export default function StudentDashboard() {
           }
         });
         setRecentTutors(Array.from(tutorMap.values()).slice(0, 5));
-        setPastSessions(past.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
+        const sortedPast = past.sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime());
+        setPastSessions(sortedPast);
+
+        // Check which past sessions have disputes
+        const disputeChecks = await Promise.all(
+          sortedPast.map(async (s: any) => {
+            try {
+              const res = await sessions.getDispute(s.id);
+              return res.data ? s.id : null;
+            } catch {
+              return null;
+            }
+          })
+        );
+        setDisputedSessionIds(new Set(disputeChecks.filter(Boolean) as string[]));
       } catch (error) {
         console.error('Failed to load dashboard data:', error);
       } finally {
@@ -247,6 +274,46 @@ export default function StudentDashboard() {
       alert('Failed to submit review. Please try again.');
     } finally {
       setReviewLoading(false);
+    }
+  };
+
+  const handleDisputeFileUpload = async (files: FileList) => {
+    if (disputeEvidenceKeys.length + files.length > 5) {
+      alert('Maximum 5 files allowed.');
+      return;
+    }
+    setDisputeUploading(true);
+    try {
+      for (const file of Array.from(files)) {
+        const presignedRes = await upload.getDisputeEvidenceUrl(file.name, file.type);
+        const { uploadUrl, key } = presignedRes.data;
+        await upload.uploadToS3(uploadUrl, file);
+        setDisputeEvidenceKeys(prev => [...prev, key]);
+        setDisputeEvidenceNames(prev => [...prev, file.name]);
+      }
+    } catch {
+      alert('Failed to upload file. Please try again.');
+    } finally {
+      setDisputeUploading(false);
+    }
+  };
+
+  const handleSubmitDispute = async () => {
+    if (!disputeSessionId || !disputeReason || !disputeDetails.trim()) return;
+    setDisputeLoading(true);
+    try {
+      await sessions.createDispute(disputeSessionId, disputeReason, disputeDetails, disputeEvidenceKeys);
+      setDisputedSessionIds(prev => new Set([...prev, disputeSessionId]));
+      setDisputeSessionId(null);
+      setDisputeReason('');
+      setDisputeDetails('');
+      setDisputeEvidenceKeys([]);
+      setDisputeEvidenceNames([]);
+      alert('Dispute submitted successfully. We will review it shortly.');
+    } catch (err: any) {
+      alert(err.message || 'Failed to submit dispute.');
+    } finally {
+      setDisputeLoading(false);
     }
   };
 
@@ -572,6 +639,23 @@ export default function StudentDashboard() {
                                 </Button>
                               </div>
                             )}
+                            {/* Dispute button */}
+                            <div className="mt-2">
+                              {disputedSessionIds.has(session.id) ? (
+                                <span className="inline-flex items-center gap-1 text-xs text-orange-600 font-medium">
+                                  <AlertTriangle className="w-3.5 h-3.5" />
+                                  Dispute submitted
+                                </span>
+                              ) : (
+                                <button
+                                  onClick={() => setDisputeSessionId(session.id)}
+                                  className="text-xs text-[#95A5A6] hover:text-red-500 transition-colors"
+                                >
+                                  <AlertTriangle className="w-3.5 h-3.5 inline mr-1" />
+                                  Raise a Dispute
+                                </button>
+                              )}
+                            </div>
                           </div>
                         ))}
                       </div>
@@ -809,6 +893,101 @@ export default function StudentDashboard() {
                 onClick={handleCancelSession}
               >
                 Cancel Session
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Dispute Modal */}
+      {disputeSessionId && (
+        <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl shadow-xl p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold text-[#2C3E50]">Raise a Dispute</h3>
+              <button onClick={() => { setDisputeSessionId(null); setDisputeReason(''); setDisputeDetails(''); setDisputeEvidenceKeys([]); setDisputeEvidenceNames([]); }} className="text-[#95A5A6] hover:text-[#2C3E50]">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <p className="text-sm text-[#5D6D7E] mb-4">
+              Session with {pastSessions.find(s => s.id === disputeSessionId)?.tutorName}. Please provide details about the issue.
+            </p>
+
+            {/* Reason */}
+            <label className="block text-sm font-medium text-[#2C3E50] mb-1">Reason</label>
+            <select
+              value={disputeReason}
+              onChange={e => setDisputeReason(e.target.value)}
+              className="w-full px-4 py-3 border border-[#E5E7EB] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2D9B6E] mb-4 bg-white"
+            >
+              <option value="">Select a reason...</option>
+              <option value="tutor_no_show">Tutor didn&apos;t show up</option>
+              <option value="poor_quality">Poor quality session</option>
+              <option value="inappropriate_behavior">Inappropriate behavior</option>
+              <option value="other">Other</option>
+            </select>
+
+            {/* Details */}
+            <label className="block text-sm font-medium text-[#2C3E50] mb-1">Details</label>
+            <textarea
+              value={disputeDetails}
+              onChange={e => setDisputeDetails(e.target.value)}
+              rows={4}
+              placeholder="Describe what happened in detail..."
+              className="w-full px-4 py-3 border border-[#E5E7EB] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2D9B6E] resize-none mb-4"
+            />
+
+            {/* Evidence Upload */}
+            <label className="block text-sm font-medium text-[#2C3E50] mb-1">Evidence (optional)</label>
+            <p className="text-xs text-[#95A5A6] mb-2">Upload screenshots or documents. Max 5 files, images or PDFs.</p>
+
+            {disputeEvidenceNames.length > 0 && (
+              <div className="space-y-1 mb-2">
+                {disputeEvidenceNames.map((name, i) => (
+                  <div key={i} className="flex items-center gap-2 text-sm text-[#5D6D7E] bg-[#F8F9FA] px-3 py-1.5 rounded">
+                    <Paperclip className="w-3.5 h-3.5" />
+                    <span className="truncate flex-1">{name}</span>
+                    <button
+                      onClick={() => {
+                        setDisputeEvidenceKeys(prev => prev.filter((_, idx) => idx !== i));
+                        setDisputeEvidenceNames(prev => prev.filter((_, idx) => idx !== i));
+                      }}
+                      className="text-[#95A5A6] hover:text-red-500"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {disputeEvidenceKeys.length < 5 && (
+              <label className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-[#2D9B6E] border border-[#2D9B6E] rounded-lg hover:bg-[#F0F7F4] cursor-pointer mb-4">
+                {disputeUploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
+                {disputeUploading ? 'Uploading...' : 'Upload File'}
+                <input
+                  type="file"
+                  className="hidden"
+                  accept="image/jpeg,image/png,image/webp,application/pdf"
+                  multiple
+                  disabled={disputeUploading}
+                  onChange={e => { if (e.target.files?.length) handleDisputeFileUpload(e.target.files); e.target.value = ''; }}
+                />
+              </label>
+            )}
+
+            <div className="flex gap-3 mt-4">
+              <Button variant="outline" className="flex-1" onClick={() => { setDisputeSessionId(null); setDisputeReason(''); setDisputeDetails(''); setDisputeEvidenceKeys([]); setDisputeEvidenceNames([]); }}>
+                Cancel
+              </Button>
+              <Button
+                className="flex-1 !bg-red-600 hover:!bg-red-700"
+                disabled={!disputeReason || !disputeDetails.trim()}
+                isLoading={disputeLoading}
+                onClick={handleSubmitDispute}
+              >
+                Submit Dispute
               </Button>
             </div>
           </div>

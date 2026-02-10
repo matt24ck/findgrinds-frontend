@@ -32,6 +32,8 @@ import {
   Trash2,
   Flag,
   Camera,
+  AlertTriangle,
+  Paperclip,
 } from 'lucide-react';
 import { AvailabilityEditor } from '@/components/dashboard/AvailabilityEditor';
 import { AccountSection } from '@/components/dashboard/AccountSection';
@@ -94,6 +96,15 @@ export default function TutorDashboard() {
   // Profile photo state
   const [profilePhotoUrl, setProfilePhotoUrl] = useState<string | null>(null);
   const [photoUploading, setPhotoUploading] = useState(false);
+
+  // Dispute state
+  const [pendingDisputes, setPendingDisputes] = useState<any[]>([]);
+  const [disputeRespondId, setDisputeRespondId] = useState<string | null>(null);
+  const [disputeResponseText, setDisputeResponseText] = useState('');
+  const [disputeResponseKeys, setDisputeResponseKeys] = useState<string[]>([]);
+  const [disputeResponseNames, setDisputeResponseNames] = useState<string[]>([]);
+  const [disputeResponseUploading, setDisputeResponseUploading] = useState(false);
+  const [disputeResponseLoading, setDisputeResponseLoading] = useState(false);
 
   // Fetch Stripe Connect status on mount
   const fetchStripeStatus = async () => {
@@ -316,6 +327,28 @@ export default function TutorDashboard() {
               date: r.date ? new Date(r.date).toLocaleDateString('en-IE') : '',
             })));
           }
+
+          // Fetch pending disputes for this tutor's sessions
+          try {
+            const allSessions = await sessionsApi.getAll();
+            const disputeResults = await Promise.all(
+              (allSessions.data || []).map(async (s: any) => {
+                try {
+                  const res = await sessionsApi.getDispute(s.id);
+                  if (res.data && res.data.status === 'PENDING') {
+                    return {
+                      ...res.data,
+                      sessionSubject: s.subject,
+                      sessionDate: s.scheduledAt,
+                      studentName: s.student ? `${s.student.firstName} ${s.student.lastName}` : 'Student',
+                    };
+                  }
+                  return null;
+                } catch { return null; }
+              })
+            );
+            setPendingDisputes(disputeResults.filter(Boolean));
+          } catch {}
         }
       } catch (err) {
         console.error('Failed to load dashboard data:', err);
@@ -347,6 +380,47 @@ export default function TutorDashboard() {
       alert(err instanceof Error ? err.message : 'Failed to report review');
     } finally {
       setFlagLoading(false);
+    }
+  };
+
+  const handleDisputeResponseUpload = async (files: FileList) => {
+    if (disputeResponseKeys.length + files.length > 5) {
+      alert('Maximum 5 files allowed.');
+      return;
+    }
+    setDisputeResponseUploading(true);
+    try {
+      for (const file of Array.from(files)) {
+        const presignedRes = await upload.getDisputeEvidenceUrl(file.name, file.type);
+        const { uploadUrl, key } = presignedRes.data;
+        await upload.uploadToS3(uploadUrl, file);
+        setDisputeResponseKeys(prev => [...prev, key]);
+        setDisputeResponseNames(prev => [...prev, file.name]);
+      }
+    } catch {
+      alert('Failed to upload file.');
+    } finally {
+      setDisputeResponseUploading(false);
+    }
+  };
+
+  const handleSubmitDisputeResponse = async () => {
+    if (!disputeRespondId || !disputeResponseText.trim()) return;
+    setDisputeResponseLoading(true);
+    try {
+      await sessionsApi.respondToDispute(disputeRespondId, disputeResponseText, disputeResponseKeys);
+      setPendingDisputes(prev => prev.map(d =>
+        d.sessionId === disputeRespondId ? { ...d, tutorResponse: disputeResponseText, respondedAt: new Date().toISOString() } : d
+      ));
+      setDisputeRespondId(null);
+      setDisputeResponseText('');
+      setDisputeResponseKeys([]);
+      setDisputeResponseNames([]);
+      alert('Response submitted. An admin will review the dispute.');
+    } catch (err: any) {
+      alert(err.message || 'Failed to submit response.');
+    } finally {
+      setDisputeResponseLoading(false);
     }
   };
 
@@ -617,6 +691,56 @@ export default function TutorDashboard() {
                   </button>
                 </div>
               </div>
+
+              {/* Pending Disputes Alert */}
+              {pendingDisputes.length > 0 && (
+                <div className="bg-red-50 border border-red-200 rounded-xl p-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+                      <AlertTriangle className="w-5 h-5 text-red-600" />
+                    </div>
+                    <div>
+                      <h2 className="text-lg font-bold text-[#2C3E50]">Pending Disputes ({pendingDisputes.length})</h2>
+                      <p className="text-sm text-[#5D6D7E]">A student has raised a dispute about one of your sessions. Please respond.</p>
+                    </div>
+                  </div>
+                  <div className="space-y-3">
+                    {pendingDisputes.map(dispute => {
+                      const reasonLabels: Record<string, string> = {
+                        tutor_no_show: 'Tutor didn\'t show up',
+                        poor_quality: 'Poor quality',
+                        inappropriate_behavior: 'Inappropriate behavior',
+                        other: 'Other',
+                      };
+                      return (
+                        <div key={dispute.id} className="bg-white rounded-lg p-4 border border-red-100">
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="font-medium text-[#2C3E50]">{dispute.sessionSubject}</div>
+                            <Badge variant="default">{reasonLabels[dispute.reason] || dispute.reason}</Badge>
+                          </div>
+                          <div className="text-sm text-[#5D6D7E] mb-2">
+                            Student: {dispute.studentName} &middot; {dispute.sessionDate ? new Date(dispute.sessionDate).toLocaleDateString('en-IE', { day: 'numeric', month: 'short', year: 'numeric' }) : ''}
+                          </div>
+                          <div className="text-sm text-[#5D6D7E] mb-3 bg-[#F8F9FA] p-3 rounded">
+                            &ldquo;{dispute.details}&rdquo;
+                          </div>
+                          {dispute.tutorResponse ? (
+                            <div className="text-sm text-[#2D9B6E] font-medium">Response submitted — awaiting admin review</div>
+                          ) : (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => { setDisputeRespondId(dispute.sessionId); setDisputeResponseText(''); setDisputeResponseKeys([]); setDisputeResponseNames([]); }}
+                            >
+                              Respond to Dispute
+                            </Button>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
 
               {/* Main Content Grid */}
               <div className="grid lg:grid-cols-3 gap-6">
@@ -1639,6 +1763,85 @@ export default function TutorDashboard() {
               >
                 <Flag className="w-4 h-4 mr-1" />
                 Submit Report
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Dispute Response Modal */}
+      {disputeRespondId && (
+        <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl shadow-xl p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold text-[#2C3E50]">Respond to Dispute</h3>
+              <button onClick={() => { setDisputeRespondId(null); setDisputeResponseText(''); setDisputeResponseKeys([]); setDisputeResponseNames([]); }} className="text-[#95A5A6] hover:text-[#2C3E50]">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <p className="text-sm text-[#5D6D7E] mb-4">
+              Provide your side of the story. An admin will review both perspectives before making a decision.
+            </p>
+
+            <label className="block text-sm font-medium text-[#2C3E50] mb-1">Your Response</label>
+            <textarea
+              value={disputeResponseText}
+              onChange={e => setDisputeResponseText(e.target.value)}
+              rows={4}
+              placeholder="Explain what happened from your perspective..."
+              className="w-full px-4 py-3 border border-[#E5E7EB] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2D9B6E] resize-none mb-4"
+            />
+
+            <label className="block text-sm font-medium text-[#2C3E50] mb-1">Evidence (optional)</label>
+            <p className="text-xs text-[#95A5A6] mb-2">Upload screenshots or documents to support your response.</p>
+
+            {disputeResponseNames.length > 0 && (
+              <div className="space-y-1 mb-2">
+                {disputeResponseNames.map((name, i) => (
+                  <div key={i} className="flex items-center gap-2 text-sm text-[#5D6D7E] bg-[#F8F9FA] px-3 py-1.5 rounded">
+                    <Paperclip className="w-3.5 h-3.5" />
+                    <span className="truncate flex-1">{name}</span>
+                    <button
+                      onClick={() => {
+                        setDisputeResponseKeys(prev => prev.filter((_, idx) => idx !== i));
+                        setDisputeResponseNames(prev => prev.filter((_, idx) => idx !== i));
+                      }}
+                      className="text-[#95A5A6] hover:text-red-500"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {disputeResponseKeys.length < 5 && (
+              <label className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-[#2D9B6E] border border-[#2D9B6E] rounded-lg hover:bg-[#F0F7F4] cursor-pointer mb-4">
+                {disputeResponseUploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
+                {disputeResponseUploading ? 'Uploading...' : 'Upload File'}
+                <input
+                  type="file"
+                  className="hidden"
+                  accept="image/jpeg,image/png,image/webp,application/pdf"
+                  multiple
+                  disabled={disputeResponseUploading}
+                  onChange={e => { if (e.target.files?.length) handleDisputeResponseUpload(e.target.files); e.target.value = ''; }}
+                />
+              </label>
+            )}
+
+            <div className="flex gap-3 mt-4">
+              <Button variant="outline" className="flex-1" onClick={() => { setDisputeRespondId(null); setDisputeResponseText(''); setDisputeResponseKeys([]); setDisputeResponseNames([]); }}>
+                Cancel
+              </Button>
+              <Button
+                className="flex-1"
+                disabled={!disputeResponseText.trim()}
+                isLoading={disputeResponseLoading}
+                onClick={handleSubmitDisputeResponse}
+              >
+                Submit Response
               </Button>
             </div>
           </div>

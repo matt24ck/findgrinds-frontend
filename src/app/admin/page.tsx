@@ -17,6 +17,7 @@ import {
   TrendingUp,
   Flag,
   FileText,
+  AlertTriangle,
 } from 'lucide-react';
 
 interface Stats {
@@ -121,6 +122,13 @@ export default function AdminDashboardPage() {
       title: 'Resource Reports',
       description: 'Review reported resources and process refunds',
       color: '#E67E22',
+    },
+    {
+      href: '/admin/session-disputes',
+      icon: AlertTriangle,
+      title: 'Session Disputes',
+      description: 'Review session disputes and process refunds',
+      color: '#9B59B6',
     },
   ];
 

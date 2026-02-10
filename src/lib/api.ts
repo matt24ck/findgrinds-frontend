@@ -150,6 +150,21 @@ export const sessions = {
       method: 'POST',
       body: JSON.stringify({ reason, details }),
     }),
+
+  createDispute: (id: string, reason: string, details: string, evidenceKeys: string[]) =>
+    fetchAPI<{ success: boolean; data: any }>(`/api/sessions/${id}/dispute`, {
+      method: 'POST',
+      body: JSON.stringify({ reason, details, evidenceKeys }),
+    }),
+
+  getDispute: (id: string) =>
+    fetchAPI<{ success: boolean; data: any }>(`/api/sessions/${id}/dispute`),
+
+  respondToDispute: (id: string, tutorResponse: string, tutorEvidenceKeys: string[]) =>
+    fetchAPI<{ success: boolean; data: any }>(`/api/sessions/${id}/dispute/respond`, {
+      method: 'POST',
+      body: JSON.stringify({ tutorResponse, tutorEvidenceKeys }),
+    }),
 };
 
 // ============ RESOURCES ============
@@ -390,6 +405,12 @@ export const upload = {
       { method: 'POST', body: JSON.stringify({ fileName, contentType }) }
     ),
 
+  getDisputeEvidenceUrl: (fileName: string, contentType: string) =>
+    fetchAPI<{ success: boolean; data: { uploadUrl: string; key: string } }>(
+      '/api/upload/dispute-evidence',
+      { method: 'POST', body: JSON.stringify({ fileName, contentType }) }
+    ),
+
   uploadToS3: async (presignedUrl: string, file: File): Promise<void> => {
     const response = await fetch(presignedUrl, {
       method: 'PUT',
@@ -476,6 +497,17 @@ export const adminApi = {
   actionReviewReport: (reportId: string, action: 'dismiss' | 'remove_review') =>
     fetchAPI<{ success: boolean; data: any }>(`/api/admin/review-reports/${reportId}`, {
       method: 'PUT',
+      body: JSON.stringify({ action }),
+    }),
+
+  getSessionDisputes: (status = 'PENDING') =>
+    fetchAPI<{ success: boolean; data: any[]; count: number }>(
+      `/api/admin/session-disputes?status=${status}`
+    ),
+
+  actionSessionDispute: (disputeId: string, action: 'refund' | 'dismiss') =>
+    fetchAPI<{ success: boolean; message: string }>(`/api/admin/session-disputes/${disputeId}/action`, {
+      method: 'POST',
       body: JSON.stringify({ action }),
     }),
 };
