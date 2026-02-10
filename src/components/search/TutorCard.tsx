@@ -64,7 +64,7 @@ export function TutorCard({ tutor }: TutorCardProps) {
         <div className="flex items-start gap-4 mb-4">
           <Avatar
             size="lg"
-            src={tutor.image}
+            src={tutor.profilePhotoUrl || tutor.image}
             alt={tutor.name}
             fallback={tutor.name}
           />
