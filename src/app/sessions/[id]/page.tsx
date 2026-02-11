@@ -21,6 +21,13 @@ interface SessionData {
   tutor?: { User?: { firstName: string; lastName: string } };
 }
 
+interface ChatMessage {
+  sender: string;
+  text: string;
+  timestamp: Date;
+  isLocal: boolean;
+}
+
 type CallState = 'loading' | 'lobby' | 'joining' | 'in-call' | 'ended' | 'error';
 
 // ─── Icons (inline SVGs) ────────────────────────────────────────
@@ -84,6 +91,13 @@ const PhoneOffIcon = () => (
   </svg>
 );
 
+const SendIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+    <line x1="22" y1="2" x2="11" y2="13" />
+    <polygon points="22 2 15 22 11 13 2 9 22 2" />
+  </svg>
+);
+
 // ─── Main Component ──────────────────────────────────────────────
 export default function SessionVideoPage() {
   const params = useParams();
@@ -95,15 +109,38 @@ export default function SessionVideoPage() {
   const [error, setError] = useState<string>('');
   const [isMuted, setIsMuted] = useState(false);
   const [isCameraOff, setIsCameraOff] = useState(false);
-  const [isScreenSharing, setIsScreenSharing] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [elapsedTime, setElapsedTime] = useState(0);
   const [participants, setParticipants] = useState<Record<string, DailyParticipant>>({});
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
+  const [chatInput, setChatInput] = useState('');
+  const [unreadCount, setUnreadCount] = useState(0);
 
   const callRef = useRef<DailyCall | null>(null);
   const localVideoRef = useRef<HTMLVideoElement>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const joinTimeRef = useRef<number>(0);
+  const chatEndRef = useRef<HTMLDivElement>(null);
+  const isChatOpenRef = useRef(false);
+
+  // Keep ref in sync with state for use in event handlers
+  useEffect(() => {
+    isChatOpenRef.current = isChatOpen;
+    if (isChatOpen) setUnreadCount(0);
+  }, [isChatOpen]);
+
+  // Auto-scroll chat
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [chatMessages]);
+
+  // Derive screen share participant
+  const screenShareParticipant = Object.values(participants).find(
+    (p) => p.tracks?.screenVideo?.state === 'playable'
+  );
+  const isScreenSharing = Object.values(participants).some(
+    (p) => p.local && p.tracks?.screenVideo?.state === 'playable'
+  );
 
   // Fetch session data
   useEffect(() => {
@@ -244,6 +281,24 @@ export default function SessionVideoPage() {
         setCallState('error');
       });
 
+      // Chat message listener
+      callObject.on('app-message', (ev: any) => {
+        if (ev?.data?.text) {
+          setChatMessages((prev) => [
+            ...prev,
+            {
+              sender: ev.data.sender || 'Participant',
+              text: ev.data.text,
+              timestamp: new Date(),
+              isLocal: false,
+            },
+          ]);
+          if (!isChatOpenRef.current) {
+            setUnreadCount((c) => c + 1);
+          }
+        }
+      });
+
       // Join the room
       await callObject.join({
         url: tokenRes.data.roomUrl!,
@@ -294,16 +349,27 @@ export default function SessionVideoPage() {
 
     if (isScreenSharing) {
       callRef.current.stopScreenShare();
-      setIsScreenSharing(false);
     } else {
       try {
         await callRef.current.startScreenShare();
-        setIsScreenSharing(true);
       } catch {
         // User cancelled screen share dialog
       }
     }
   }, [isScreenSharing]);
+
+  // Send chat message
+  const sendChatMessage = useCallback(() => {
+    if (!chatInput.trim() || !callRef.current) return;
+    const localP = callRef.current.participants().local;
+    const sender = localP?.user_name || 'You';
+    callRef.current.sendAppMessage({ text: chatInput.trim(), sender }, '*');
+    setChatMessages((prev) => [
+      ...prev,
+      { sender, text: chatInput.trim(), timestamp: new Date(), isLocal: true },
+    ]);
+    setChatInput('');
+  }, [chatInput]);
 
   // Cleanup on unmount
   useEffect(() => {
@@ -333,7 +399,7 @@ export default function SessionVideoPage() {
     : '';
 
   // ─── Video tile component ──────────────────────────────────────
-  const VideoTile = ({ participant, isLocal }: { participant: DailyParticipant; isLocal: boolean }) => {
+  const VideoTile = ({ participant, isLocal, className }: { participant: DailyParticipant; isLocal: boolean; className?: string }) => {
     const videoRef = useRef<HTMLVideoElement>(null);
     const [hasVideo, setHasVideo] = useState(false);
 
@@ -349,24 +415,24 @@ export default function SessionVideoPage() {
           videoRef.current.srcObject = null;
         }
       }
-    }, [participant.tracks?.video?.state, participant.tracks?.video?.persistentTrack]);
+    }, [participant, participant.tracks?.video?.state, participant.tracks?.video?.persistentTrack]);
 
     const isSpeaking = participant.tracks?.audio?.state === 'playable';
     const name = participant.user_name || (isLocal ? 'You' : 'Participant');
     const initial = name.charAt(0).toUpperCase();
 
     return (
-      <div className={`relative rounded-2xl overflow-hidden bg-gray-900 ${isSpeaking && !isLocal ? 'ring-2 ring-[#2D9B6E]' : ''}`}>
+      <div className={`relative rounded-2xl overflow-hidden bg-gray-900 h-full ${isSpeaking && !isLocal ? 'ring-2 ring-[#2D9B6E]' : ''} ${className || ''}`}>
         {hasVideo ? (
           <video
             ref={videoRef}
             autoPlay
             playsInline
             muted={isLocal}
-            className={`w-full h-full object-cover ${isLocal ? 'transform scale-x-[-1]' : ''}`}
+            className={`absolute inset-0 w-full h-full object-cover ${isLocal ? 'transform scale-x-[-1]' : ''}`}
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center bg-gray-800">
+          <div className="absolute inset-0 w-full h-full flex items-center justify-center bg-gray-800">
             <div className="w-20 h-20 rounded-full bg-[#2D9B6E] flex items-center justify-center text-white text-3xl font-semibold">
               {initial}
             </div>
@@ -382,6 +448,38 @@ export default function SessionVideoPage() {
             <MicIcon muted />
           </div>
         )}
+      </div>
+    );
+  };
+
+  // ─── Screen share tile component ───────────────────────────────
+  const ScreenShareTile = ({ participant }: { participant: DailyParticipant }) => {
+    const videoRef = useRef<HTMLVideoElement>(null);
+
+    useEffect(() => {
+      const track = participant.tracks?.screenVideo;
+      if (track?.state === 'playable' && track.persistentTrack && videoRef.current) {
+        const stream = new MediaStream([track.persistentTrack]);
+        videoRef.current.srcObject = stream;
+      } else if (videoRef.current) {
+        videoRef.current.srcObject = null;
+      }
+    }, [participant, participant.tracks?.screenVideo?.state, participant.tracks?.screenVideo?.persistentTrack]);
+
+    const name = participant.user_name || (participant.local ? 'You' : 'Participant');
+
+    return (
+      <div className="relative rounded-2xl overflow-hidden bg-black h-full">
+        <video
+          ref={videoRef}
+          autoPlay
+          playsInline
+          className="absolute inset-0 w-full h-full object-contain"
+        />
+        <div className="absolute top-3 left-3 bg-black/60 backdrop-blur-sm text-white text-xs px-3 py-1 rounded-lg flex items-center gap-2">
+          <ScreenShareIcon />
+          <span>{name}&apos;s screen</span>
+        </div>
       </div>
     );
   };
@@ -535,9 +633,30 @@ export default function SessionVideoPage() {
 
         {/* Video area */}
         <div className="flex-1 p-4 flex gap-4 min-h-0">
-          {remoteParticipants.length === 0 ? (
+          {screenShareParticipant ? (
+            // Screen share active — screen share as main, cameras in sidebar
+            <div className="flex-1 flex gap-4 min-h-0">
+              {/* Main: screen share */}
+              <div className="flex-1 min-h-0">
+                <ScreenShareTile participant={screenShareParticipant} />
+              </div>
+              {/* Sidebar: camera tiles */}
+              <div className="w-48 flex flex-col gap-3 min-h-0">
+                {remoteParticipants.map((p) => (
+                  <div key={p.session_id} className="h-36">
+                    <VideoTile participant={p} isLocal={false} />
+                  </div>
+                ))}
+                {localParticipant && (
+                  <div className="h-36">
+                    <VideoTile participant={localParticipant} isLocal />
+                  </div>
+                )}
+              </div>
+            </div>
+          ) : remoteParticipants.length === 0 ? (
             // Solo — waiting for other participant
-            <div className="flex-1 flex flex-col">
+            <div className="flex-1 flex flex-col min-h-0">
               <div className="flex-1 rounded-2xl bg-gray-900 flex items-center justify-center">
                 <div className="text-center">
                   <div className="w-12 h-12 border-2 border-[#2D9B6E] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
@@ -552,18 +671,16 @@ export default function SessionVideoPage() {
               )}
             </div>
           ) : (
-            // Two participants — side by side on desktop, stacked on mobile
-            <div className="flex-1 flex flex-col md:flex-row gap-4">
+            // Normal: camera tiles side by side
+            <div className="flex-1 flex flex-col md:flex-row gap-4 min-h-0 relative">
               {remoteParticipants.map((p) => (
                 <div key={p.session_id} className="flex-1 min-h-0">
-                  <div className="h-full">
-                    <VideoTile participant={p} isLocal={false} />
-                  </div>
+                  <VideoTile participant={p} isLocal={false} />
                 </div>
               ))}
               {/* Self view (picture-in-picture) */}
               {localParticipant && (
-                <div className="absolute bottom-24 right-8 w-48 h-36 z-10 rounded-2xl overflow-hidden shadow-2xl border-2 border-gray-700">
+                <div className="absolute bottom-4 right-4 w-48 h-36 z-10 rounded-2xl overflow-hidden shadow-2xl border-2 border-gray-700">
                   <VideoTile participant={localParticipant} isLocal />
                 </div>
               )}
@@ -572,8 +689,9 @@ export default function SessionVideoPage() {
 
           {/* Chat panel */}
           {isChatOpen && (
-            <div className="w-80 bg-gray-900 border border-gray-800 rounded-2xl p-4 flex flex-col">
-              <div className="flex items-center justify-between mb-3">
+            <div className="w-80 bg-gray-900 border border-gray-800 rounded-2xl flex flex-col min-h-0">
+              {/* Header */}
+              <div className="flex items-center justify-between px-4 py-3 border-b border-gray-800">
                 <h3 className="text-white font-semibold text-sm">Chat</h3>
                 <button onClick={() => setIsChatOpen(false)} className="text-gray-500 hover:text-white">
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -581,8 +699,56 @@ export default function SessionVideoPage() {
                   </svg>
                 </button>
               </div>
-              <div className="flex-1 flex items-center justify-center">
-                <p className="text-gray-500 text-sm text-center">Chat messages will appear here during the session.</p>
+
+              {/* Messages */}
+              <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3 min-h-0">
+                {chatMessages.length === 0 ? (
+                  <div className="flex-1 flex items-center justify-center h-full">
+                    <p className="text-gray-500 text-sm text-center">No messages yet. Say hello!</p>
+                  </div>
+                ) : (
+                  chatMessages.map((msg, i) => (
+                    <div key={i} className={`flex flex-col ${msg.isLocal ? 'items-end' : 'items-start'}`}>
+                      <span className="text-[10px] text-gray-500 mb-0.5 px-1">
+                        {msg.isLocal ? 'You' : msg.sender}
+                      </span>
+                      <div
+                        className={`max-w-[85%] px-3 py-2 rounded-xl text-sm ${
+                          msg.isLocal
+                            ? 'bg-[#2D9B6E] text-white rounded-br-sm'
+                            : 'bg-gray-800 text-gray-200 rounded-bl-sm'
+                        }`}
+                      >
+                        {msg.text}
+                      </div>
+                      <span className="text-[10px] text-gray-600 mt-0.5 px-1">
+                        {msg.timestamp.toLocaleTimeString('en-IE', { hour: '2-digit', minute: '2-digit' })}
+                      </span>
+                    </div>
+                  ))
+                )}
+                <div ref={chatEndRef} />
+              </div>
+
+              {/* Input */}
+              <div className="px-3 py-3 border-t border-gray-800">
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={chatInput}
+                    onChange={(e) => setChatInput(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && sendChatMessage()}
+                    placeholder="Type a message..."
+                    className="flex-1 bg-gray-800 text-white text-sm px-3 py-2 rounded-lg border border-gray-700 focus:border-[#2D9B6E] focus:outline-none placeholder-gray-500"
+                  />
+                  <button
+                    onClick={sendChatMessage}
+                    disabled={!chatInput.trim()}
+                    className="p-2 rounded-lg bg-[#2D9B6E] text-white hover:bg-[#258a5e] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  >
+                    <SendIcon />
+                  </button>
+                </div>
               </div>
             </div>
           )}
@@ -619,10 +785,15 @@ export default function SessionVideoPage() {
             </button>
             <button
               onClick={() => setIsChatOpen(!isChatOpen)}
-              className={`p-3.5 rounded-full transition-all ${isChatOpen ? 'bg-[#2D9B6E] text-white' : 'bg-gray-700 text-white hover:bg-gray-600'}`}
+              className={`p-3.5 rounded-full transition-all relative ${isChatOpen ? 'bg-[#2D9B6E] text-white' : 'bg-gray-700 text-white hover:bg-gray-600'}`}
               title="Toggle chat"
             >
               <ChatIcon />
+              {unreadCount > 0 && !isChatOpen && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center">
+                  {unreadCount > 9 ? '9+' : unreadCount}
+                </span>
+              )}
             </button>
             <div className="w-px h-8 bg-gray-700 mx-1" />
             <button
