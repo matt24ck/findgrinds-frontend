@@ -98,6 +98,108 @@ const SendIcon = () => (
   </svg>
 );
 
+// ─── Video tile (top-level to preserve identity across re-renders) ──
+function VideoTile({ participant, isLocal, className }: { participant: DailyParticipant; isLocal: boolean; className?: string }) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [hasVideo, setHasVideo] = useState(false);
+
+  useEffect(() => {
+    const track = participant.tracks?.video;
+    if (track?.state === 'playable' && track.persistentTrack && videoRef.current) {
+      const stream = new MediaStream([track.persistentTrack]);
+      videoRef.current.srcObject = stream;
+      setHasVideo(true);
+    } else {
+      setHasVideo(false);
+      if (videoRef.current) {
+        videoRef.current.srcObject = null;
+      }
+    }
+  }, [participant.tracks?.video?.state, participant.tracks?.video?.persistentTrack]);
+
+  const isSpeaking = participant.tracks?.audio?.state === 'playable';
+  const name = participant.user_name || (isLocal ? 'You' : 'Participant');
+  const initial = name.charAt(0).toUpperCase();
+
+  return (
+    <div className={`relative rounded-2xl overflow-hidden bg-gray-900 h-full ${isSpeaking && !isLocal ? 'ring-2 ring-[#2D9B6E]' : ''} ${className || ''}`}>
+      {/* Always render video element so ref is available */}
+      <video
+        ref={videoRef}
+        autoPlay
+        playsInline
+        muted={isLocal}
+        className={`absolute inset-0 w-full h-full object-cover ${isLocal ? 'transform scale-x-[-1]' : ''} ${hasVideo ? '' : 'hidden'}`}
+      />
+      {/* Avatar placeholder when no video */}
+      {!hasVideo && (
+        <div className="absolute inset-0 w-full h-full flex items-center justify-center bg-gray-800">
+          <div className="w-20 h-20 rounded-full bg-[#2D9B6E] flex items-center justify-center text-white text-3xl font-semibold">
+            {initial}
+          </div>
+        </div>
+      )}
+      {/* Name overlay */}
+      <div className="absolute bottom-3 left-3 bg-black/60 backdrop-blur-sm text-white text-sm px-3 py-1 rounded-lg">
+        {isLocal ? `${name} (You)` : name}
+      </div>
+      {/* Muted indicator */}
+      {participant.tracks?.audio?.state !== 'playable' && !isLocal && (
+        <div className="absolute top-3 right-3 bg-red-500/80 backdrop-blur-sm p-1.5 rounded-full">
+          <MicIcon muted />
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Screen share tile (top-level) ──────────────────────────────
+function ScreenShareTile({ participant }: { participant: DailyParticipant }) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const track = participant.tracks?.screenVideo;
+    if (track?.state === 'playable' && track.persistentTrack && videoRef.current) {
+      const stream = new MediaStream([track.persistentTrack]);
+      videoRef.current.srcObject = stream;
+    } else if (videoRef.current) {
+      videoRef.current.srcObject = null;
+    }
+  }, [participant.tracks?.screenVideo?.state, participant.tracks?.screenVideo?.persistentTrack]);
+
+  const name = participant.user_name || (participant.local ? 'You' : 'Participant');
+
+  return (
+    <div className="relative rounded-2xl overflow-hidden bg-black h-full">
+      <video
+        ref={videoRef}
+        autoPlay
+        playsInline
+        className="absolute inset-0 w-full h-full object-contain"
+      />
+      <div className="absolute top-3 left-3 bg-black/60 backdrop-blur-sm text-white text-xs px-3 py-1 rounded-lg flex items-center gap-2">
+        <ScreenShareIcon />
+        <span>{name}&apos;s screen</span>
+      </div>
+    </div>
+  );
+}
+
+// ─── Audio element for remote participants (top-level) ───────────
+function RemoteAudio({ participant }: { participant: DailyParticipant }) {
+  const audioRef = useRef<HTMLAudioElement>(null);
+
+  useEffect(() => {
+    const track = participant.tracks?.audio;
+    if (track?.state === 'playable' && track.persistentTrack && audioRef.current) {
+      const stream = new MediaStream([track.persistentTrack]);
+      audioRef.current.srcObject = stream;
+    }
+  }, [participant.tracks?.audio?.state, participant.tracks?.audio?.persistentTrack]);
+
+  return <audio ref={audioRef} autoPlay playsInline />;
+}
+
 // ─── Main Component ──────────────────────────────────────────────
 export default function SessionVideoPage() {
   const params = useParams();
@@ -351,7 +453,11 @@ export default function SessionVideoPage() {
       callRef.current.stopScreenShare();
     } else {
       try {
-        await callRef.current.startScreenShare();
+        await callRef.current.startScreenShare({
+          screenVideoSendSettings: {
+            maxQuality: 'high',
+          },
+        });
       } catch {
         // User cancelled screen share dialog
       }
@@ -397,107 +503,6 @@ export default function SessionVideoPage() {
         minute: '2-digit',
       })
     : '';
-
-  // ─── Video tile component ──────────────────────────────────────
-  const VideoTile = ({ participant, isLocal, className }: { participant: DailyParticipant; isLocal: boolean; className?: string }) => {
-    const videoRef = useRef<HTMLVideoElement>(null);
-    const [hasVideo, setHasVideo] = useState(false);
-
-    useEffect(() => {
-      const track = participant.tracks?.video;
-      if (track?.state === 'playable' && track.persistentTrack && videoRef.current) {
-        const stream = new MediaStream([track.persistentTrack]);
-        videoRef.current.srcObject = stream;
-        setHasVideo(true);
-      } else {
-        setHasVideo(false);
-        if (videoRef.current) {
-          videoRef.current.srcObject = null;
-        }
-      }
-    }, [participant, participant.tracks?.video?.state, participant.tracks?.video?.persistentTrack]);
-
-    const isSpeaking = participant.tracks?.audio?.state === 'playable';
-    const name = participant.user_name || (isLocal ? 'You' : 'Participant');
-    const initial = name.charAt(0).toUpperCase();
-
-    return (
-      <div className={`relative rounded-2xl overflow-hidden bg-gray-900 h-full ${isSpeaking && !isLocal ? 'ring-2 ring-[#2D9B6E]' : ''} ${className || ''}`}>
-        {hasVideo ? (
-          <video
-            ref={videoRef}
-            autoPlay
-            playsInline
-            muted={isLocal}
-            className={`absolute inset-0 w-full h-full object-cover ${isLocal ? 'transform scale-x-[-1]' : ''}`}
-          />
-        ) : (
-          <div className="absolute inset-0 w-full h-full flex items-center justify-center bg-gray-800">
-            <div className="w-20 h-20 rounded-full bg-[#2D9B6E] flex items-center justify-center text-white text-3xl font-semibold">
-              {initial}
-            </div>
-          </div>
-        )}
-        {/* Name overlay */}
-        <div className="absolute bottom-3 left-3 bg-black/60 backdrop-blur-sm text-white text-sm px-3 py-1 rounded-lg">
-          {isLocal ? `${name} (You)` : name}
-        </div>
-        {/* Muted indicator */}
-        {participant.tracks?.audio?.state !== 'playable' && !isLocal && (
-          <div className="absolute top-3 right-3 bg-red-500/80 backdrop-blur-sm p-1.5 rounded-full">
-            <MicIcon muted />
-          </div>
-        )}
-      </div>
-    );
-  };
-
-  // ─── Screen share tile component ───────────────────────────────
-  const ScreenShareTile = ({ participant }: { participant: DailyParticipant }) => {
-    const videoRef = useRef<HTMLVideoElement>(null);
-
-    useEffect(() => {
-      const track = participant.tracks?.screenVideo;
-      if (track?.state === 'playable' && track.persistentTrack && videoRef.current) {
-        const stream = new MediaStream([track.persistentTrack]);
-        videoRef.current.srcObject = stream;
-      } else if (videoRef.current) {
-        videoRef.current.srcObject = null;
-      }
-    }, [participant, participant.tracks?.screenVideo?.state, participant.tracks?.screenVideo?.persistentTrack]);
-
-    const name = participant.user_name || (participant.local ? 'You' : 'Participant');
-
-    return (
-      <div className="relative rounded-2xl overflow-hidden bg-black h-full">
-        <video
-          ref={videoRef}
-          autoPlay
-          playsInline
-          className="absolute inset-0 w-full h-full object-contain"
-        />
-        <div className="absolute top-3 left-3 bg-black/60 backdrop-blur-sm text-white text-xs px-3 py-1 rounded-lg flex items-center gap-2">
-          <ScreenShareIcon />
-          <span>{name}&apos;s screen</span>
-        </div>
-      </div>
-    );
-  };
-
-  // ─── Audio elements for remote participants ─────────────────────
-  const RemoteAudio = ({ participant }: { participant: DailyParticipant }) => {
-    const audioRef = useRef<HTMLAudioElement>(null);
-
-    useEffect(() => {
-      const track = participant.tracks?.audio;
-      if (track?.state === 'playable' && track.persistentTrack && audioRef.current) {
-        const stream = new MediaStream([track.persistentTrack]);
-        audioRef.current.srcObject = stream;
-      }
-    }, [participant.tracks?.audio?.state, participant.tracks?.audio?.persistentTrack]);
-
-    return <audio ref={audioRef} autoPlay playsInline />;
-  };
 
   // ─── Render ────────────────────────────────────────────────────
   // Loading state
