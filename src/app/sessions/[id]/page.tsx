@@ -453,8 +453,9 @@ export default function SessionVideoPage() {
       callRef.current.stopScreenShare();
     } else {
       try {
-        await callRef.current.startScreenShare({
-          screenVideoSendSettings: 'detail-optimized',
+        callRef.current.startScreenShare();
+        await callRef.current.updateSendSettings({
+          screenVideo: 'detail-optimized',
         });
       } catch {
         // User cancelled screen share dialog
