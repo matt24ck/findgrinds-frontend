@@ -21,6 +21,7 @@ import {
   X,
   AlertTriangle,
   MapPin,
+  Building2,
 } from 'lucide-react';
 import { messages, tutors as tutorsApi, resources, availability as availabilityApi } from '@/lib/api';
 import { AREA_LABELS } from '@/lib/constants';
@@ -303,6 +304,18 @@ export default function TutorProfilePage() {
                   <MessageCircle className="w-5 h-5 mr-2" />
                   Message Tutor
                 </Button>
+
+                {tutor.featuredTier === 'ENTERPRISE' && tutor.organisationName && (
+                  <a
+                    href={tutor.organisationWebsite || '#'}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center justify-center font-semibold rounded-xl w-full mt-3 px-5 py-2.5 text-sm border-2 border-[#D4A574] text-[#D4A574] hover:bg-[#FDF8F3] transition-all duration-200"
+                  >
+                    <Building2 className="w-5 h-5 mr-2" />
+                    {tutor.organisationName}
+                  </a>
+                )}
 
                 <p className="text-xs text-center text-[#95A5A6] mt-4">
                   {(() => {

@@ -37,7 +37,7 @@ import {
 } from 'lucide-react';
 import { AvailabilityEditor } from '@/components/dashboard/AvailabilityEditor';
 import { AccountSection } from '@/components/dashboard/AccountSection';
-import { resources as resourcesApi, upload, sessions as sessionsApi, tutors as tutorsApi, auth } from '@/lib/api';
+import { resources as resourcesApi, upload, sessions as sessionsApi, tutors as tutorsApi, auth, stripeApi } from '@/lib/api';
 import { AREAS_BY_COUNTY } from '@/lib/constants';
 import { Loader2 } from 'lucide-react';
 
@@ -96,6 +96,9 @@ export default function TutorDashboard() {
   // Profile photo state
   const [profilePhotoUrl, setProfilePhotoUrl] = useState<string | null>(null);
   const [photoUploading, setPhotoUploading] = useState(false);
+
+  // Subscription tier
+  const [subscriptionTier, setSubscriptionTier] = useState<string>('FREE');
 
   // Dispute state
   const [pendingDisputes, setPendingDisputes] = useState<any[]>([]);
@@ -241,6 +244,11 @@ export default function TutorDashboard() {
   useEffect(() => {
     // Fetch Stripe status (always needed for requirements banner)
     fetchStripeStatus();
+
+    // Fetch subscription tier
+    stripeApi.getMySubscription()
+      .then((data) => { if (data.tier) setSubscriptionTier(data.tier); })
+      .catch(() => {});
 
     const fetchDashboardData = async () => {
       setDashboardLoading(true);
@@ -1271,19 +1279,60 @@ export default function TutorDashboard() {
                     </select>
                     <p className="text-xs text-[#95A5A6] mt-1">Shown to students so they know your area for in-person sessions</p>
                   </div>
+                  {subscriptionTier === 'ENTERPRISE' && (
+                    <>
+                      <div className="pt-4 border-t border-[#ECF0F1]">
+                        <h3 className="text-sm font-semibold text-[#D4A574] mb-3">Organisation Linking</h3>
+                        <div className="space-y-3">
+                          <div>
+                            <label className="block text-sm font-medium text-[#2C3E50] mb-1">Organisation Name</label>
+                            <input
+                              type="text"
+                              defaultValue={tutorProfile?.organisationName || ''}
+                              key={`org-name-${tutorProfile?.organisationName}`}
+                              maxLength={100}
+                              className="w-full px-4 py-2 rounded-lg border border-[#D5DBDB] focus:border-[#D4A574] focus:outline-none"
+                              placeholder="e.g. Dublin Grinds School"
+                              id="profile-org-name"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-[#2C3E50] mb-1">Organisation Website</label>
+                            <input
+                              type="url"
+                              defaultValue={tutorProfile?.organisationWebsite || ''}
+                              key={`org-website-${tutorProfile?.organisationWebsite}`}
+                              maxLength={255}
+                              className="w-full px-4 py-2 rounded-lg border border-[#D5DBDB] focus:border-[#D4A574] focus:outline-none"
+                              placeholder="https://www.example.com"
+                              id="profile-org-website"
+                            />
+                          </div>
+                          <p className="text-xs text-[#95A5A6]">Your organisation name will appear as a link on your public profile</p>
+                        </div>
+                      </div>
+                    </>
+                  )}
                   <Button
                     onClick={async () => {
                       const headline = (document.getElementById('profile-headline') as HTMLInputElement)?.value;
                       const baseHourlyRate = Number((document.getElementById('profile-rate') as HTMLInputElement)?.value);
                       const bio = (document.getElementById('profile-bio') as HTMLTextAreaElement)?.value;
                       const area = (document.getElementById('profile-area') as HTMLSelectElement)?.value;
+                      const organisationName = (document.getElementById('profile-org-name') as HTMLInputElement)?.value;
+                      const organisationWebsite = (document.getElementById('profile-org-website') as HTMLInputElement)?.value;
                       try {
                         const token = localStorage.getItem('token');
                         const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+                        const body: Record<string, any> = { headline, baseHourlyRate, bio, area: area || undefined };
+                        if (subscriptionTier === 'ENTERPRISE') {
+                          body.organisationName = organisationName || '';
+                          body.organisationWebsite = organisationWebsite || '';
+                        }
                         const res = await fetch(`${apiUrl}/api/tutors/me`, {
                           method: 'PUT',
                           headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-                          body: JSON.stringify({ headline, baseHourlyRate, bio, area: area || undefined }),
+                          body: JSON.stringify(body),
                         });
                         if (res.ok) alert('Profile updated!');
                         else alert('Failed to update profile.');
@@ -1481,24 +1530,32 @@ export default function TutorDashboard() {
                   </div>
                   <div>
                     <h2 className="text-lg font-bold text-[#2C3E50]">Subscription Plan</h2>
-                    <p className="text-sm text-[#5D6D7E]">Upgrade to get more visibility</p>
+                    <p className="text-sm text-[#5D6D7E]">{subscriptionTier === 'FREE' ? 'Upgrade to get more visibility' : 'Manage your subscription'}</p>
                   </div>
                 </div>
 
                 <div className="p-4 bg-[#F8F9FA] rounded-lg mb-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="font-medium text-[#2C3E50]">Free Plan</p>
-                      <p className="text-sm text-[#5D6D7E]">Basic profile and unlimited bookings</p>
+                      <p className="font-medium text-[#2C3E50]">
+                        {subscriptionTier === 'ENTERPRISE' ? 'Enterprise Plan' : subscriptionTier === 'PROFESSIONAL' ? 'Professional Plan' : 'Free Plan'}
+                        {subscriptionTier === 'ENTERPRISE' && <span className="text-sm text-[#5D6D7E] ml-2">€99/mo</span>}
+                        {subscriptionTier === 'PROFESSIONAL' && <span className="text-sm text-[#5D6D7E] ml-2">€19/mo</span>}
+                      </p>
+                      <p className="text-sm text-[#5D6D7E]">
+                        {subscriptionTier === 'ENTERPRISE' ? 'Top placement, organisation linking' : subscriptionTier === 'PROFESSIONAL' ? 'Priority search, verified badge' : 'Basic profile and unlimited bookings'}
+                      </p>
                     </div>
-                    <span className="px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-sm">Current</span>
+                    <span className={`px-3 py-1 rounded-full text-sm ${
+                      subscriptionTier === 'ENTERPRISE' ? 'bg-amber-100 text-amber-700' : subscriptionTier === 'PROFESSIONAL' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'
+                    }`}>Current</span>
                   </div>
                 </div>
 
                 <Link href="/dashboard/tutor/upgrade">
                   <Button className="w-full bg-[#D4A574] hover:bg-[#C69565]">
                     <Star className="w-4 h-4 mr-2" />
-                    View Upgrade Options
+                    {subscriptionTier === 'FREE' ? 'View Upgrade Options' : 'Manage Subscription'}
                   </Button>
                 </Link>
               </div>

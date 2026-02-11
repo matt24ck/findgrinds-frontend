@@ -10,6 +10,8 @@ interface TutorGridProps {
   pageSize: number;
   totalPages: number;
   onPageChange: (page: number) => void;
+  sortBy: string;
+  onSortChange: (sort: string) => void;
   isLoading?: boolean;
 }
 
@@ -20,6 +22,8 @@ export function TutorGrid({
   pageSize,
   totalPages,
   onPageChange,
+  sortBy,
+  onSortChange,
   isLoading,
 }: TutorGridProps) {
   if (isLoading) {
@@ -74,7 +78,11 @@ export function TutorGrid({
           Showing <span className="font-semibold text-[#2C3E50]">{startIndex}-{endIndex}</span> of{' '}
           <span className="font-semibold text-[#2C3E50]">{total}</span> tutors
         </p>
-        <select className="px-3 py-2 rounded-lg border border-[#D5DBDB] text-sm text-[#5D6D7E] focus:border-[#2D9B6E] focus:outline-none">
+        <select
+          value={sortBy}
+          onChange={(e) => onSortChange(e.target.value)}
+          className="px-3 py-2 rounded-lg border border-[#D5DBDB] text-sm text-[#5D6D7E] focus:border-[#2D9B6E] focus:outline-none"
+        >
           <option value="featured">Sort by: Featured</option>
           <option value="rating">Highest Rated</option>
           <option value="price_asc">Price: Low to High</option>

@@ -50,7 +50,7 @@ export function TutorCard({ tutor }: TutorCardProps) {
 
   return (
     <Link href={`/tutors/${tutor.id}`}>
-      <div className={`bg-white rounded-xl border p-5 hover:shadow-lg hover:-translate-y-1 transition-all duration-200 h-full ${tutor.featuredTier === 'ENTERPRISE' ? 'border-[#D4A574] ring-1 ring-[#D4A574]/20' : tutor.featuredTier === 'PROFESSIONAL' ? 'border-[#2D9B6E] ring-1 ring-[#2D9B6E]/20' : 'border-[#ECF0F1]'}`}>
+      <div className={`bg-white rounded-xl border p-5 hover:shadow-lg hover:-translate-y-1 transition-all duration-200 h-full ${tutor.featuredTier === 'ENTERPRISE' ? 'border-[#D4A574] ring-1 ring-[#D4A574]/20 shadow-[0_2px_12px_rgba(212,165,116,0.3)]' : tutor.featuredTier === 'PROFESSIONAL' ? 'border-[#2D9B6E] ring-1 ring-[#2D9B6E]/20' : 'border-[#ECF0F1]'}`}>
         {/* Featured Banner */}
         {isFeatured && (
           <div className="flex justify-end mb-2 -mt-2 -mr-2">
@@ -126,7 +126,13 @@ export function TutorCard({ tutor }: TutorCardProps) {
             <span className="text-2xl font-bold text-[#2D9B6E]">€{tutor.hourlyRate}</span>
             <span className="text-[#95A5A6] text-sm">/hour</span>
           </div>
-          <Button variant="secondary" size="sm">View Profile</Button>
+          <Button
+            variant="secondary"
+            size="sm"
+            className={tutor.featuredTier === 'ENTERPRISE' ? '!text-[#D4A574] !border-[#D4A574] hover:!bg-[#FDF8F3]' : ''}
+          >
+            View Profile
+          </Button>
         </div>
       </div>
     </Link>

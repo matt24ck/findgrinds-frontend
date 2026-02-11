@@ -21,6 +21,7 @@ function TutorsPageContent() {
   const [isLoading, setIsLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const [sortBy, setSortBy] = useState('featured');
 
   // Persist forStudent param so it survives navigation to tutor profile → booking page
   useEffect(() => {
@@ -73,6 +74,9 @@ function TutorsPageContent() {
         if (filters.teachesInIrish) {
           params.set('teachesInIrish', 'true');
         }
+        if (sortBy) {
+          params.set('sortBy', sortBy);
+        }
 
         const response = await fetch(`${API_URL}/api/tutors?${params.toString()}`);
         const data = await response.json();
@@ -115,7 +119,7 @@ function TutorsPageContent() {
     };
 
     fetchTutors();
-  }, [filters, page]);
+  }, [filters, page, sortBy]);
 
   const handleFiltersChange = (newFilters: FilterState) => {
     setFilters(newFilters);
@@ -205,6 +209,8 @@ function TutorsPageContent() {
                 pageSize={pageSize}
                 totalPages={totalPages}
                 onPageChange={setPage}
+                sortBy={sortBy}
+                onSortChange={(s) => { setSortBy(s); setPage(1); }}
                 isLoading={isLoading}
               />
             </div>
