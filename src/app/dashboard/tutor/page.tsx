@@ -302,6 +302,8 @@ export default function TutorDashboard() {
               duration: s.durationMins || 60,
               price: Number(s.price) || 0,
               status: s.status,
+              type: s.sessionType || 'VIDEO',
+              meetingLink: s.meetingLink || '#',
             }));
             setUpcomingSessions(mapped);
           }
@@ -778,6 +780,13 @@ export default function TutorDashboard() {
                           <div className="text-right">
                             <div className="font-semibold text-[#2D9B6E]">€{session.price.toFixed(2)}</div>
                           </div>
+                          {session.type === 'VIDEO' && (
+                            <Link href={session.meetingLink}>
+                              <button className="text-xs text-[#2D9B6E] hover:text-[#25A876] px-2 py-1 rounded hover:bg-green-50 font-medium">
+                                Join
+                              </button>
+                            </Link>
+                          )}
                           <button
                             onClick={() => setCancelSessionId(session.id)}
                             className="text-xs text-red-500 hover:text-red-700 px-2 py-1 rounded hover:bg-red-50"
@@ -903,6 +912,13 @@ export default function TutorDashboard() {
                         </div>
                         <div className="text-sm font-semibold text-[#2D9B6E]">€{session.price.toFixed(2)}</div>
                       </div>
+                      {session.type === 'VIDEO' && (
+                        <Link href={session.meetingLink}>
+                          <button className="text-xs text-[#2D9B6E] hover:text-[#25A876] px-2 py-1 rounded hover:bg-green-50 font-medium">
+                            Join
+                          </button>
+                        </Link>
+                      )}
                       <button
                         onClick={() => setCancelSessionId(session.id)}
                         className="text-xs text-red-500 hover:text-red-700 px-2 py-1 rounded hover:bg-red-50"
@@ -1531,6 +1547,8 @@ export default function TutorDashboard() {
                             duration: s.durationMins || 60,
                             price: Number(s.price) || 0,
                             status: s.status,
+                            type: s.sessionType || 'VIDEO',
+                            meetingLink: s.meetingLink || '#',
                           })));
                         }
                       } catch {}

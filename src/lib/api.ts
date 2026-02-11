@@ -157,6 +157,9 @@ export const sessions = {
       body: JSON.stringify({ reason, details, evidenceKeys }),
     }),
 
+  getToken: (id: string) =>
+    fetchAPI<{ success: boolean; data: { provider: string; token?: string; roomUrl?: string; roomName?: string; meetingLink?: string } }>(`/api/sessions/${id}/token`),
+
   getDispute: (id: string) =>
     fetchAPI<{ success: boolean; data: any }>(`/api/sessions/${id}/dispute`),
 

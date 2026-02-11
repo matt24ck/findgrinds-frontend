@@ -113,12 +113,12 @@ function BookingSuccessContent() {
               description: "We've sent you a confirmation with session details",
             },
             {
-              title: 'Get your video call link',
-              description: "You'll receive a Zoom/Google Meet link before your session",
+              title: 'Join your session',
+              description: 'Join your session directly from your dashboard when it\'s time',
             },
             {
-              title: 'Join your session',
-              description: 'Click the link at the scheduled time to start learning',
+              title: 'Start learning',
+              description: 'Your video call opens right on FindGrinds — no extra apps needed',
             },
           ],
         };

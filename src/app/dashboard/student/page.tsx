@@ -98,7 +98,7 @@ export default function StudentDashboard() {
             time: new Date(s.scheduledAt).toLocaleTimeString('en-IE', { hour: '2-digit', minute: '2-digit' }),
             duration: s.durationMins,
             type: s.sessionType,
-            meetingLink: s.meetingLink || s.zoomLink || '#',
+            meetingLink: s.meetingLink || '#',
             status: s.status,
           };
         }));
@@ -244,7 +244,7 @@ export default function StudentDashboard() {
             time: new Date(s.scheduledAt).toLocaleTimeString('en-IE', { hour: '2-digit', minute: '2-digit' }),
             duration: s.durationMins,
             type: s.sessionType,
-            meetingLink: s.meetingLink || s.zoomLink || '#',
+            meetingLink: s.meetingLink || '#',
             status: s.status,
           };
         }));
@@ -428,12 +428,12 @@ export default function StudentDashboard() {
                               </div>
                             </div>
                             {session.type === 'VIDEO' && (
-                              <a href={session.meetingLink} target="_blank" rel="noopener noreferrer">
+                              <Link href={session.meetingLink}>
                                 <Button size="sm">
                                   <Video className="w-4 h-4 mr-1" />
                                   Join
                                 </Button>
-                              </a>
+                              </Link>
                             )}
                             <button
                               onClick={() => setCancelSessionId(session.id)}
@@ -564,12 +564,12 @@ export default function StudentDashboard() {
                               </div>
                             </div>
                             {session.type === 'VIDEO' && (
-                              <a href={session.meetingLink} target="_blank" rel="noopener noreferrer">
+                              <Link href={session.meetingLink}>
                                 <Button size="sm">
                                   <Video className="w-4 h-4 mr-1" />
                                   Join
                                 </Button>
-                              </a>
+                              </Link>
                             )}
                             <button
                               onClick={() => setCancelSessionId(session.id)}
