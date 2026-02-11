@@ -43,6 +43,8 @@ interface TutorData {
   rating: number;
   reviewCount: number;
   totalBookings: number;
+  organisationName?: string;
+  organisationWebsite?: string;
   User?: {
     firstName: string;
     lastName: string;
