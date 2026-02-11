@@ -407,6 +407,11 @@ export default function SessionVideoPage() {
         token: tokenRes.data.token!,
       });
 
+      // Configure send settings for screen share quality
+      await callObject.updateSendSettings({
+        screenVideo: 'detail-optimized',
+      });
+
       // Get initial participants
       const allParticipants = callObject.participants();
       setParticipants(allParticipants as Record<string, DailyParticipant>);
@@ -453,9 +458,13 @@ export default function SessionVideoPage() {
       callRef.current.stopScreenShare();
     } else {
       try {
-        callRef.current.startScreenShare();
-        await callRef.current.updateSendSettings({
-          screenVideo: 'detail-optimized',
+        callRef.current.startScreenShare({
+          displayMediaOptions: {
+            video: {
+              width: { ideal: 1920, max: 1920 },
+              height: { ideal: 1080, max: 1080 },
+            },
+          },
         });
       } catch {
         // User cancelled screen share dialog
