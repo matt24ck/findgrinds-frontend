@@ -454,9 +454,7 @@ export default function SessionVideoPage() {
     } else {
       try {
         await callRef.current.startScreenShare({
-          screenVideoSendSettings: {
-            maxQuality: 'high',
-          },
+          screenVideoSendSettings: 'detail-optimized',
         });
       } catch {
         // User cancelled screen share dialog
