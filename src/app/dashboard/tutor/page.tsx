@@ -253,6 +253,10 @@ export default function TutorDashboard() {
 
         if (userRes) {
           const u = (userRes as any).data || userRes;
+          if (u.userType && u.userType !== 'TUTOR') {
+            window.location.href = '/dashboard/student';
+            return;
+          }
           setIsAdmin(!!u.isAdmin);
           if (u.email) setUserEmail(u.email);
           if (u.profilePhotoUrl) setProfilePhotoUrl(u.profilePhotoUrl);

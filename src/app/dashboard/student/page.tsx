@@ -79,8 +79,12 @@ export default function StudentDashboard() {
           sessions.getAll(),
         ]);
 
-        // User data
+        // User data — redirect if wrong role
         const user = userRes.data;
+        if (user?.userType === 'TUTOR') {
+          window.location.href = '/dashboard/tutor';
+          return;
+        }
         setUserData(user);
         if (user?.email) setUserEmail(user.email);
 
