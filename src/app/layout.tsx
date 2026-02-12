@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Lato, Open_Sans } from "next/font/google";
 import "./globals.css";
 import { CookieConsent } from "@/components/gdpr/CookieConsent";
+import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
 
 const lato = Lato({
   subsets: ["latin"],
@@ -31,6 +32,7 @@ export default function RootLayout({
       <body className="antialiased min-h-screen bg-white font-sans">
         {children}
         <CookieConsent />
+        <GoogleAnalytics />
       </body>
     </html>
   );
