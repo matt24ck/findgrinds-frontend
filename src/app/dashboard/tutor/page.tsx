@@ -34,6 +34,7 @@ import {
   Camera,
   AlertTriangle,
   Paperclip,
+  Share2,
 } from 'lucide-react';
 import { AvailabilityEditor } from '@/components/dashboard/AvailabilityEditor';
 import { AccountSection } from '@/components/dashboard/AccountSection';
@@ -58,6 +59,7 @@ export default function TutorDashboard() {
   const [stripeLoading, setStripeLoading] = useState(false);
   const [availabilityStatus, setAvailabilityStatus] = useState<{ hasWeeklySlots: boolean; slotCount: number } | null>(null);
   const [tutorId, setTutorId] = useState<string | null>(null);
+  const [profileCopied, setProfileCopied] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const [visibilityLoading, setVisibilityLoading] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
@@ -535,12 +537,27 @@ export default function TutorDashboard() {
               <h1 className="text-3xl font-bold text-[#2C3E50] mb-2">Tutor Dashboard</h1>
               <p className="text-[#5D6D7E]">Manage your sessions, resources, and earnings.</p>
             </div>
-            <Link href="/dashboard/tutor/upgrade">
-              <Button className="bg-[#D4A574] hover:bg-[#C69565]">
-                <Crown className="w-4 h-4 mr-2" />
-                Upgrade Plan
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  if (tutorId) {
+                    navigator.clipboard.writeText(`https://findgrinds.ie/tutors/${tutorId}`);
+                    setProfileCopied(true);
+                    setTimeout(() => setProfileCopied(false), 2000);
+                  }
+                }}
+              >
+                <Share2 className="w-4 h-4 mr-2" />
+                {profileCopied ? 'Copied!' : 'Share My Profile'}
               </Button>
-            </Link>
+              <Link href="/dashboard/tutor/upgrade">
+                <Button className="bg-[#D4A574] hover:bg-[#C69565]">
+                  <Crown className="w-4 h-4 mr-2" />
+                  Upgrade Plan
+                </Button>
+              </Link>
+            </div>
           </div>
 
           {/* Tabs */}

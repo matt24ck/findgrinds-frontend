@@ -22,6 +22,7 @@ import {
   AlertTriangle,
   MapPin,
   Building2,
+  LogIn,
 } from 'lucide-react';
 import { messages, tutors as tutorsApi, resources, availability as availabilityApi } from '@/lib/api';
 import { AREA_LABELS } from '@/lib/constants';
@@ -280,32 +281,38 @@ export default function TutorProfilePage() {
                   <span className="text-[#95A5A6]">/hour</span>
                 </div>
 
-                <Link href={`/book/${tutor.id}`}>
-                  <Button className="w-full mb-3" size="lg">
-                    <Calendar className="w-5 h-5 mr-2" />
-                    Book Session
-                  </Button>
-                </Link>
+                {currentUser ? (
+                  <Link href={`/book/${tutor.id}`}>
+                    <Button className="w-full mb-3" size="lg">
+                      <Calendar className="w-5 h-5 mr-2" />
+                      Book Session
+                    </Button>
+                  </Link>
+                ) : (
+                  <Link href="/login">
+                    <Button className="w-full mb-3" size="lg">
+                      <LogIn className="w-5 h-5 mr-2" />
+                      Log In to Book this Tutor
+                    </Button>
+                  </Link>
+                )}
 
-                <Button
-                  variant="secondary"
-                  className="w-full"
-                  onClick={() => {
-                    if (!currentUser) {
-                      router.push('/login');
-                      return;
-                    }
-                    setShowMessageModal(true);
-                    setMessageError('');
-                    // Load predefined messages in case they're needed
-                    messages.getPredefinedMessages().then((res) => {
-                      setPredefinedMessages(res.data);
-                    }).catch(() => {});
-                  }}
-                >
-                  <MessageCircle className="w-5 h-5 mr-2" />
-                  Message Tutor
-                </Button>
+                {currentUser && (
+                  <Button
+                    variant="secondary"
+                    className="w-full"
+                    onClick={() => {
+                      setShowMessageModal(true);
+                      setMessageError('');
+                      messages.getPredefinedMessages().then((res) => {
+                        setPredefinedMessages(res.data);
+                      }).catch(() => {});
+                    }}
+                  >
+                    <MessageCircle className="w-5 h-5 mr-2" />
+                    Message Tutor
+                  </Button>
+                )}
 
                 {tutor.featuredTier === 'ENTERPRISE' && tutor.organisationName && (
                   <a
