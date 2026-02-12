@@ -60,6 +60,7 @@ export default function TutorDashboard() {
   const [availabilityStatus, setAvailabilityStatus] = useState<{ hasWeeklySlots: boolean; slotCount: number } | null>(null);
   const [tutorId, setTutorId] = useState<string | null>(null);
   const [profileCopied, setProfileCopied] = useState(false);
+  const [gardaVettingVerified, setGardaVettingVerified] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const [visibilityLoading, setVisibilityLoading] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
@@ -270,6 +271,7 @@ export default function TutorDashboard() {
           setIsAdmin(!!u.isAdmin);
           if (u.email) setUserEmail(u.email);
           if (u.profilePhotoUrl) setProfilePhotoUrl(u.profilePhotoUrl);
+          if (u.gardaVettingVerified) setGardaVettingVerified(true);
         }
 
         // Now that fetchAvailabilityStatus set tutorId, fetch dependent data
@@ -1180,28 +1182,44 @@ export default function TutorDashboard() {
               {/* Garda Vetting Verification */}
               <div className="bg-white rounded-xl shadow-sm p-6">
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 bg-[#F0F7F4] rounded-lg flex items-center justify-center">
-                    <Shield className="w-5 h-5 text-[#2D9B6E]" />
+                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${gardaVettingVerified ? 'bg-green-100' : 'bg-[#F0F7F4]'}`}>
+                    {gardaVettingVerified ? (
+                      <CheckCircle className="w-5 h-5 text-green-600" />
+                    ) : (
+                      <Shield className="w-5 h-5 text-[#2D9B6E]" />
+                    )}
                   </div>
                   <div>
                     <h2 className="text-lg font-bold text-[#2C3E50]">Garda Vetted Badge</h2>
-                    <p className="text-sm text-[#5D6D7E]">Optional verification for professional teachers</p>
+                    <p className="text-sm text-[#5D6D7E]">
+                      {gardaVettingVerified ? 'Your Garda Vetting has been verified' : 'Optional verification for professional teachers'}
+                    </p>
                   </div>
                 </div>
 
-                <div className="p-4 bg-blue-50 rounded-lg mb-4">
-                  <p className="text-sm text-blue-800">
-                    Are you a teacher or tutor who is already Garda vetted through your employer?
-                    Upload proof to display a verified badge on your profile.
-                  </p>
-                </div>
+                {gardaVettingVerified ? (
+                  <div className="p-4 bg-green-50 rounded-lg">
+                    <p className="text-sm text-green-800 font-medium">
+                      Your profile displays a verified Garda Vetted badge.
+                    </p>
+                  </div>
+                ) : (
+                  <>
+                    <div className="p-4 bg-blue-50 rounded-lg mb-4">
+                      <p className="text-sm text-blue-800">
+                        Are you a teacher or tutor who is already Garda vetted through your employer?
+                        Upload proof to display a verified badge on your profile.
+                      </p>
+                    </div>
 
-                <Link href="/dashboard/tutor/verification">
-                  <Button variant="outline" className="w-full">
-                    <Upload className="w-4 h-4 mr-2" />
-                    Upload Proof of Garda Vetting
-                  </Button>
-                </Link>
+                    <Link href="/dashboard/tutor/verification">
+                      <Button variant="outline" className="w-full">
+                        <Upload className="w-4 h-4 mr-2" />
+                        Upload Proof of Garda Vetting
+                      </Button>
+                    </Link>
+                  </>
+                )}
               </div>
 
               {/* Profile Settings */}
