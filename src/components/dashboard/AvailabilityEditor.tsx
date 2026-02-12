@@ -68,6 +68,7 @@ export function AvailabilityEditor({ tutorId, onSave }: AvailabilityEditorProps)
 
   // Group settings
   const [maxGroupSize, setMaxGroupSize] = useState(5);
+  const [minGroupSize, setMinGroupSize] = useState(2);
   const [groupHourlyRate, setGroupHourlyRate] = useState<string>('');
   const [groupSettingsChanged, setGroupSettingsChanged] = useState(false);
 
@@ -112,6 +113,7 @@ export function AvailabilityEditor({ tutorId, onSave }: AvailabilityEditorProps)
         if (tutorData.success || tutorData.data) {
           const tutor = tutorData.data || tutorData;
           setMaxGroupSize(tutor.maxGroupSize || 5);
+          setMinGroupSize(tutor.minGroupSize || 2);
           setGroupHourlyRate(tutor.groupHourlyRate ? String(tutor.groupHourlyRate) : '');
         }
       } catch (error) {
@@ -302,6 +304,7 @@ export function AvailabilityEditor({ tutorId, onSave }: AvailabilityEditorProps)
           },
           body: JSON.stringify({
             maxGroupSize,
+            minGroupSize,
             groupHourlyRate: groupHourlyRate ? parseFloat(groupHourlyRate) : null,
           }),
         });
@@ -420,7 +423,7 @@ export function AvailabilityEditor({ tutorId, onSave }: AvailabilityEditorProps)
       {selectedMedium === 'GROUP' && (
         <div className="bg-white border border-[#ECF0F1] rounded-xl p-4">
           <h3 className="font-semibold text-[#2C3E50] mb-3">Group Session Settings</h3>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-3 gap-4">
             <div>
               <label className="block text-sm text-[#5D6D7E] mb-1">Max Group Size</label>
               <input
@@ -429,14 +432,31 @@ export function AvailabilityEditor({ tutorId, onSave }: AvailabilityEditorProps)
                 max={20}
                 value={maxGroupSize}
                 onChange={(e) => {
-                  setMaxGroupSize(parseInt(e.target.value) || 5);
+                  const val = parseInt(e.target.value) || 5;
+                  setMaxGroupSize(val);
+                  if (minGroupSize > val) setMinGroupSize(val);
                   setGroupSettingsChanged(true);
                 }}
                 className="w-full px-3 py-2 border border-[#ECF0F1] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2D9B6E]"
               />
             </div>
             <div>
-              <label className="block text-sm text-[#5D6D7E] mb-1">Group Rate (per student/hr)</label>
+              <label className="block text-sm text-[#5D6D7E] mb-1">Min to Confirm</label>
+              <input
+                type="number"
+                min={2}
+                max={maxGroupSize}
+                value={minGroupSize}
+                onChange={(e) => {
+                  setMinGroupSize(parseInt(e.target.value) || 2);
+                  setGroupSettingsChanged(true);
+                }}
+                className="w-full px-3 py-2 border border-[#ECF0F1] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2D9B6E]"
+              />
+              <p className="text-xs text-[#95A5A6] mt-1">Students won&apos;t be charged until this many reserve</p>
+            </div>
+            <div>
+              <label className="block text-sm text-[#5D6D7E] mb-1">Rate (per student/hr)</label>
               <div className="relative">
                 <span className="absolute left-3 top-2 text-[#5D6D7E]">€</span>
                 <input

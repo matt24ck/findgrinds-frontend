@@ -561,7 +561,11 @@ export default function StudentDashboard() {
                               <div className="font-semibold text-[#2C3E50]">{session.tutorName}</div>
                               <div className="text-sm text-[#5D6D7E]">{session.subject} - {session.duration} minutes</div>
                             </div>
-                            <Badge variant="primary">Upcoming</Badge>
+                            {session.status === 'RESERVED' ? (
+                              <Badge variant="warning">Reserved</Badge>
+                            ) : (
+                              <Badge variant="primary">Upcoming</Badge>
+                            )}
                             <div className="text-right">
                               <div className="text-[#2C3E50]">
                                 {new Date(session.date).toLocaleDateString('en-IE')} at {session.time}
@@ -885,7 +889,9 @@ export default function StudentDashboard() {
           <div className="bg-white rounded-xl shadow-xl p-6 max-w-sm w-full">
             <h3 className="text-lg font-bold text-[#2C3E50] mb-2">Cancel Session?</h3>
             <p className="text-sm text-[#5D6D7E] mb-4">
-              Your refund will be calculated based on the tutor&apos;s cancellation policy.
+              {upcomingSessions.find(s => s.id === cancelSessionId)?.status === 'RESERVED'
+                ? 'This is a reserved group session. Your card has not been charged and no payment will be taken.'
+                : 'Your refund will be calculated based on the tutor\'s cancellation policy.'}
             </p>
             <div className="flex gap-3">
               <Button variant="outline" className="flex-1" onClick={() => setCancelSessionId(null)}>

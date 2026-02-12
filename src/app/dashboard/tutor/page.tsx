@@ -936,7 +936,11 @@ export default function TutorDashboard() {
                         <div className="font-semibold text-[#2C3E50]">{session.studentName}</div>
                         <div className="text-sm text-[#5D6D7E]">{session.subject} - {session.duration} mins</div>
                       </div>
-                      <Badge variant="primary">Upcoming</Badge>
+                      {session.status === 'RESERVED' ? (
+                        <Badge variant="warning">Reserved</Badge>
+                      ) : (
+                        <Badge variant="primary">Upcoming</Badge>
+                      )}
                       <div className="text-right">
                         <div className="text-[#2C3E50]">
                           {session.date ? new Date(session.date).toLocaleDateString('en-IE', { weekday: 'short', day: 'numeric', month: 'short' }) : ''} at {session.time}

@@ -67,6 +67,7 @@ interface TutorData {
   baseHourlyRate: number;
   groupHourlyRate?: number;
   maxGroupSize?: number;
+  minGroupSize?: number;
   area?: string;
   rating: number;
   reviewCount: number;
@@ -698,15 +699,29 @@ export default function BookingPage() {
                     )}
                   </div>
 
-                  <div className="bg-[#F0F7F4] rounded-lg p-4 mb-6">
-                    <div className="flex items-center gap-2 text-[#2D9B6E] mb-2">
-                      <CreditCard className="w-5 h-5" />
-                      <span className="font-medium">Secure Payment</span>
+                  {sessionType === 'GROUP' && tutor.minGroupSize && tutor.minGroupSize > 1 ? (
+                    <div className="bg-blue-50 rounded-lg p-4 mb-6">
+                      <div className="flex items-center gap-2 text-blue-700 mb-2">
+                        <Info className="w-5 h-5" />
+                        <span className="font-medium">Reserve Now, Pay Later</span>
+                      </div>
+                      <ul className="text-sm text-blue-600 space-y-1 ml-7 list-disc">
+                        <li>Your card details will be saved securely but <strong>you will not be charged now</strong>.</li>
+                        <li>You will only be charged <strong>&euro;{total.toFixed(2)}</strong> once at least <strong>{tutor.minGroupSize} students</strong> have reserved.</li>
+                        <li>If the minimum isn&apos;t met <strong>24 hours before the session</strong>, your reservation will be cancelled automatically.</li>
+                      </ul>
                     </div>
-                    <p className="text-sm text-[#5D6D7E]">
-                      You'll be redirected to our secure payment provider to complete your booking.
-                    </p>
-                  </div>
+                  ) : (
+                    <div className="bg-[#F0F7F4] rounded-lg p-4 mb-6">
+                      <div className="flex items-center gap-2 text-[#2D9B6E] mb-2">
+                        <CreditCard className="w-5 h-5" />
+                        <span className="font-medium">Secure Payment</span>
+                      </div>
+                      <p className="text-sm text-[#5D6D7E]">
+                        You&apos;ll be redirected to our secure payment provider to complete your booking.
+                      </p>
+                    </div>
+                  )}
 
                   <div className="mt-8 pt-6 border-t border-[#ECF0F1] flex gap-4">
                     <Button variant="outline" onClick={() => setStep(2)} className="flex-1">
@@ -719,7 +734,9 @@ export default function BookingPage() {
                       className="flex-1"
                     >
                       <CreditCard className="w-5 h-5 mr-2" />
-                      Pay €{total.toFixed(2)}
+                      {sessionType === 'GROUP' && tutor.minGroupSize && tutor.minGroupSize > 1
+                        ? `Reserve Spot — €${total.toFixed(2)}`
+                        : `Pay €${total.toFixed(2)}`}
                     </Button>
                   </div>
                 </div>
@@ -795,6 +812,12 @@ export default function BookingPage() {
                   <span className="font-bold text-[#2C3E50]">Total</span>
                   <span className="text-2xl font-bold text-[#2D9B6E]">€{total.toFixed(2)}</span>
                 </div>
+
+                {sessionType === 'GROUP' && tutor?.minGroupSize && tutor.minGroupSize > 1 && (
+                  <p className="text-xs text-blue-600 mt-2 text-center font-medium">
+                    Card will not be charged until {tutor.minGroupSize} students reserve
+                  </p>
+                )}
 
                 <p className="text-xs text-[#95A5A6] mt-4 text-center">
                   {tutor && (() => {
