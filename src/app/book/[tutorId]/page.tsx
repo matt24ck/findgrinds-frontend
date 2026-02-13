@@ -408,7 +408,7 @@ export default function BookingPage() {
                   {/* Session Type */}
                   <div className="mb-6">
                     <label className="block text-sm font-medium text-[#2C3E50] mb-3">Session Type</label>
-                    <div className="grid grid-cols-3 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                       {sessionTypes.map((st) => (
                         <button
                           key={st.type}
@@ -508,7 +508,7 @@ export default function BookingPage() {
                   {selectedDate && (
                     <div>
                       <label className="block text-sm font-medium text-[#2C3E50] mb-3">Select a Start Time</label>
-                      <div className="grid grid-cols-4 gap-3">
+                      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
                         {availability
                           .find((d) => d.date === selectedDate)
                           ?.slots.map((slot) => (
@@ -555,7 +555,7 @@ export default function BookingPage() {
                           >
                             <Minus className="w-5 h-5" />
                           </button>
-                          <div className="text-center min-w-[140px]">
+                          <div className="text-center min-w-[100px] sm:min-w-[140px]">
                             <div className="text-2xl font-bold text-[#2C3E50]">
                               {formatDuration(durationMins)}
                             </div>
@@ -745,7 +745,7 @@ export default function BookingPage() {
 
             {/* Sidebar - Order Summary */}
             <div className="lg:col-span-1">
-              <div className="bg-white rounded-xl shadow-sm p-6 sticky top-24">
+              <div className="bg-white rounded-xl shadow-sm p-6 lg:sticky top-24">
                 <h3 className="font-bold text-[#2C3E50] mb-4">Booking Summary</h3>
 
                 {/* Tutor Info */}
