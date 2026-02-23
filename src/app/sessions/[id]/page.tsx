@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, useCallback, useRef } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import DailyIframe, { DailyCall, DailyParticipant } from '@daily-co/daily-js';
 import { sessions } from '@/lib/api';
@@ -204,7 +204,13 @@ function RemoteAudio({ participant }: { participant: DailyParticipant }) {
 export default function SessionVideoPage() {
   const params = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const sessionId = params.id as string;
+
+  // Demo mode: skip auth when token + room query params are present
+  const demoToken = searchParams.get('token');
+  const demoRoom = searchParams.get('room');
+  const isDemo = !!(demoToken && demoRoom);
 
   const [session, setSession] = useState<SessionData | null>(null);
   const [callState, setCallState] = useState<CallState>('loading');
@@ -247,6 +253,21 @@ export default function SessionVideoPage() {
   // Fetch session data
   useEffect(() => {
     async function loadSession() {
+      // Demo mode — skip API, use synthetic session data
+      if (isDemo) {
+        setSession({
+          id: sessionId,
+          subject: 'FindGrinds Demo',
+          level: '',
+          scheduledAt: new Date().toISOString(),
+          durationMins: 60,
+          status: 'CONFIRMED',
+          sessionType: 'VIDEO',
+        });
+        setCallState('lobby');
+        return;
+      }
+
       try {
         const res = await sessions.getById(sessionId);
         if (!res.success) {
@@ -275,7 +296,7 @@ export default function SessionVideoPage() {
       }
     }
     loadSession();
-  }, [sessionId]);
+  }, [sessionId, isDemo]);
 
   // Setup local video preview in lobby
   useEffect(() => {
@@ -327,19 +348,30 @@ export default function SessionVideoPage() {
     setCallState('joining');
 
     try {
-      const tokenRes = await sessions.getToken(sessionId);
+      // Resolve room URL + token (demo mode uses query params, normal mode uses API)
+      let joinUrl: string;
+      let joinToken: string;
 
-      if (!tokenRes.success) {
-        setError('Failed to get meeting access');
-        setCallState('error');
-        return;
-      }
+      if (isDemo && demoToken && demoRoom) {
+        joinUrl = demoRoom;
+        joinToken = demoToken;
+      } else {
+        const tokenRes = await sessions.getToken(sessionId);
 
-      if (tokenRes.data.provider === 'zoom' && tokenRes.data.meetingLink) {
-        // Fallback for Zoom provider — redirect externally
-        window.open(tokenRes.data.meetingLink, '_blank');
-        setCallState('lobby');
-        return;
+        if (!tokenRes.success) {
+          setError('Failed to get meeting access');
+          setCallState('error');
+          return;
+        }
+
+        if (tokenRes.data.provider === 'zoom' && tokenRes.data.meetingLink) {
+          window.open(tokenRes.data.meetingLink, '_blank');
+          setCallState('lobby');
+          return;
+        }
+
+        joinUrl = tokenRes.data.roomUrl!;
+        joinToken = tokenRes.data.token!;
       }
 
       // Create Daily call object
@@ -403,8 +435,8 @@ export default function SessionVideoPage() {
 
       // Join the room
       await callObject.join({
-        url: tokenRes.data.roomUrl!,
-        token: tokenRes.data.token!,
+        url: joinUrl,
+        token: joinToken,
       });
 
       // Configure send settings for screen share quality
@@ -422,7 +454,7 @@ export default function SessionVideoPage() {
       setError('Failed to join the video call. Please try again.');
       setCallState('error');
     }
-  }, [session, sessionId]);
+  }, [session, sessionId, isDemo, demoToken, demoRoom]);
 
   // Leave the call
   const leaveCall = useCallback(async () => {
