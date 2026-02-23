@@ -461,11 +461,16 @@ export default function SessionVideoPage() {
 
       // Apply background blur if pre-selected in lobby
       if (isBlurred) {
-        callObject.updateInputSettings({
-          video: {
-            processor: { type: 'background-blur' as const, config: { strength: 0.8 } },
-          },
-        });
+        try {
+          await callObject.updateInputSettings({
+            video: {
+              processor: { type: 'background-blur' as const, config: { strength: 0.8 } },
+            },
+          });
+        } catch (err) {
+          console.error('Background blur failed on join:', err);
+          setIsBlurred(false);
+        }
       }
 
       // Get initial participants
@@ -507,17 +512,22 @@ export default function SessionVideoPage() {
   }, [isCameraOff]);
 
   // Toggle background blur
-  const toggleBlur = useCallback(() => {
+  const toggleBlur = useCallback(async () => {
     const newBlurred = !isBlurred;
     setIsBlurred(newBlurred);
     if (callRef.current) {
-      callRef.current.updateInputSettings({
-        video: {
-          processor: newBlurred
-            ? { type: 'background-blur' as const, config: { strength: 0.8 } }
-            : { type: 'none' as const },
-        },
-      });
+      try {
+        await callRef.current.updateInputSettings({
+          video: {
+            processor: newBlurred
+              ? { type: 'background-blur' as const, config: { strength: 0.8 } }
+              : { type: 'none' as const },
+          },
+        });
+      } catch (err) {
+        console.error('Background blur failed:', err);
+        setIsBlurred(!newBlurred);
+      }
     }
   }, [isBlurred]);
 
