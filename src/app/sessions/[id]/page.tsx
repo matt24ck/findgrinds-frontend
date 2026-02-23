@@ -98,6 +98,14 @@ const SendIcon = () => (
   </svg>
 );
 
+const BlurIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+    <circle cx="12" cy="12" r="3" />
+    <circle cx="12" cy="12" r="7" opacity="0.5" />
+    <circle cx="12" cy="12" r="10" opacity="0.25" />
+  </svg>
+);
+
 // ─── Video tile (top-level to preserve identity across re-renders) ──
 function VideoTile({ participant, isLocal, className }: { participant: DailyParticipant; isLocal: boolean; className?: string }) {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -217,6 +225,7 @@ export default function SessionVideoPage() {
   const [error, setError] = useState<string>('');
   const [isMuted, setIsMuted] = useState(false);
   const [isCameraOff, setIsCameraOff] = useState(false);
+  const [isBlurred, setIsBlurred] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [elapsedTime, setElapsedTime] = useState(0);
   const [participants, setParticipants] = useState<Record<string, DailyParticipant>>({});
@@ -450,6 +459,15 @@ export default function SessionVideoPage() {
         screenVideo: 'detail-optimized',
       });
 
+      // Apply background blur if pre-selected in lobby
+      if (isBlurred) {
+        callObject.updateInputSettings({
+          video: {
+            processor: { type: 'background-blur' as const, config: { strength: 0.8 } },
+          },
+        });
+      }
+
       // Get initial participants
       const allParticipants = callObject.participants();
       setParticipants(allParticipants as Record<string, DailyParticipant>);
@@ -460,7 +478,7 @@ export default function SessionVideoPage() {
       setError('Failed to join the video call. Please try again.');
       setCallState('error');
     }
-  }, [session, sessionId, isDemo, demoToken, demoRoom]);
+  }, [session, sessionId, isDemo, demoToken, demoRoom, isBlurred]);
 
   // Leave the call
   const leaveCall = useCallback(async () => {
@@ -487,6 +505,21 @@ export default function SessionVideoPage() {
       setIsCameraOff(!isCameraOff);
     }
   }, [isCameraOff]);
+
+  // Toggle background blur
+  const toggleBlur = useCallback(() => {
+    const newBlurred = !isBlurred;
+    setIsBlurred(newBlurred);
+    if (callRef.current) {
+      callRef.current.updateInputSettings({
+        video: {
+          processor: newBlurred
+            ? { type: 'background-blur' as const, config: { strength: 0.8 } }
+            : { type: 'none' as const },
+        },
+      });
+    }
+  }, [isBlurred]);
 
   // Toggle screen share
   const toggleScreenShare = useCallback(async () => {
@@ -617,6 +650,13 @@ export default function SessionVideoPage() {
                 className={`p-3 rounded-full transition-colors ${isCameraOff ? 'bg-red-500 text-white' : 'bg-white/20 backdrop-blur-sm text-white hover:bg-white/30'}`}
               >
                 <CameraIcon off={isCameraOff} />
+              </button>
+              <button
+                onClick={() => setIsBlurred(!isBlurred)}
+                className={`p-3 rounded-full transition-colors ${isBlurred ? 'bg-[#2D9B6E] text-white' : 'bg-white/20 backdrop-blur-sm text-white hover:bg-white/30'}`}
+                title={isBlurred ? 'Remove blur' : 'Blur background'}
+              >
+                <BlurIcon />
               </button>
             </div>
           </div>
@@ -833,6 +873,13 @@ export default function SessionVideoPage() {
               title={isScreenSharing ? 'Stop sharing' : 'Share screen'}
             >
               <ScreenShareIcon />
+            </button>
+            <button
+              onClick={toggleBlur}
+              className={`p-3.5 rounded-full transition-all ${isBlurred ? 'bg-[#2D9B6E] text-white' : 'bg-gray-700 text-white hover:bg-gray-600'}`}
+              title={isBlurred ? 'Remove blur' : 'Blur background'}
+            >
+              <BlurIcon />
             </button>
             <button
               onClick={() => setIsChatOpen(!isChatOpen)}
