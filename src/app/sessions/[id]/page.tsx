@@ -252,6 +252,8 @@ export default function SessionVideoPage() {
 
   // Fetch session data
   useEffect(() => {
+    let cancelled = false;
+
     async function loadSession() {
       // Demo mode — skip API, use synthetic session data
       if (isDemo) {
@@ -270,6 +272,7 @@ export default function SessionVideoPage() {
 
       try {
         const res = await sessions.getById(sessionId);
+        if (cancelled) return;
         if (!res.success) {
           setError('Session not found');
           setCallState('error');
@@ -291,11 +294,14 @@ export default function SessionVideoPage() {
 
         setCallState('lobby');
       } catch {
+        if (cancelled) return;
         setError('Failed to load session. Please check you are logged in.');
         setCallState('error');
       }
     }
     loadSession();
+
+    return () => { cancelled = true; };
   }, [sessionId, isDemo]);
 
   // Setup local video preview in lobby
