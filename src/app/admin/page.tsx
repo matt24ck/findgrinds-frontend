@@ -34,7 +34,7 @@ interface Stats {
   };
   sessions: {
     total: number;
-    completed: number;
+    cancelled: number;
   };
   reports?: {
     pending: number;
@@ -230,8 +230,8 @@ export default function AdminDashboardPage() {
               </Card>
               <Card className="p-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-[#5D6D7E]">Completed Sessions</span>
-                  <span className="font-bold text-green-600">{stats.sessions.completed}</span>
+                  <span className="text-[#5D6D7E]">Cancelled Sessions</span>
+                  <span className="font-bold text-red-600">{stats.sessions.cancelled}</span>
                 </div>
               </Card>
               <Link href="/admin/reports">
