@@ -1,12 +1,13 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { MessageCircle, X, Send, Sparkles } from 'lucide-react';
+import { X, Send, Sparkles } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { ai, type AITutor, type AIResource } from '@/lib/api';
 import { TutorResultCard } from './TutorResultCard';
 import { ResourceResultCard } from './ResourceResultCard';
+import { BookAIIcon } from './BookAIIcon';
 
 type ChatTurn =
   | { role: 'user'; content: string }
@@ -205,7 +206,7 @@ export function ChatWidget() {
           open ? 'hidden sm:flex' : 'flex'
         }`}
       >
-        {open ? <X className="w-6 h-6" /> : <MessageCircle className="w-6 h-6" />}
+        {open ? <X className="w-6 h-6" /> : <BookAIIcon className="w-7 h-7" />}
       </button>
     </>
   );
