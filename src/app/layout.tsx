@@ -3,6 +3,7 @@ import { Lato, Open_Sans } from "next/font/google";
 import "./globals.css";
 import { CookieConsent } from "@/components/gdpr/CookieConsent";
 import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
+import { ChatWidget } from "@/components/chat/ChatWidget";
 
 const lato = Lato({
   subsets: ["latin"],
@@ -34,6 +35,7 @@ export default function RootLayout({
     <html lang="en" className={`${lato.variable} ${openSans.variable}`}>
       <body className="antialiased min-h-screen bg-white font-sans">
         {children}
+        <ChatWidget />
         <CookieConsent />
         <GoogleAnalytics />
       </body>

@@ -71,6 +71,59 @@ export const auth = {
     }),
 };
 
+// ============ AI ASSISTANT ============
+export interface AIChatMessage {
+  role: 'user' | 'assistant';
+  content: string;
+}
+
+export interface AITutor {
+  id: string;
+  name: string;
+  headline: string;
+  subjects: string[];
+  levels: string[];
+  area: string | null;
+  hourlyRate: number;
+  rating: number;
+  reviewCount: number;
+  teachesInIrish: boolean;
+  featuredTier: 'FREE' | 'PROFESSIONAL' | 'ENTERPRISE';
+  verified: boolean;
+  profilePhotoUrl: string | null;
+  profileUrl: string;
+  bookUrl: string;
+}
+
+export interface AIResource {
+  id: string;
+  title: string;
+  description: string;
+  subject: string;
+  level: string;
+  resourceType: string;
+  price: number;
+  rating: number;
+  salesCount: number;
+  tutorName: string | null;
+  url: string;
+}
+
+export interface AIChatResponse {
+  reply: string;
+  tutors: AITutor[];
+  resources: AIResource[];
+}
+
+export const ai = {
+  // The backend returns { reply, tutors, resources } directly (not wrapped in { success, data }).
+  chat: (messages: AIChatMessage[]) =>
+    fetchAPI<AIChatResponse>('/api/ai/chat', {
+      method: 'POST',
+      body: JSON.stringify({ messages }),
+    }),
+};
+
 // ============ TUTORS ============
 export const tutors = {
   search: (params: {
