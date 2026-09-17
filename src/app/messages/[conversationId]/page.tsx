@@ -30,6 +30,7 @@ const REPORT_REASONS = [
   { value: 'harassment', label: 'Harassment or bullying' },
   { value: 'spam', label: 'Spam' },
   { value: 'safety_concern', label: 'Safety concern' },
+  { value: 'off_platform_contact', label: 'Asking to talk or pay outside FindGrinds' },
   { value: 'other', label: 'Other' },
 ];
 

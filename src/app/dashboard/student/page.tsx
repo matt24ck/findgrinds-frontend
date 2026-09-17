@@ -66,6 +66,24 @@ export default function StudentDashboard() {
   const [purchasedResources, setPurchasedResources] = useState<any[]>([]);
   const [recentTutors, setRecentTutors] = useState<any[]>([]);
   const [userData, setUserData] = useState<any>(null);
+
+  // Age policy: an account with no date of birth is treated as under 18 (see backend README).
+  const [dobInput, setDobInput] = useState('');
+  const [dobSaving, setDobSaving] = useState(false);
+  const [dobError, setDobError] = useState('');
+  const handleSaveDob = async () => {
+    if (!dobInput) return;
+    setDobSaving(true);
+    setDobError('');
+    try {
+      const res = await auth.setDateOfBirth(dobInput);
+      setUserData((prev: any) => (prev ? { ...prev, dateOfBirth: res.data.dateOfBirth } : prev));
+    } catch (err) {
+      setDobError(err instanceof Error ? err.message : 'Failed to save date of birth');
+    } finally {
+      setDobSaving(false);
+    }
+  };
   const [dashboardLoading, setDashboardLoading] = useState(true);
 
   useEffect(() => {
@@ -752,6 +770,34 @@ export default function StudentDashboard() {
                       </p>
                     </div>
                   </div>
+
+                  {/* Date of birth (one-time) */}
+                  {userData && !userData.dateOfBirth && (
+                    <div className="bg-white rounded-xl shadow-sm p-6 border border-amber-200">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Shield className="w-5 h-5 text-amber-600" />
+                        <h2 className="text-lg font-bold text-[#2C3E50]">Confirm your date of birth</h2>
+                      </div>
+                      <p className="text-sm text-[#5D6D7E] mb-4">
+                        We don&apos;t have your date of birth on file, so your account is treated as under 18: you can only send
+                        pre-written messages to tutors unless a parent or guardian links their account. Add it once below.
+                        It can&apos;t be changed afterwards without contacting support.
+                      </p>
+                      <div className="flex flex-col sm:flex-row gap-3">
+                        <input
+                          type="date"
+                          value={dobInput}
+                          max={new Date().toISOString().split('T')[0]}
+                          onChange={(e) => setDobInput(e.target.value)}
+                          className="px-4 py-2 rounded-lg border border-[#D5DBDB] focus:border-[#2D9B6E] focus:outline-none"
+                        />
+                        <Button size="sm" onClick={handleSaveDob} isLoading={dobSaving} disabled={!dobInput}>
+                          Save date of birth
+                        </Button>
+                      </div>
+                      {dobError && <p className="text-sm text-red-600 mt-2">{dobError}</p>}
+                    </div>
+                  )}
 
                   {/* Parent Access */}
                   <div className="bg-white rounded-xl shadow-sm p-6">

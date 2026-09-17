@@ -44,13 +44,20 @@ export const auth = {
       body: JSON.stringify({ email, password }),
     }),
 
-  signup: (data: { email: string; password: string; firstName: string; lastName: string; userType: string }) =>
+  signup: (data: { email: string; password: string; firstName: string; lastName: string; userType: string; dateOfBirth?: string }) =>
     fetchAPI<{ success: boolean; data: { user: any; token: string } }>('/api/auth/signup', {
       method: 'POST',
       body: JSON.stringify(data),
     }),
 
   me: () => fetchAPI<{ success: boolean; data: any }>('/api/auth/me'),
+
+  // One-time: only allowed while no date of birth is on file (age policy, see backend README).
+  setDateOfBirth: (dateOfBirth: string) =>
+    fetchAPI<{ success: boolean; data: { dateOfBirth: string; isMinor: boolean } }>('/api/auth/date-of-birth', {
+      method: 'PUT',
+      body: JSON.stringify({ dateOfBirth }),
+    }),
 
   changePassword: (currentPassword: string, newPassword: string) =>
     fetchAPI<{ success: boolean; message: string }>('/api/auth/change-password', {

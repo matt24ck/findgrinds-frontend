@@ -74,6 +74,11 @@ export default function SignupPage() {
       return;
     }
 
+    if (userType === 'STUDENT' && !formData.dateOfBirth) {
+      setError('Please enter your date of birth');
+      return;
+    }
+
     setIsLoading(true);
 
     try {
@@ -254,10 +259,13 @@ export default function SignupPage() {
                         onChange={(e) => setFormData({ ...formData, dateOfBirth: e.target.value })}
                         className="pl-10"
                         max={new Date().toISOString().split('T')[0]}
+                        required={userType === 'STUDENT'}
                       />
                     </div>
                     <p className="text-xs text-[#95A5A6] mt-1">
-                      {userType === 'STUDENT' ? 'Used for safeguarding purposes' : 'Optional'}
+                      {userType === 'STUDENT'
+                        ? 'Required for safeguarding. Students under 18 can only send pre-written messages to tutors unless a parent or guardian links their account.'
+                        : 'Optional'}
                     </p>
                   </div>
                 )}

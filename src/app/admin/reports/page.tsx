@@ -41,12 +41,21 @@ interface MessageReport {
       tutorId: string;
     };
   };
+  // Null for automated reports (source === 'auto_screening').
   reporter: {
     id: string;
     firstName: string;
     lastName: string;
     email: string;
-  };
+  } | null;
+  source?: 'user' | 'auto_screening';
+  metadata?: {
+    score?: number;
+    threshold?: number;
+    categories?: string[];
+    matches?: { category: string; pattern: string; excerpt: string }[];
+    screenerVersion?: string;
+  } | null;
 }
 
 const REASON_LABELS: Record<string, string> = {
@@ -54,6 +63,7 @@ const REASON_LABELS: Record<string, string> = {
   harassment: 'Harassment',
   spam: 'Spam',
   safety_concern: 'Safety Concern',
+  off_platform_contact: 'Off-platform Contact',
   other: 'Other',
 };
 
@@ -62,7 +72,18 @@ const REASON_COLORS: Record<string, string> = {
   harassment: 'bg-red-100 text-red-700',
   spam: 'bg-gray-100 text-gray-700',
   safety_concern: 'bg-purple-100 text-purple-700',
+  off_platform_contact: 'bg-red-100 text-red-800',
   other: 'bg-blue-100 text-blue-700',
+};
+
+const SCREENING_CATEGORY_LABELS: Record<string, string> = {
+  phone_number: 'phone number',
+  email_address: 'email address',
+  messaging_app: 'messaging app / handle',
+  move_off_platform: 'moving off-platform',
+  meetup_request: 'meet-up request',
+  secrecy: 'secrecy',
+  off_platform_payment: 'off-platform payment',
 };
 
 export default function AdminReportsPage() {
@@ -263,8 +284,13 @@ export default function AdminReportsPage() {
                         <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${REASON_COLORS[report.reason] || 'bg-gray-100 text-gray-700'}`}>
                           {REASON_LABELS[report.reason] || report.reason}
                         </span>
-                        {report.reason === 'safety_concern' && (
+                        {(report.reason === 'safety_concern' || report.reason === 'off_platform_contact') && (
                           <AlertTriangle className="w-4 h-4 text-purple-600" />
+                        )}
+                        {report.source === 'auto_screening' && (
+                          <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700">
+                            Automated screening
+                          </span>
                         )}
                       </div>
                       <span className="text-xs text-[#95A5A6]">
@@ -299,21 +325,37 @@ export default function AdminReportsPage() {
                       <div className="w-8 h-8 bg-[#F0F7F4] rounded-full flex items-center justify-center">
                         <User className="w-4 h-4 text-[#2D9B6E]" />
                       </div>
-                      <div>
-                        <p className="text-sm font-medium text-[#2C3E50]">
-                          Reported by {report.reporter.firstName} {report.reporter.lastName}
-                        </p>
-                        <p className="text-xs text-[#95A5A6] flex items-center gap-1">
-                          <Mail className="w-3 h-3" />
-                          {report.reporter.email}
-                        </p>
-                      </div>
+                      {report.reporter ? (
+                        <div>
+                          <p className="text-sm font-medium text-[#2C3E50]">
+                            Reported by {report.reporter.firstName} {report.reporter.lastName}
+                          </p>
+                          <p className="text-xs text-[#95A5A6] flex items-center gap-1">
+                            <Mail className="w-3 h-3" />
+                            {report.reporter.email}
+                          </p>
+                        </div>
+                      ) : (
+                        <div>
+                          <p className="text-sm font-medium text-[#2C3E50]">
+                            Flagged by automated screening (tutor message to a minor)
+                          </p>
+                          {report.metadata?.categories && report.metadata.categories.length > 0 && (
+                            <p className="text-xs text-[#95A5A6]">
+                              Signals: {report.metadata.categories.map((c) => SCREENING_CATEGORY_LABELS[c] || c).join(', ')}
+                              {typeof report.metadata.score === 'number' && ` (score ${report.metadata.score.toFixed(2)})`}
+                            </p>
+                          )}
+                        </div>
+                      )}
                     </div>
 
                     {/* Additional Details */}
                     {report.details && (
                       <div className="bg-yellow-50 border border-yellow-200 rounded-lg px-4 py-3 mb-4">
-                        <p className="text-xs font-medium text-yellow-800 mb-1">Additional details from reporter:</p>
+                        <p className="text-xs font-medium text-yellow-800 mb-1">
+                          {report.reporter ? 'Additional details from reporter:' : 'Screening summary:'}
+                        </p>
                         <p className="text-sm text-yellow-900">{report.details}</p>
                       </div>
                     )}
