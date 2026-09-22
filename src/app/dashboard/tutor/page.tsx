@@ -38,6 +38,7 @@ import {
 } from 'lucide-react';
 import { AvailabilityEditor } from '@/components/dashboard/AvailabilityEditor';
 import { AccountSection } from '@/components/dashboard/AccountSection';
+import { TutorOfferCard } from '@/components/dashboard/TutorOfferCard';
 import { resources as resourcesApi, upload, sessions as sessionsApi, tutors as tutorsApi, auth, stripeApi } from '@/lib/api';
 import { AREAS_BY_COUNTY } from '@/lib/constants';
 import { Loader2 } from 'lucide-react';
@@ -667,6 +668,9 @@ export default function TutorDashboard() {
                   </Button>
                 </div>
               )}
+
+              {/* Tutor offer: join link + free Professional month */}
+              <TutorOfferCard />
 
               {/* Stats Cards */}
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">

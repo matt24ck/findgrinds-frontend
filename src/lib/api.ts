@@ -597,3 +597,41 @@ export const gdpr = {
       body: JSON.stringify(consent),
     }),
 };
+
+// ============ TUTOR OFFER (join links, 0% fees, free Professional month) ============
+export interface TutorOfferStatus {
+  inviteCode: string;
+  feeWaiverEndsAt: string;
+  referredCount: number;
+  feeWaivedBookings: number;
+  proMonth: {
+    qualifyBy: string;
+    qualified: boolean;
+    activatedAt: string | null;
+    endsAt: string | null;
+    canActivate: boolean;
+    blockedReason: 'already_activated' | 'not_qualified' | 'deadline_passed' | 'offer_ended' | 'already_on_paid_plan' | null;
+  };
+}
+
+export interface JoinLinkTutor {
+  tutorId: string;
+  firstName: string;
+  lastName: string;
+  profilePhotoUrl: string | null;
+  headline?: string;
+  subjects: string[];
+}
+
+// localStorage key holding a join-link code until the visitor signs up
+export const JOIN_CODE_KEY = 'fg_join_code';
+
+export const tutorOffer = {
+  lookupJoinLink: (code: string) =>
+    fetchAPI<{ success: boolean; data: JoinLinkTutor }>(`/api/tutor-offer/join/${encodeURIComponent(code)}`),
+
+  getStatus: () => fetchAPI<{ success: boolean; data: TutorOfferStatus }>('/api/tutor-offer/status'),
+
+  activateProMonth: () =>
+    fetchAPI<{ success: boolean; data: { url: string } }>('/api/tutor-offer/pro-month/activate', { method: 'POST' }),
+};

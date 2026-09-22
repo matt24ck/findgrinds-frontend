@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { BookOpen, Mail, Lock, User, GraduationCap, Users, Calendar, MapPin } from 'lucide-react';
 import { AREAS_BY_COUNTY } from '@/lib/constants';
+import { tutorOffer, JoinLinkTutor, JOIN_CODE_KEY } from '@/lib/api';
 
 type UserType = 'STUDENT' | 'PARENT' | 'TUTOR';
 
@@ -38,6 +39,30 @@ export default function SignupPage() {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  // Tutor join link (/join/<code> or ?join=<code>): students and parents who sign up are tagged to that tutor
+  const [joinCode, setJoinCode] = useState<string | null>(null);
+  const [joinTutor, setJoinTutor] = useState<JoinLinkTutor | null>(null);
+
+  useEffect(() => {
+    let code = new URLSearchParams(window.location.search).get('join');
+    try {
+      code = code || localStorage.getItem(JOIN_CODE_KEY);
+    } catch {}
+    if (!code) return;
+    tutorOffer
+      .lookupJoinLink(code)
+      .then((res) => {
+        setJoinCode(code);
+        setJoinTutor(res.data);
+      })
+      .catch(() => {
+        try {
+          localStorage.removeItem(JOIN_CODE_KEY);
+        } catch {}
+      });
+  }, []);
+
+  const usesJoinLink = !!joinCode && (userType === 'STUDENT' || userType === 'PARENT');
 
   const userTypes = [
     {
@@ -95,6 +120,7 @@ export default function SignupPage() {
           levels: formData.levels,
           area: formData.area || undefined,
           userType,
+          inviteCode: usesJoinLink ? joinCode : undefined,
         }),
       });
 
@@ -108,8 +134,14 @@ export default function SignupPage() {
       localStorage.setItem('token', data.data.token);
       localStorage.setItem('user', JSON.stringify(data.data.user));
 
-      // Redirect based on user type
-      if (userType === 'TUTOR') {
+      try {
+        localStorage.removeItem(JOIN_CODE_KEY);
+      } catch {}
+
+      // Redirect based on user type (joined via a tutor's link: straight to booking them)
+      if (usesJoinLink && joinTutor) {
+        window.location.href = `/tutors/${joinTutor.tutorId}`;
+      } else if (userType === 'TUTOR') {
         window.location.href = '/dashboard/tutor';
       } else if (userType === 'PARENT') {
         window.location.href = '/dashboard/parent';
@@ -141,6 +173,14 @@ export default function SignupPage() {
               Join Ireland's leading grinds marketplace
             </p>
           </div>
+
+          {/* Join-link banner */}
+          {joinTutor && userType !== 'TUTOR' && (
+            <div className="mb-6 p-4 bg-[#F0F7F4] border border-[#2D9B6E]/30 rounded-xl text-sm text-[#2C3E50] text-center">
+              You&apos;re joining with an invite from <strong>{joinTutor.firstName} {joinTutor.lastName}</strong>.
+              Once you&apos;ve signed up you can book your lessons with them straight away.
+            </div>
+          )}
 
           {/* Step Indicator */}
           <div className="flex items-center justify-center gap-2 mb-8">
