@@ -17,7 +17,7 @@ export default function TermsOfServicePage() {
 
           <div className="prose prose-lg max-w-none text-[#5D6D7E]">
             <p className="text-sm text-[#95A5A6] mb-8">
-              Last updated: January 2026
+              Last updated: September 2026
             </p>
 
             <section className="mb-8">
@@ -28,8 +28,8 @@ export default function TermsOfServicePage() {
                 please do not use our Service.
               </p>
               <p className="mt-4">
-                These Terms constitute a legally binding agreement between you and FindGrinds Limited
-                ("we", "our", or "us"), a company registered in Ireland.
+                These Terms constitute a legally binding agreement between you and Matthew Callinan Keenan,
+                a sole trader based in Ireland trading as FindGrinds ("we", "our", or "us").
               </p>
             </section>
 
@@ -232,7 +232,7 @@ export default function TermsOfServicePage() {
               <h2 className="text-2xl font-bold text-[#2C3E50] mb-4">14. Contact Us</h2>
               <p>For questions about these Terms of Service:</p>
               <div className="bg-[#F8F9FA] p-6 rounded-lg mt-4">
-                <p><strong>FindGrinds Limited</strong></p>
+                <p><strong>Matthew Callinan Keenan, trading as FindGrinds</strong></p>
                 <p>Email: support@findgrinds.ie</p>
                 <p>Legal: legal@findgrinds.ie</p>
               </div>

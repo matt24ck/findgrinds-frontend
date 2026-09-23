@@ -17,18 +17,19 @@ export default function PrivacyPolicyPage() {
 
           <div className="prose prose-lg max-w-none text-[#5D6D7E]">
             <p className="text-sm text-[#95A5A6] mb-8">
-              Last updated: January 2026
+              Last updated: September 2026
             </p>
 
             <section className="mb-8">
               <h2 className="text-2xl font-bold text-[#2C3E50] mb-4">1. Introduction</h2>
               <p>
-                FindGrinds Limited ("we", "our", or "us") is committed to protecting your personal data
+                FindGrinds is operated by Matthew Callinan Keenan, a sole trader based in Ireland trading as
+                FindGrinds ("we", "our", or "us"). We are committed to protecting your personal data
                 and respecting your privacy. This Privacy Policy explains how we collect, use, store, and
                 protect your information when you use our platform at findgrinds.ie (the "Service").
               </p>
               <p className="mt-4">
-                We are the data controller responsible for your personal data and are registered in Ireland.
+                We are the data controller responsible for your personal data.
                 For any privacy-related queries, contact us at: <strong>privacy@findgrinds.ie</strong>
               </p>
             </section>
@@ -179,8 +180,8 @@ export default function PrivacyPolicyPage() {
               <h2 className="text-2xl font-bold text-[#2C3E50] mb-4">13. Contact Us</h2>
               <p>For privacy-related inquiries or to exercise your rights:</p>
               <div className="bg-[#F8F9FA] p-6 rounded-lg mt-4">
-                <p><strong>Data Protection Officer</strong></p>
-                <p>FindGrinds Limited</p>
+                <p><strong>Privacy Contact</strong></p>
+                <p>Matthew Callinan Keenan, trading as FindGrinds</p>
                 <p>Email: privacy@findgrinds.ie</p>
                 <p className="mt-4">
                   You also have the right to lodge a complaint with the Irish Data Protection Commission

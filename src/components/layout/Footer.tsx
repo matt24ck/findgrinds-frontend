@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { BookOpen, Facebook, Twitter, Instagram, Linkedin } from 'lucide-react';
+import { BookOpen } from 'lucide-react';
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
@@ -24,21 +24,6 @@ export function Footer() {
               Ireland's trusted marketplace for Junior and Leaving Cert grinds.
               Find professional tutors and quality resources.
             </p>
-            {/* Social Links */}
-            <div className="flex gap-4">
-              <a href="#" className="text-[#95A5A6] hover:text-[#2D9B6E] transition-colors">
-                <Facebook className="w-5 h-5" />
-              </a>
-              <a href="#" className="text-[#95A5A6] hover:text-[#2D9B6E] transition-colors">
-                <Twitter className="w-5 h-5" />
-              </a>
-              <a href="#" className="text-[#95A5A6] hover:text-[#2D9B6E] transition-colors">
-                <Instagram className="w-5 h-5" />
-              </a>
-              <a href="#" className="text-[#95A5A6] hover:text-[#2D9B6E] transition-colors">
-                <Linkedin className="w-5 h-5" />
-              </a>
-            </div>
           </div>
 
           {/* For Students */}
@@ -126,7 +111,7 @@ export function Footer() {
         {/* Bottom Bar */}
         <div className="mt-12 pt-8 border-t border-[#5D6D7E]/30 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-[#95A5A6] text-sm">
-            &copy; {currentYear} FindGrinds. All rights reserved.
+            &copy; {currentYear} Sonraí AI. All rights reserved.
           </p>
           <div className="flex gap-6 text-sm text-[#95A5A6]">
             <Link href="/privacy" className="hover:text-[#2D9B6E] transition-colors">
