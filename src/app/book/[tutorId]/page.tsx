@@ -244,7 +244,7 @@ export default function BookingPage() {
   const sessionTypes = [
     { type: 'VIDEO' as SessionType, icon: Video, label: '1:1 Video', description: 'Online video call' },
     { type: 'IN_PERSON' as SessionType, icon: MapPin, label: 'In Person', description: 'Meet face-to-face' },
-    { type: 'GROUP' as SessionType, icon: Users, label: 'Group Class', description: 'Join with others' },
+    { type: 'GROUP' as SessionType, icon: Users, label: 'Group Class', description: 'Online, with other students' },
   ];
 
   const handleProceedToPayment = async () => {
@@ -368,7 +368,7 @@ export default function BookingPage() {
               <div>
                 <p className="font-medium text-amber-800">Payments not available</p>
                 <p className="text-sm text-amber-700">
-                  This tutor hasn't set up payment processing yet. You can still contact them directly.
+                  This tutor hasn't finished setting up payments yet, so they can't be booked. You can still message them on FindGrinds.
                 </p>
               </div>
             </div>
@@ -444,7 +444,7 @@ export default function BookingPage() {
                           This tutor is based in {AREA_LABELS[tutor.area] || tutor.area}
                         </p>
                         <p className="text-sm text-blue-700">
-                          In-person sessions take place in the tutor&apos;s area. Make sure this location works for you before booking.
+                          You and the tutor agree the exact meeting place through FindGrinds messages. We recommend meeting in a public place. Make sure this area works for you before booking.
                         </p>
                       </div>
                     </div>
@@ -457,7 +457,7 @@ export default function BookingPage() {
                           Location not specified
                         </p>
                         <p className="text-sm text-amber-700">
-                          This tutor hasn&apos;t set their area yet. Contact them before booking to confirm location.
+                          This tutor hasn&apos;t set their area yet. Message them before booking to agree where to meet. We recommend meeting in a public place.
                         </p>
                       </div>
                     </div>
@@ -718,7 +718,7 @@ export default function BookingPage() {
                         <span className="font-medium">Secure Payment</span>
                       </div>
                       <p className="text-sm text-[#5D6D7E]">
-                        You&apos;ll be redirected to our secure payment provider to complete your booking.
+                        You&apos;ll be redirected to Stripe, our payment provider, to pay for this session in full and complete your booking. There is no booking fee.
                       </p>
                     </div>
                   )}

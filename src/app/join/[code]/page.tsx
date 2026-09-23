@@ -63,8 +63,8 @@ export default function JoinPage() {
               {tutor.headline && <p className="text-[#5D6D7E] mt-2">{tutor.headline}</p>}
 
               <p className="text-[#2C3E50] mt-6">
-                Create your free account to book your lessons with {tutor.firstName} online: pay securely by card,
-                join video lessons, and keep everything in one place.
+                Create your free account to book your lessons with {tutor.firstName} through FindGrinds: pay securely by card,
+                join online lessons by video, and keep everything in one place.
               </p>
 
               <Link href={`/signup?join=${encodeURIComponent(code)}`} className="block mt-6">

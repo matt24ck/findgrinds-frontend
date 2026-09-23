@@ -125,7 +125,7 @@ export function TutorCarousel() {
               Popular Tutors
             </h2>
             <p className="text-[#5D6D7E]">
-              Top-rated tutors ready to help you succeed
+              Tutors ready to help you succeed
             </p>
           </div>
           {!loading && tutorsList.length > 0 && (

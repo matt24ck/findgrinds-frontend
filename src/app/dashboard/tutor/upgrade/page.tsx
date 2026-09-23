@@ -44,10 +44,9 @@ const allTiers = [
     description: 'Get noticed by more students',
     features: [
       'Everything in Free',
-      'Green verified tick on profile',
-      '"Professional Tutor" badge',
-      'Priority in search results',
-      'Priority email support',
+      '"Professional" Featured badge',
+      'Highlighted card in search results',
+      'Higher placement in search results',
     ],
   },
   {
@@ -59,10 +58,9 @@ const allTiers = [
     description: 'For tutors employed in grinds schools',
     features: [
       'Everything in Professional',
-      'Gold verified tick on profile',
-      '"Enterprise Tutor" badge',
-      'Top placement in all search results',
-      'Link your profile to your organisation',
+      '"Enterprise Tutor" Featured badge',
+      'Highest placement in default search results',
+      'Show your organisation name and website',
     ],
   },
 ];
@@ -145,7 +143,7 @@ export default function UpgradePage() {
               Change Your Plan
             </h1>
             <p className="text-lg text-[#5D6D7E] max-w-2xl mx-auto">
-              Featured tutors appear at the top of search results and get significantly more bookings.
+              Featured tutors appear above free listings in the default search order and get a Featured badge.
             </p>
             {!isLoading && (
               <p className="text-sm text-[#95A5A6] mt-3">
@@ -272,13 +270,13 @@ export default function UpgradePage() {
               <div className="bg-white rounded-xl p-6">
                 <h3 className="font-semibold text-[#2C3E50] mb-2">How does Featured placement work?</h3>
                 <p className="text-[#5D6D7E] text-sm">
-                  Featured tutors appear at the top of search results for their chosen subjects. The higher your tier, the higher your placement and the more subjects you can feature.
+                  In the default search order, Enterprise tutors appear first, then Professional, then Free; within each tier, tutors are ordered by rating. Featured placement doesn&apos;t apply when students sort by rating or price. Featured badges show your plan, not a verification.
                 </p>
               </div>
               <div className="bg-white rounded-xl p-6">
                 <h3 className="font-semibold text-[#2C3E50] mb-2">Can I cancel anytime?</h3>
                 <p className="text-[#5D6D7E] text-sm">
-                  Yes! You can cancel your subscription at any time. Your Featured status will remain active until the end of your current billing period.
+                  Yes! You can cancel your subscription at any time. Your Featured status will remain active until the end of the period you have paid for, then your profile returns to the Free plan.
                 </p>
               </div>
               <div className="bg-white rounded-xl p-6">

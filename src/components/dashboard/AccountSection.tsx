@@ -157,7 +157,7 @@ export function AccountSection({ userEmail }: AccountSectionProps) {
           <div>
             <h2 className="text-lg font-bold text-[#2C3E50]">Export My Data</h2>
             <p className="text-sm text-[#5D6D7E]">
-              Download all personal data we hold about you (GDPR Article 20)
+              Download a copy of your account data (GDPR Article 20)
             </p>
           </div>
         </div>
@@ -165,6 +165,7 @@ export function AccountSection({ userEmail }: AccountSectionProps) {
         <p className="text-sm text-[#5D6D7E] mb-4">
           This includes your profile information, session history, resources, and transaction records.
           Passwords are never included. Payment card details are handled by Stripe and not stored by us.
+          For a fuller copy of your data (for example, your messages), email privacy@findgrinds.ie.
         </p>
 
         <Button variant="secondary" onClick={handleExport} isLoading={exportLoading}>
@@ -200,9 +201,10 @@ export function AccountSection({ userEmail }: AccountSectionProps) {
               <div className="text-sm text-red-800">
                 <p className="font-medium mb-1">This action cannot be undone.</p>
                 <p>
-                  All your personal data will be permanently deleted. Some anonymised records
-                  (transactions, session history) may be retained for legal and financial purposes.
-                  You must cancel or complete any pending sessions before deleting your account.
+                  Your account and profile will be permanently deleted and any Featured subscription
+                  cancelled. Anonymised records (session history, transactions and messages you sent)
+                  are kept for legal, financial and safety purposes. You must cancel any upcoming
+                  sessions before deleting your account.
                 </p>
               </div>
             </div>

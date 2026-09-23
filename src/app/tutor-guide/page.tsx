@@ -32,15 +32,15 @@ const sections = [
     content: [
       {
         title: 'Create Your Account',
-        description: 'Sign up as a tutor and verify your email address. You\'ll need to provide basic information including your name, email, and subjects you teach.',
+        description: 'Sign up as a tutor. You\'ll need to provide basic information including your name, email, and subjects you teach.',
       },
       {
         title: 'Complete Your Profile',
-        description: 'A complete profile gets 5x more views. Add your qualifications, teaching experience, subjects, levels taught, and a compelling bio that highlights your expertise.',
+        description: 'A complete profile helps students and parents choose you. Add your qualifications, teaching experience, subjects, levels taught, and a compelling bio that highlights your expertise.',
       },
       {
         title: 'Upload a Professional Photo',
-        description: 'Profiles with photos get 7x more bookings. Use a clear, friendly headshot with good lighting. Dress professionally and smile!',
+        description: 'A photo makes your profile more personal and easier to trust. Use a clear, friendly headshot with good lighting. Dress professionally and smile!',
       },
       {
         title: 'Set Your Rates',
@@ -71,7 +71,7 @@ const sections = [
       },
       {
         title: 'Start Earning',
-        description: 'Once your details are submitted, you\'re ready to accept session bookings and resource purchases. Earnings are paid out directly to your bank account.',
+        description: 'Once your details are submitted, you\'re ready to accept session bookings and resource purchases. Your share of each payment goes to your Stripe account when the student pays, and Stripe pays it out to your bank account on its payout schedule.',
       },
       {
         title: 'Identity Verification (Later)',
@@ -97,8 +97,8 @@ const sections = [
         description: 'Include years of tutoring experience, number of students helped, and any notable results. Parents want to see proven track records.',
       },
       {
-        title: 'Verify Your Profile',
-        description: 'Consider uploading qualifications or certifications to build trust. This helps parents feel confident booking tutors for their children.',
+        title: 'Get Your Garda Vetted Badge',
+        description: 'If you have Garda vetting, upload your vetting document from your dashboard. Once our team approves it, a Garda vetted badge appears on your profile, which helps parents feel confident booking tutors for their children.',
       },
     ],
   },
@@ -132,7 +132,7 @@ const sections = [
     content: [
       {
         title: 'Respond Quickly',
-        description: 'Aim to respond to booking requests and messages within 24 hours. Fast responses lead to more bookings.',
+        description: 'Aim to respond to messages within 24 hours. Quick, helpful replies make students and parents more likely to book.',
       },
       {
         title: 'Set Clear Expectations',
@@ -159,23 +159,23 @@ const sections = [
       },
       {
         title: 'Ask for Reviews',
-        description: 'After a few successful sessions, politely ask students or parents to leave a review. Most happy students are glad to help.',
+        description: 'After a few successful sessions, politely ask students to leave a review (reviews can only be left by students, once per session). Most happy students are glad to help.',
       },
       {
         title: 'Respond to Feedback',
-        description: 'Thank students for positive reviews. If you receive constructive criticism, respond professionally and show you\'re committed to improving.',
+        description: 'Thank students for positive feedback. If you receive constructive criticism, take it on board and show you\'re committed to improving. If a review breaks our rules, you can report it.',
       },
       {
         title: 'Build Long-Term Relationships',
-        description: 'Regular students are your best asset. Offer package deals and be flexible to keep them coming back.',
+        description: 'Regular students are your best asset. Be reliable and flexible to keep them coming back.',
       },
     ],
   },
 ];
 
 const quickTips = [
-  { icon: Camera, tip: 'Add a professional photo - 7x more bookings' },
-  { icon: Shield, tip: 'Upload qualifications to build trust with parents' },
+  { icon: Camera, tip: 'Add a clear, professional profile photo' },
+  { icon: Shield, tip: 'Upload your Garda vetting document to get the vetted badge' },
   { icon: Clock, tip: 'Respond to inquiries within 24 hours' },
   { icon: FileText, tip: 'Upload resources to earn passive income' },
   { icon: Euro, tip: 'Consider introductory rates to get first reviews' },
@@ -291,7 +291,7 @@ export default function TutorGuidePage() {
             <div className="bg-[#F8F9FA] rounded-2xl p-8">
               <div className="space-y-4">
                 {[
-                  'Created account and verified email',
+                  'Created your tutor account',
                   'Added a professional profile photo',
                   'Written a compelling bio',
                   'Listed qualifications and experience',
@@ -299,7 +299,7 @@ export default function TutorGuidePage() {
                   'Set competitive hourly rates',
                   'Completed Stripe onboarding (bank account added)',
                   'Added availability to calendar',
-                  'Uploaded qualifications (if available)',
+                  'Uploaded Garda vetting document (if available)',
                   'Read and understood the terms of service',
                 ].map((item, index) => (
                   <div key={index} className="flex items-center gap-3 bg-white rounded-lg p-4">
@@ -332,9 +332,9 @@ export default function TutorGuidePage() {
               </div>
 
               <div className="bg-gradient-to-br from-[#2C3E50] to-[#34495E] rounded-2xl p-8 text-white">
-                <h3 className="text-xl font-bold mb-4">Get Verified</h3>
+                <h3 className="text-xl font-bold mb-4">Get Featured</h3>
                 <p className="text-white/90 mb-6">
-                  Stand out with a verified badge and get more bookings from students and parents.
+                  Stand out with a Featured badge and higher placement in search results.
                 </p>
                 <Link href="/featured">
                   <Button variant="secondary" className="bg-white text-[#2C3E50] hover:bg-gray-100">
@@ -354,7 +354,7 @@ export default function TutorGuidePage() {
               Ready to Start Tutoring?
             </h2>
             <p className="text-[#5D6D7E] mb-8">
-              Join hundreds of tutors making a difference for Irish students
+              Join FindGrinds and make a difference for Irish students
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/become-tutor">

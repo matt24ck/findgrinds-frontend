@@ -170,7 +170,7 @@ export default function SignupPage() {
             </Link>
             <h1 className="text-2xl font-bold text-[#2C3E50]">Create Account</h1>
             <p className="text-[#5D6D7E] mt-2">
-              Join Ireland's leading grinds marketplace
+              Join FindGrinds, an Irish grinds marketplace
             </p>
           </div>
 
@@ -304,7 +304,7 @@ export default function SignupPage() {
                     </div>
                     <p className="text-xs text-[#95A5A6] mt-1">
                       {userType === 'STUDENT'
-                        ? 'Required for safeguarding. Students under 18 can only send pre-written messages to tutors unless a parent or guardian links their account.'
+                        ? 'Required for safeguarding, and can\'t be changed once saved. Students under 18 can only send pre-written messages to tutors unless a parent or guardian links their account.'
                         : 'Optional'}
                     </p>
                   </div>
@@ -396,7 +396,7 @@ export default function SignupPage() {
                       <p className="text-sm text-blue-800">
                         <span className="font-medium">Already Garda vetted?</span>
                         <br />
-                        Professional teachers can upload proof of Garda vetting from their dashboard to display a verified badge.
+                        You can upload your Garda vetting document from your dashboard. Once our team approves it, a Garda vetted badge appears on your profile.
                       </p>
                     </div>
                   </>

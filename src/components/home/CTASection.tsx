@@ -18,8 +18,8 @@ export function CTASection() {
               Ready to Ace Your Exams?
             </h2>
             <p className="text-lg text-white/80 mb-6">
-              Join thousands of students who found the perfect tutor on FindGrinds.
-              Your next A is just a click away.
+              Find the right tutor for your subject and level on FindGrinds.
+              Your next A could be just a click away.
             </p>
             <Link href="/tutors">
               <Button
@@ -41,7 +41,7 @@ export function CTASection() {
               Are You a Tutor?
             </h2>
             <p className="text-lg text-white/80 mb-6">
-              Competitive earnings on every session with secure payments directly to your bank.
+              Set your own rates and get paid securely through Stripe, straight to your bank account.
             </p>
             <Link href="/become-tutor">
               <Button

@@ -381,7 +381,7 @@ export default function TutorProfilePage() {
                 {/* Qualifications */}
                 {(tutor.qualifications || []).length > 0 && (
                   <div className="bg-white rounded-xl p-6 shadow-sm">
-                    <h2 className="text-xl font-bold text-[#2C3E50] mb-4">Qualifications</h2>
+                    <h2 className="text-xl font-bold text-[#2C3E50] mb-4">Qualifications <span className="text-sm font-normal text-[#95A5A6]">(as stated by the tutor, not checked by FindGrinds)</span></h2>
                     <ul className="space-y-3">
                       {tutor.qualifications.map((qual: string, i: number) => (
                         <li key={i} className="flex items-start gap-3">
@@ -547,7 +547,7 @@ export default function TutorProfilePage() {
                 <div className="text-center py-8">
                   <Calendar className="w-12 h-12 text-[#D5DBDB] mx-auto mb-4" />
                   <p className="text-[#5D6D7E]">This tutor hasn&apos;t set up their availability yet.</p>
-                  <p className="text-sm text-[#95A5A6] mt-1">Contact them to arrange a session.</p>
+                  <p className="text-sm text-[#95A5A6] mt-1">Send them a message on FindGrinds to ask about availability.</p>
                 </div>
               ) : (
                 <div className="overflow-x-auto">

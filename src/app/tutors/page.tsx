@@ -138,7 +138,7 @@ function TutorsPageContent() {
               Find Your Perfect Tutor
             </h1>
             <p className="text-[#5D6D7E]">
-              Browse our network of verified tutors across Ireland
+              Browse tutors across Ireland, online and in person
             </p>
           </div>
 

@@ -6,7 +6,7 @@ import { CheckCircle, CreditCard, Shield, BookOpen } from 'lucide-react';
 export function HeroSection() {
   const trustPoints = [
     { icon: CreditCard, label: 'Secure Payments via Stripe' },
-    { icon: Shield, label: 'Every Tutor is ID-Verified' },
+    { icon: Shield, label: 'Reviews from Real Students' },
     { icon: BookOpen, label: 'Buy & Sell Study Resources' },
   ];
 
@@ -17,7 +17,7 @@ export function HeroSection() {
           {/* Badge */}
           <div className="inline-flex items-center gap-2 bg-[#2D9B6E]/10 text-[#2D9B6E] px-4 py-2 rounded-full text-sm font-semibold mb-6">
             <CheckCircle className="w-4 h-4" />
-            Connect with Top Tutors across Ireland
+            Connect with Tutors across Ireland
           </div>
 
           {/* Headline */}
@@ -28,7 +28,7 @@ export function HeroSection() {
 
           {/* Subheadline */}
           <p className="text-lg md:text-xl text-[#5D6D7E] mb-8">
-            Browse professional tutors across Dublin, Cork, Galway and beyond.
+            Browse tutors across Dublin, Cork, Galway and beyond.
             Book sessions, access revision resources, and ace your exams.
           </p>
         </div>

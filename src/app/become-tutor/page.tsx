@@ -7,14 +7,14 @@ import Link from 'next/link';
 
 export const metadata = {
   title: 'Become a Tutor | FindGrinds',
-  description: 'Join Ireland\'s leading tutoring platform. Set your own rates, flexible schedule, and reach thousands of students preparing for Junior and Leaving Cert exams.',
+  description: 'Tutor on FindGrinds, an Irish grinds marketplace. Set your own rates and schedule, and reach students preparing for Junior and Leaving Cert exams.',
 };
 
 const benefits = [
   {
     icon: TrendingUp,
     title: 'Earn More',
-    description: 'Set your own hourly rate with competitive earnings on every session. Top tutors earn €50-100+ per hour.',
+    description: 'Set your own hourly rate. You keep 85% of every session price, and students pay no booking fee on top.',
   },
   {
     icon: Calendar,
@@ -24,7 +24,7 @@ const benefits = [
   {
     icon: Users,
     title: 'Reach Students',
-    description: 'Connect with thousands of students across Ireland looking for quality grinds.',
+    description: 'Connect with students and parents across Ireland looking for grinds, online or in person.',
   },
   {
     icon: BookOpen,
@@ -34,12 +34,12 @@ const benefits = [
   {
     icon: Shield,
     title: 'Secure Payments',
-    description: 'Get paid reliably through our secure platform. Weekly payouts directly to your bank.',
+    description: 'Students pay when they book. Your share goes to your Stripe account at payment and is paid out to your bank on Stripe\'s payout schedule.',
   },
   {
     icon: CheckCircle,
     title: 'Build Reputation',
-    description: 'Collect reviews, earn badges, and become a featured tutor to attract more students.',
+    description: 'Collect reviews, get a Garda vetted badge by uploading your vetting document, and upgrade to a Featured plan to stand out.',
   },
 ];
 
@@ -47,7 +47,7 @@ const steps = [
   {
     number: '1',
     title: 'Create Your Profile',
-    description: 'Sign up and tell us about your qualifications, subjects, and teaching experience.',
+    description: 'Sign up and tell students about your qualifications, subjects, and teaching experience.',
   },
   {
     number: '2',
@@ -57,7 +57,7 @@ const steps = [
   {
     number: '3',
     title: 'Set Up Payments',
-    description: 'Connect your bank account through Stripe so you can get paid for sessions and resource sales.',
+    description: 'Complete Stripe\'s onboarding (identity details and bank account) so students can book you and you can get paid for sessions and resource sales.',
   },
   {
     number: '4',
@@ -86,13 +86,12 @@ const tiers = [
     name: 'Professional',
     price: '€19',
     period: '/month',
-    description: 'Build trust with students and parents',
+    description: 'Stand out to students and parents',
     features: [
       'Everything in Free',
-      'Green verified tick on profile',
-      '"Professional Tutor" badge',
-      'Priority in search results',
-      'Priority email support',
+      '"Professional" Featured badge',
+      'Highlighted card in search results',
+      'Higher placement in search results',
     ],
     cta: 'Go Professional',
     featured: true,
@@ -105,10 +104,9 @@ const tiers = [
     description: 'For tutors employed in grinds schools',
     features: [
       'Everything in Professional',
-      'Gold verified tick on profile',
-      '"Enterprise Tutor" badge',
-      'Top placement in all search results',
-      'Link your profile to your organisation',
+      '"Enterprise Tutor" Featured badge',
+      'Highest placement in default search results',
+      'Show your organisation name and website',
     ],
     cta: 'Go Enterprise',
     featured: false,
@@ -131,7 +129,7 @@ export default function BecomeTutorPage() {
                 <span className="text-[#2D9B6E]">Grow Your Income</span>
               </h1>
               <p className="text-xl text-[#5D6D7E] mb-8">
-                Join Ireland's fastest-growing tutoring platform. Connect with students,
+                Join FindGrinds, an Irish grinds marketplace. Connect with students,
                 set your own rates, and build a flexible teaching career.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -147,7 +145,7 @@ export default function BecomeTutorPage() {
                 </Link>
               </div>
               <p className="mt-6 text-sm text-[#95A5A6]">
-                Join tutors already earning on the platform
+                Free to join. No monthly fee on the Free plan
               </p>
             </div>
           </div>
@@ -191,7 +189,7 @@ export default function BecomeTutorPage() {
                 How It Works
               </h2>
               <p className="text-[#5D6D7E] max-w-2xl mx-auto">
-                Getting started is easy. Be up and running in less than 10 minutes.
+                Getting started is easy.
               </p>
             </div>
 
@@ -226,7 +224,7 @@ export default function BecomeTutorPage() {
                 Choose Your Plan
               </h2>
               <p className="text-[#5D6D7E] max-w-2xl mx-auto">
-                Start for free, or get verified to build trust with students and parents
+                Start for free, or upgrade to a Featured plan to stand out in search results
               </p>
             </div>
 
@@ -238,7 +236,7 @@ export default function BecomeTutorPage() {
                 >
                   {tier.featured && (
                     <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#2D9B6E] text-white text-xs font-semibold px-3 py-1 rounded-full">
-                      Most Popular
+                      Recommended
                     </div>
                   )}
                   <div className="text-center mb-6">
@@ -348,7 +346,7 @@ export default function BecomeTutorPage() {
               Ready to Start Your Tutoring Journey?
             </h2>
             <p className="text-white/90 mb-8 max-w-2xl mx-auto">
-              Join tutors already earning on FindGrinds. Create your free
+              Join FindGrinds today. Create your free
               profile today and start connecting with students.
             </p>
             <Link href="/signup?type=tutor">

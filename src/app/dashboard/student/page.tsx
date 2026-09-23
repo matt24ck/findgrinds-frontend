@@ -307,7 +307,7 @@ export default function StudentDashboard() {
     setDisputeUploading(true);
     try {
       for (const file of Array.from(files)) {
-        const presignedRes = await upload.getDisputeEvidenceUrl(file.name, file.type);
+        const presignedRes = await upload.getDisputeEvidenceUrl(file.name, file.type, file.size);
         const { uploadUrl, key } = presignedRes.data;
         await upload.uploadToS3(uploadUrl, file);
         setDisputeEvidenceKeys(prev => [...prev, key]);
@@ -806,7 +806,7 @@ export default function StudentDashboard() {
                       <h2 className="text-lg font-bold text-[#2C3E50]">Parent/Guardian Access</h2>
                     </div>
                     <p className="text-sm text-[#5D6D7E] mb-4">
-                      Generate a link code for your parent/guardian so they can view your sessions, resources, and book on your behalf.
+                      Generate a link code for your parent/guardian so they can view your sessions, purchases, spending and conversations with tutors, message tutors, and book or buy on your behalf. The code is valid for 24 hours.
                     </p>
 
                     {parentCode ? (

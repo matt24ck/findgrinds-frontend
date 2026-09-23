@@ -70,8 +70,8 @@ export function CookieConsent() {
                 <div>
                   <h3 className="font-semibold text-[#2C3E50] mb-1">We value your privacy</h3>
                   <p className="text-sm text-[#5D6D7E]">
-                    We use cookies to enhance your browsing experience, serve personalized content, and analyze our traffic.
-                    By clicking "Accept All", you consent to our use of cookies.{' '}
+                    We use essential browser storage to keep the site working. With your permission, we&apos;d also like
+                    to use Google Analytics cookies to understand how the site is used. We don&apos;t use advertising cookies.{' '}
                     <Link href="/privacy" className="text-[#2D9B6E] hover:underline">
                       Read our Privacy Policy
                     </Link>
@@ -135,7 +135,7 @@ export function CookieConsent() {
                   <div>
                     <h4 className="font-medium text-[#2C3E50]">Analytics Cookies</h4>
                     <p className="text-sm text-[#5D6D7E]">
-                      Help us understand how visitors use our website.
+                      Google Analytics, to help us understand how visitors use our website.
                     </p>
                   </div>
                   <input
@@ -151,7 +151,7 @@ export function CookieConsent() {
                   <div>
                     <h4 className="font-medium text-[#2C3E50]">Marketing Cookies</h4>
                     <p className="text-sm text-[#5D6D7E]">
-                      Used to deliver relevant advertisements and track campaigns.
+                      Not currently used. This choice will apply if we add marketing cookies in future.
                     </p>
                   </div>
                   <input

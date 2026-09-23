@@ -258,9 +258,11 @@ export const resources = {
   getPurchased: () =>
     fetchAPI<{ success: boolean; data: any[] }>('/api/resources/purchased'),
 
-  purchase: (id: string) =>
+  // acceptImmediateAccess: buyer ticked the digital-content withdrawal waiver
+  purchase: (id: string, acceptImmediateAccess: boolean) =>
     fetchAPI<{ url: string; purchaseId: string }>(`/api/resources/${id}/purchase`, {
       method: 'POST',
+      body: JSON.stringify({ acceptImmediateAccess }),
     }),
 
   checkOwnership: (id: string) =>
@@ -308,21 +310,6 @@ export const resources = {
 
 // ============ PAYMENTS ============
 export const payments = {
-  createIntent: (sessionId: string, amount: number) =>
-    fetchAPI<{ success: boolean; data: { clientSecret: string; paymentIntentId: string } }>(
-      '/api/payments/create-intent',
-      {
-        method: 'POST',
-        body: JSON.stringify({ sessionId, amount }),
-      }
-    ),
-
-  confirm: (paymentIntentId: string, sessionId: string) =>
-    fetchAPI<{ success: boolean; data: any }>('/api/payments/confirm', {
-      method: 'POST',
-      body: JSON.stringify({ paymentIntentId, sessionId }),
-    }),
-
   history: (page = 1) =>
     fetchAPI<{ success: boolean; data: { items: any[]; total: number } }>(
       `/api/payments/history?page=${page}`
@@ -444,10 +431,10 @@ export const parentApi = {
 
 // ============ UPLOAD ============
 export const upload = {
-  getProfilePhotoUrl: (fileName: string, contentType: string) =>
+  getProfilePhotoUrl: (fileName: string, contentType: string, fileSize: number) =>
     fetchAPI<{ success: boolean; data: { uploadUrl: string; key: string } }>(
       '/api/upload/profile-photo',
-      { method: 'POST', body: JSON.stringify({ fileName, contentType }) }
+      { method: 'POST', body: JSON.stringify({ fileName, contentType, fileSize }) }
     ),
 
   confirmProfilePhoto: (key: string) =>
@@ -456,22 +443,22 @@ export const upload = {
       { method: 'PUT', body: JSON.stringify({ key }) }
     ),
 
-  getGardaDocumentUrl: (fileName: string, contentType: string) =>
+  getGardaDocumentUrl: (fileName: string, contentType: string, fileSize: number) =>
     fetchAPI<{ success: boolean; data: { uploadUrl: string; key: string } }>(
       '/api/upload/garda-document',
-      { method: 'POST', body: JSON.stringify({ fileName, contentType }) }
+      { method: 'POST', body: JSON.stringify({ fileName, contentType, fileSize }) }
     ),
 
-  getResourceUrl: (fileName: string, contentType: string) =>
+  getResourceUrl: (fileName: string, contentType: string, fileSize: number) =>
     fetchAPI<{ success: boolean; data: { uploadUrl: string; key: string } }>(
       '/api/upload/resource',
-      { method: 'POST', body: JSON.stringify({ fileName, contentType }) }
+      { method: 'POST', body: JSON.stringify({ fileName, contentType, fileSize }) }
     ),
 
-  getDisputeEvidenceUrl: (fileName: string, contentType: string) =>
+  getDisputeEvidenceUrl: (fileName: string, contentType: string, fileSize: number) =>
     fetchAPI<{ success: boolean; data: { uploadUrl: string; key: string } }>(
       '/api/upload/dispute-evidence',
-      { method: 'POST', body: JSON.stringify({ fileName, contentType }) }
+      { method: 'POST', body: JSON.stringify({ fileName, contentType, fileSize }) }
     ),
 
   uploadToS3: async (presignedUrl: string, file: File): Promise<void> => {

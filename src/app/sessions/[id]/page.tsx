@@ -951,7 +951,7 @@ export default function SessionVideoPage() {
             </Link>
           </div>
           <p className="text-gray-500 text-sm mt-4">
-            Don&apos;t forget to leave a review from your dashboard!
+            Students can leave a review for this session from their dashboard.
           </p>
         </div>
       </div>

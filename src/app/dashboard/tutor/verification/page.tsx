@@ -97,7 +97,7 @@ export default function TutorVerificationPage() {
 
     try {
       // 1. Get presigned URL from backend
-      const presignedRes = await upload.getGardaDocumentUrl(selectedFile.name, selectedFile.type);
+      const presignedRes = await upload.getGardaDocumentUrl(selectedFile.name, selectedFile.type, selectedFile.size);
       const { uploadUrl, key } = presignedRes.data;
 
       // 2. Upload file to S3
@@ -183,15 +183,15 @@ export default function TutorVerificationPage() {
             </div>
             <div>
               <h1 className="text-2xl font-bold text-[#2C3E50]">Garda Vetted Badge</h1>
-              <p className="text-[#5D6D7E]">Verification for professional teachers and tutors</p>
+              <p className="text-[#5D6D7E]">Optional: for tutors who are already Garda vetted</p>
             </div>
           </div>
 
           {/* Explanation Card */}
           <Card className="p-6 mb-6 border-l-4 border-l-blue-500">
-            <h2 className="text-lg font-semibold text-[#2C3E50] mb-3">Who can get verified?</h2>
+            <h2 className="text-lg font-semibold text-[#2C3E50] mb-3">Who can get the badge?</h2>
             <p className="text-[#5D6D7E] mb-4">
-              This verification is for tutors who are <strong>already Garda vetted</strong> through their employer,
+              The badge is optional and is for tutors who are <strong>already Garda vetted</strong> through their employer,
               such as a school, tuition centre, or other organisation that works with children.
             </p>
             <div className="bg-[#F8F9FA] rounded-lg p-4">
@@ -222,9 +222,9 @@ export default function TutorVerificationPage() {
                     <div className="flex items-center gap-3 p-4 bg-green-50 rounded-lg flex-1">
                       <CheckCircle className="w-8 h-8 text-green-600" />
                       <div>
-                        <p className="font-semibold text-green-800">Verified</p>
+                        <p className="font-semibold text-green-800">Approved</p>
                         <p className="text-sm text-green-700">
-                          Your Garda vetting has been verified. A badge is displayed on your profile.
+                          Your Garda vetting document has been approved. A Garda Vetted badge is displayed on your profile.
                         </p>
                       </div>
                     </div>
@@ -234,7 +234,7 @@ export default function TutorVerificationPage() {
                       <div>
                         <p className="font-semibold text-[#2C3E50]">No Badge</p>
                         <p className="text-sm text-[#5D6D7E]">
-                          Upload proof of your Garda vetting to display a verified badge on your profile.
+                          Upload proof of your Garda vetting. Once our team approves it, a Garda Vetted badge is shown on your profile.
                         </p>
                       </div>
                     </div>
@@ -354,7 +354,7 @@ export default function TutorVerificationPage() {
                 <h3 className="font-medium text-green-800 mb-2">Benefits of the Garda Vetted badge</h3>
                 <ul className="text-sm text-green-700 space-y-1">
                   <li>• Builds trust with parents looking for vetted tutors</li>
-                  <li>• Verified tutors appear higher in search results</li>
+                  <li>• The badge is shown on your profile and on your card in search results</li>
                   <li>• Distinguishes you as a professional educator</li>
                   <li>• Shows your commitment to child safety</li>
                 </ul>

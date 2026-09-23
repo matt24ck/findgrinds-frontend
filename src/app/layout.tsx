@@ -19,7 +19,7 @@ const openSans = Open_Sans({
 
 export const metadata: Metadata = {
   title: "FindGrinds | Find Junior & Leaving Cert Grinds Tutors",
-  description: "Ireland's trusted marketplace for Junior and Leaving Cert grinds. Find vetted tutors, book sessions, and access quality revision resources.",
+  description: "An Irish marketplace for Junior and Leaving Cert grinds. Find tutors, book sessions online or in person, and buy revision resources.",
   keywords: "grinds, tutoring, leaving cert, junior cert, Ireland, maths grinds, english grinds, dublin tutors",
   other: {
     "facebook-domain-verification": "3nfrgyxyy6fnhg9cgwjrx2mxtagm45",

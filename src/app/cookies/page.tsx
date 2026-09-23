@@ -44,7 +44,7 @@ export default function CookiePolicyPage() {
 
           <div className="prose prose-lg max-w-none text-[#5D6D7E]">
             <p className="text-sm text-[#95A5A6] mb-8">
-              Last updated: January 2026
+              Last updated: September 2026
             </p>
 
             <section className="mb-8">
@@ -66,35 +66,41 @@ export default function CookiePolicyPage() {
 
               <div className="mt-6 space-y-6">
                 <div className="bg-[#F8F9FA] p-6 rounded-lg">
-                  <h3 className="text-xl font-semibold text-[#2C3E50] mb-2">Necessary Cookies</h3>
+                  <h3 className="text-xl font-semibold text-[#2C3E50] mb-2">Necessary (Browser Storage)</h3>
                   <p className="text-sm mb-3">
-                    These cookies are essential for the website to function properly. They enable core
-                    functionality such as security, network management, and account authentication.
-                    You cannot disable these cookies.
+                    FindGrinds itself does not set any necessary cookies. Instead, we use your browser&apos;s
+                    local storage and session storage for the items below, which are needed for the site to
+                    work. You cannot disable these, but you can clear them at any time by signing out or
+                    clearing your browser data.
                   </p>
                   <table className="w-full text-sm">
                     <thead>
                       <tr className="border-b">
-                        <th className="text-left py-2">Cookie</th>
+                        <th className="text-left py-2">Name</th>
                         <th className="text-left py-2">Purpose</th>
                         <th className="text-left py-2">Duration</th>
                       </tr>
                     </thead>
                     <tbody>
                       <tr className="border-b">
-                        <td className="py-2">session_token</td>
-                        <td className="py-2">Maintains user login session</td>
-                        <td className="py-2">7 days</td>
+                        <td className="py-2">token, user</td>
+                        <td className="py-2">Keeps you signed in and remembers basic account details</td>
+                        <td className="py-2">Until you sign out or clear your browser data</td>
                       </tr>
                       <tr className="border-b">
-                        <td className="py-2">csrf_token</td>
-                        <td className="py-2">Security protection</td>
-                        <td className="py-2">Session</td>
+                        <td className="py-2">cookie-consent, cookie-consent-date</td>
+                        <td className="py-2">Stores your cookie preferences and when you set them</td>
+                        <td className="py-2">Until you clear your browser data</td>
+                      </tr>
+                      <tr className="border-b">
+                        <td className="py-2">fg_join_code</td>
+                        <td className="py-2">Remembers a tutor invite link you followed, so it can be applied when you sign up</td>
+                        <td className="py-2">Until used or cleared</td>
                       </tr>
                       <tr>
-                        <td className="py-2">cookie-consent</td>
-                        <td className="py-2">Stores your cookie preferences</td>
-                        <td className="py-2">1 year</td>
+                        <td className="py-2">bookingForStudent</td>
+                        <td className="py-2">Remembers which child a parent is booking for</td>
+                        <td className="py-2">Until you close the tab</td>
                       </tr>
                     </tbody>
                   </table>
@@ -103,8 +109,9 @@ export default function CookiePolicyPage() {
                 <div className="bg-[#F8F9FA] p-6 rounded-lg">
                   <h3 className="text-xl font-semibold text-[#2C3E50] mb-2">Analytics Cookies</h3>
                   <p className="text-sm mb-3">
-                    These cookies help us understand how visitors interact with our website by collecting
-                    and reporting information anonymously. This helps us improve our services.
+                    Only set if you accept analytics cookies. Google Analytics is not loaded at all unless you
+                    do. These cookies help us understand how visitors use our website, such as which pages
+                    are visited, so we can improve it. The information is processed by Google.
                   </p>
                   <table className="w-full text-sm">
                     <thead>
@@ -121,9 +128,9 @@ export default function CookiePolicyPage() {
                         <td className="py-2">2 years</td>
                       </tr>
                       <tr>
-                        <td className="py-2">_gid</td>
-                        <td className="py-2">Google Analytics - distinguishes users</td>
-                        <td className="py-2">24 hours</td>
+                        <td className="py-2">_ga_&lt;ID&gt;</td>
+                        <td className="py-2">Google Analytics - keeps track of your visit (session state)</td>
+                        <td className="py-2">2 years</td>
                       </tr>
                     </tbody>
                   </table>
@@ -132,30 +139,18 @@ export default function CookiePolicyPage() {
                 <div className="bg-[#F8F9FA] p-6 rounded-lg">
                   <h3 className="text-xl font-semibold text-[#2C3E50] mb-2">Marketing Cookies</h3>
                   <p className="text-sm mb-3">
-                    These cookies are used to track visitors across websites to display relevant
-                    advertisements. They may be set by advertising partners.
+                    We do not currently use any marketing or advertising cookies. If we add them in future,
+                    we will list them here, and they will only be set if you accept marketing cookies.
                   </p>
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="border-b">
-                        <th className="text-left py-2">Cookie</th>
-                        <th className="text-left py-2">Purpose</th>
-                        <th className="text-left py-2">Duration</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr className="border-b">
-                        <td className="py-2">_fbp</td>
-                        <td className="py-2">Facebook Pixel - ad targeting</td>
-                        <td className="py-2">3 months</td>
-                      </tr>
-                      <tr>
-                        <td className="py-2">_gcl_au</td>
-                        <td className="py-2">Google Ads conversion tracking</td>
-                        <td className="py-2">3 months</td>
-                      </tr>
-                    </tbody>
-                  </table>
+                </div>
+
+                <div className="bg-[#F8F9FA] p-6 rounded-lg">
+                  <h3 className="text-xl font-semibold text-[#2C3E50] mb-2">Third-Party Services</h3>
+                  <p className="text-sm">
+                    When you pay, you are taken to Stripe&apos;s secure checkout page, and online sessions use
+                    video calls provided by Daily.co. These services may set their own cookies or use browser
+                    storage on their own pages and in the video call, under their own cookie policies.
+                  </p>
                 </div>
               </div>
             </section>
@@ -184,7 +179,7 @@ export default function CookiePolicyPage() {
                 <div className="flex items-center justify-between p-4 bg-[#F8F9FA] rounded-lg">
                   <div>
                     <h4 className="font-medium text-[#2C3E50]">Analytics Cookies</h4>
-                    <p className="text-sm text-[#5D6D7E]">Help us improve our website</p>
+                    <p className="text-sm text-[#5D6D7E]">Google Analytics, to help us improve our website</p>
                   </div>
                   <input
                     type="checkbox"
@@ -197,7 +192,7 @@ export default function CookiePolicyPage() {
                 <div className="flex items-center justify-between p-4 bg-[#F8F9FA] rounded-lg">
                   <div>
                     <h4 className="font-medium text-[#2C3E50]">Marketing Cookies</h4>
-                    <p className="text-sm text-[#5D6D7E]">Used for advertising purposes</p>
+                    <p className="text-sm text-[#5D6D7E]">Not currently used. This choice will apply if we add marketing cookies in future.</p>
                   </div>
                   <input
                     type="checkbox"

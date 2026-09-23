@@ -410,7 +410,7 @@ export default function TutorDashboard() {
     setDisputeResponseUploading(true);
     try {
       for (const file of Array.from(files)) {
-        const presignedRes = await upload.getDisputeEvidenceUrl(file.name, file.type);
+        const presignedRes = await upload.getDisputeEvidenceUrl(file.name, file.type, file.size);
         const { uploadUrl, key } = presignedRes.data;
         await upload.uploadToS3(uploadUrl, file);
         setDisputeResponseKeys(prev => [...prev, key]);
@@ -456,7 +456,7 @@ export default function TutorDashboard() {
     setUploadLoading(true);
     try {
       // 1. Get presigned URL
-      const presignedRes = await upload.getResourceUrl(uploadFile.name, uploadFile.type);
+      const presignedRes = await upload.getResourceUrl(uploadFile.name, uploadFile.type, uploadFile.size);
       const { uploadUrl, key } = presignedRes.data;
 
       // 2. Upload file to S3
@@ -1077,7 +1077,7 @@ export default function TutorDashboard() {
                   <h2 className="text-lg font-bold text-[#2C3E50] mb-4">Payouts</h2>
                   <div className="text-center py-4">
                     <p className="text-[#5D6D7E] mb-4">
-                      Payouts are managed through your Stripe Express dashboard. Stripe processes payouts on a rolling basis.
+                      Your share of each payment is sent to your Stripe account as soon as the student pays. Stripe then pays it out to your bank on your Stripe payout schedule, which you can view and manage in your Stripe Express dashboard.
                     </p>
                     <Button onClick={handleStripeDashboard} isLoading={stripeLoading}>
                       <ExternalLink className="w-4 h-4 mr-2" />
@@ -1201,7 +1201,7 @@ export default function TutorDashboard() {
                   <div>
                     <h2 className="text-lg font-bold text-[#2C3E50]">Garda Vetted Badge</h2>
                     <p className="text-sm text-[#5D6D7E]">
-                      {gardaVettingVerified ? 'Your Garda Vetting has been verified' : 'Optional verification for professional teachers'}
+                      {gardaVettingVerified ? 'Your Garda vetting document has been approved' : 'Optional: upload proof of existing Garda vetting'}
                     </p>
                   </div>
                 </div>
@@ -1209,7 +1209,7 @@ export default function TutorDashboard() {
                 {gardaVettingVerified ? (
                   <div className="p-4 bg-green-50 rounded-lg">
                     <p className="text-sm text-green-800 font-medium">
-                      Your profile displays a verified Garda Vetted badge.
+                      Your profile displays a Garda Vetted badge.
                     </p>
                   </div>
                 ) : (
@@ -1217,7 +1217,7 @@ export default function TutorDashboard() {
                     <div className="p-4 bg-blue-50 rounded-lg mb-4">
                       <p className="text-sm text-blue-800">
                         Are you a teacher or tutor who is already Garda vetted through your employer?
-                        Upload proof to display a verified badge on your profile.
+                        Upload proof. Once our team approves it, a Garda Vetted badge is shown on your profile.
                       </p>
                     </div>
 
@@ -1249,7 +1249,7 @@ export default function TutorDashboard() {
                           if (!file) return;
                           setPhotoUploading(true);
                           try {
-                            const presignedRes = await upload.getProfilePhotoUrl(file.name, file.type);
+                            const presignedRes = await upload.getProfilePhotoUrl(file.name, file.type, file.size);
                             const { uploadUrl, key } = presignedRes.data;
                             await upload.uploadToS3(uploadUrl, file);
                             const confirmRes = await upload.confirmProfilePhoto(key);
@@ -1587,7 +1587,7 @@ export default function TutorDashboard() {
                         {subscriptionTier === 'PROFESSIONAL' && <span className="text-sm text-[#5D6D7E] ml-2">€19/mo</span>}
                       </p>
                       <p className="text-sm text-[#5D6D7E]">
-                        {subscriptionTier === 'ENTERPRISE' ? 'Top placement, organisation linking' : subscriptionTier === 'PROFESSIONAL' ? 'Priority search, verified badge' : 'Basic profile and unlimited bookings'}
+                        {subscriptionTier === 'ENTERPRISE' ? 'Highest placement in default search, Featured badge, organisation name and website' : subscriptionTier === 'PROFESSIONAL' ? 'Higher placement in default search, Featured badge' : 'Basic profile and unlimited bookings'}
                       </p>
                     </div>
                     <span className={`px-3 py-1 rounded-full text-sm ${

@@ -422,7 +422,7 @@ export function AvailabilityEditor({ tutorId, onSave }: AvailabilityEditorProps)
       {/* Group Settings (only visible for GROUP medium) */}
       {selectedMedium === 'GROUP' && (
         <div className="bg-white border border-[#ECF0F1] rounded-xl p-4">
-          <h3 className="font-semibold text-[#2C3E50] mb-3">Group Session Settings</h3>
+          <h3 className="font-semibold text-[#2C3E50] mb-3">Group Session Settings (group sessions are held online)</h3>
           <div className="grid grid-cols-3 gap-4">
             <div>
               <label className="block text-sm text-[#5D6D7E] mb-1">Max Group Size</label>

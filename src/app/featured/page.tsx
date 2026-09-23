@@ -11,8 +11,6 @@ import {
   Users,
   TrendingUp,
   ArrowRight,
-  BarChart3,
-  HeadphonesIcon,
 } from 'lucide-react';
 
 const tiers = [
@@ -36,14 +34,13 @@ const tiers = [
     name: 'Professional',
     price: '€19',
     period: '/month',
-    description: 'Build trust with students and parents',
+    description: 'Stand out to students and parents',
     badge: 'green',
     features: [
       'Everything in Free',
-      'Green verified tick on profile',
-      '"Professional Tutor" badge',
-      'Priority in search results',
-      'Priority email support',
+      '"Professional" Featured badge',
+      'Highlighted card in search results',
+      'Higher placement in search results',
     ],
     cta: 'Go Professional',
     ctaLink: '/dashboard/tutor/upgrade',
@@ -57,21 +54,14 @@ const tiers = [
     badge: 'gold',
     features: [
       'Everything in Professional',
-      'Gold verified tick on profile',
-      '"Enterprise Tutor" badge',
-      'Top placement in all search results',
-      'Link your profile to your organisation',
+      '"Enterprise Tutor" Featured badge',
+      'Highest placement in default search results',
+      'Show your organisation name and website',
     ],
     cta: 'Go Enterprise',
     ctaLink: '/dashboard/tutor/upgrade',
     featured: false,
   },
-];
-
-const stats = [
-  { value: '3x', label: 'More profile views for Professional tutors' },
-  { value: '89%', label: 'Of parents prefer verified tutors' },
-  { value: '2.5x', label: 'More bookings for Enterprise tutors' },
 ];
 
 export default function FeaturedPage() {
@@ -92,22 +82,8 @@ export default function FeaturedPage() {
                 Stand Out from the Crowd
               </h1>
               <p className="text-xl text-white/90">
-                Upgrade your profile to build trust with students and parents. Professional and Enterprise tutors see significantly more bookings.
+                Upgrade your profile to appear higher in search results and get a Featured badge. Featured badges show your subscription — they are not a verification.
               </p>
-            </div>
-          </div>
-        </section>
-
-        {/* Stats */}
-        <section className="py-8 bg-[#2D9B6E]">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid md:grid-cols-3 gap-8 text-center text-white">
-              {stats.map((stat) => (
-                <div key={stat.label}>
-                  <p className="text-4xl font-bold mb-1">{stat.value}</p>
-                  <p className="text-white/80 text-sm">{stat.label}</p>
-                </div>
-              ))}
             </div>
           </div>
         </section>
@@ -132,7 +108,7 @@ export default function FeaturedPage() {
                 >
                   {tier.featured && (
                     <div className="bg-[#2D9B6E] text-white text-center py-2 text-sm font-medium">
-                      Most Popular
+                      Recommended
                     </div>
                   )}
                   <div className="p-6">
@@ -196,17 +172,16 @@ export default function FeaturedPage() {
                   <div>
                     <div className="flex items-center gap-2">
                       <span className="font-bold text-[#2C3E50]">Sarah O'Connor</span>
-                      <CheckCircle className="w-5 h-5 text-[#2D9B6E]" />
                     </div>
                     <p className="text-[#5D6D7E] text-sm">LC Maths & Physics</p>
                     <span className="inline-flex items-center gap-1 text-xs bg-[#D1FAE5] text-[#065F46] px-2 py-0.5 rounded-full mt-1">
                       <Shield className="w-3 h-3" />
-                      Professional Tutor
+                      Professional
                     </span>
                   </div>
                 </div>
                 <p className="text-sm text-[#5D6D7E]">
-                  The green tick and "Professional Tutor" badge immediately signals trust and credibility to parents and students.
+                  The "Professional" badge and highlighted card help your profile stand out to parents and students in search results.
                 </p>
               </div>
 
@@ -217,7 +192,6 @@ export default function FeaturedPage() {
                   <div>
                     <div className="flex items-center gap-2">
                       <span className="font-bold text-[#2C3E50]">Michael Kelly</span>
-                      <CheckCircle className="w-5 h-5 text-[#D4A574]" />
                     </div>
                     <p className="text-[#5D6D7E] text-sm">LC Biology & Chemistry</p>
                     <span className="inline-flex items-center gap-1 text-xs bg-[#FEF3C7] text-[#92400E] px-2 py-0.5 rounded-full mt-1">
@@ -227,7 +201,7 @@ export default function FeaturedPage() {
                   </div>
                 </div>
                 <p className="text-sm text-[#5D6D7E]">
-                  The gold tick and "Enterprise Tutor" badge marks you as a serious, committed professional in your field.
+                  The "Enterprise Tutor" badge and gold-highlighted card give your profile the most prominent look in search results.
                 </p>
               </div>
             </div>
@@ -246,9 +220,9 @@ export default function FeaturedPage() {
                 <div className="w-12 h-12 bg-[#F0F7F4] rounded-lg flex items-center justify-center mb-4">
                   <Users className="w-6 h-6 text-[#2D9B6E]" />
                 </div>
-                <h3 className="font-bold text-[#2C3E50] mb-2">Build Trust</h3>
+                <h3 className="font-bold text-[#2C3E50] mb-2">Get Noticed</h3>
                 <p className="text-[#5D6D7E] text-sm">
-                  Parents are 3x more likely to book Professional tutors for their children.
+                  A Featured badge makes your profile easier to spot for students and parents.
                 </p>
               </div>
 
@@ -258,27 +232,27 @@ export default function FeaturedPage() {
                 </div>
                 <h3 className="font-bold text-[#2C3E50] mb-2">Get More Bookings</h3>
                 <p className="text-[#5D6D7E] text-sm">
-                  Stand out in search results and attract more students to your profile.
+                  Featured tutors appear above free listings in the default search order.
                 </p>
               </div>
 
               <div className="bg-white rounded-xl p-6 shadow-sm">
                 <div className="w-12 h-12 bg-[#FDF2E9] rounded-lg flex items-center justify-center mb-4">
-                  <BarChart3 className="w-6 h-6 text-[#D4A574]" />
+                  <Star className="w-6 h-6 text-[#D4A574]" />
                 </div>
-                <h3 className="font-bold text-[#2C3E50] mb-2">Analytics (Enterprise)</h3>
+                <h3 className="font-bold text-[#2C3E50] mb-2">Your Organisation (Enterprise)</h3>
                 <p className="text-[#5D6D7E] text-sm">
-                  Track your profile views, booking rates, and earnings with detailed analytics.
+                  Show your grinds school or organisation name and website on your profile.
                 </p>
               </div>
 
               <div className="bg-white rounded-xl p-6 shadow-sm">
                 <div className="w-12 h-12 bg-[#FDF2E9] rounded-lg flex items-center justify-center mb-4">
-                  <HeadphonesIcon className="w-6 h-6 text-[#D4A574]" />
+                  <Shield className="w-6 h-6 text-[#D4A574]" />
                 </div>
-                <h3 className="font-bold text-[#2C3E50] mb-2">Priority Support</h3>
+                <h3 className="font-bold text-[#2C3E50] mb-2">No Long-Term Commitment</h3>
                 <p className="text-[#5D6D7E] text-sm">
-                  Get faster responses and dedicated support from our team.
+                  Billed monthly through Stripe. Cancel any time and keep your plan until the end of the period you have paid for.
                 </p>
               </div>
             </div>
@@ -296,19 +270,19 @@ export default function FeaturedPage() {
               <div className="bg-[#F8F9FA] rounded-xl p-6">
                 <h3 className="font-semibold text-[#2C3E50] mb-2">Can I cancel anytime?</h3>
                 <p className="text-[#5D6D7E] text-sm">
-                  Yes, you can cancel your subscription at any time. Your badge will remain active until the end of your billing period.
+                  Yes, you can cancel your subscription at any time. Your plan and badge stay active until the end of the period you have paid for, then your profile returns to the free plan.
                 </p>
               </div>
               <div className="bg-[#F8F9FA] rounded-xl p-6">
                 <h3 className="font-semibold text-[#2C3E50] mb-2">What's the difference between Professional and Enterprise?</h3>
                 <p className="text-[#5D6D7E] text-sm">
-                  Professional is ideal for individual tutors looking to build trust and get more bookings. Enterprise is designed for tutors employed in grinds schools who want to link their profile to their organisation and get top placement in all search results.
+                  Professional is ideal for individual tutors who want higher placement in search results and a Featured badge. Enterprise is designed for tutors working with grinds schools who want to show their organisation name and website on their profile and get the highest placement in the default search order.
                 </p>
               </div>
               <div className="bg-[#F8F9FA] rounded-xl p-6">
                 <h3 className="font-semibold text-[#2C3E50] mb-2">What payment methods do you accept?</h3>
                 <p className="text-[#5D6D7E] text-sm">
-                  We accept all major credit and debit cards through Stripe. Your subscription will renew automatically each month.
+                  We accept credit and debit cards through Stripe. Your subscription will renew automatically each month until you cancel.
                 </p>
               </div>
             </div>
@@ -322,7 +296,7 @@ export default function FeaturedPage() {
               Ready to Stand Out?
             </h2>
             <p className="text-[#5D6D7E] mb-8">
-              Join hundreds of tutors who have upgraded their profiles
+              Upgrade your profile and start standing out in search results
             </p>
             <Link href="/dashboard/tutor/upgrade">
               <Button size="lg">

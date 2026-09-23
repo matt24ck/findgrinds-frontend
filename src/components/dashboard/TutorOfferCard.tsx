@@ -68,7 +68,7 @@ export function TutorOfferCard() {
           <p className="text-sm text-[#5D6D7E] mt-1">
             {offerOver
               ? 'This offer has ended.'
-              : <>Students who sign up with your link pay no FindGrinds fees on lessons with you until {formatLastDay(status.feeWaiverEndsAt)}. Students who find you some other way are charged the usual 15%.</>}
+              : <>You pay no FindGrinds platform fee on lessons with students who sign up with your link (or whose parent does), for lessons scheduled up to {formatLastDay(status.feeWaiverEndsAt)}. Lessons with students who find you some other way carry the usual 15% fee. Resource sales are always 15%.</>}
           </p>
         </div>
       </div>
@@ -109,7 +109,7 @@ export function TutorOfferCard() {
             )}
             {!proMonthActive && proMonth.activatedAt && <>You've used your free month.</>}
             {!proMonth.activatedAt && proMonth.canActivate && (
-              <>Unlocked! Start it whenever suits you. Free for 30 days, then €19/month. Cancel before the 30 days are up and you won't be charged.</>
+              <>Unlocked! Start it whenever suits you, up to {formatLastDay(status.feeWaiverEndsAt)}. Free for 30 days (you&apos;ll need to add a card), then €19/month. Cancel before the 30 days are up and you won&apos;t be charged.</>
             )}
             {proMonth.blockedReason === 'not_qualified' && (
               <>Unlocks when a student who joined with your link books and pays for a lesson with you by {formatLastDay(proMonth.qualifyBy)}.</>

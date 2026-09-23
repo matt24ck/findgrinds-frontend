@@ -22,7 +22,7 @@ const faqSections: FAQSection[] = [
       {
         question: 'What is FindGrinds?',
         answer:
-          'FindGrinds is Ireland\'s trusted marketplace for Junior and Leaving Cert grinds. We connect students with qualified tutors for one-on-one or group sessions, and provide a marketplace for purchasing study resources like notes, exam papers, and revision guides.',
+          'FindGrinds is an Irish marketplace for Junior and Leaving Cert grinds. We connect students and parents with independent tutors for one-to-one sessions (online or in person) and online group sessions, and provide a marketplace for buying study resources like notes and revision guides created by tutors.',
       },
       {
         question: 'How do I create an account?',
@@ -32,7 +32,7 @@ const faqSections: FAQSection[] = [
       {
         question: 'Is FindGrinds only for Irish students?',
         answer:
-          'FindGrinds is designed for the Irish education system, covering Junior Cert, Leaving Cert, and Leaving Cert Higher Level subjects. However, anyone can sign up and use the platform. Sessions can be conducted via video call, so location is not a barrier.',
+          'FindGrinds is designed for the Irish education system, covering Junior Cert, Leaving Cert, and Leaving Cert Higher Level subjects. However, anyone can sign up and use the platform. Online sessions take place on FindGrinds\' built-in video calls, so location is not a barrier.',
       },
     ],
   },
@@ -42,17 +42,17 @@ const faqSections: FAQSection[] = [
       {
         question: 'How do I find a tutor?',
         answer:
-          'Head to the "Find Tutors" page and use the filters to search by subject, level, price range, and rating. You can also filter for tutors who teach through Irish. Click on any tutor\'s profile to see their bio, qualifications, reviews, and availability.',
+          'Head to the "Find Tutors" page and use the filters to search by subject, level, price range, and rating. You can also filter for tutors who teach through Irish. Click on any tutor\'s profile to see their bio, qualifications (as described by the tutor), reviews, and availability.',
       },
       {
         question: 'How do I book a session?',
         answer:
-          'Once you\'ve found a tutor, go to their profile and check their availability calendar. Select a time slot that suits you, choose your subject and level, then proceed to payment. You\'ll receive a confirmation email with the session details.',
+          'Once you\'ve found a tutor, go to their profile and check their availability calendar. Select a time slot that suits you, choose your subject and level, then proceed to payment. One-to-one sessions are paid in full when you book, with no booking fee on top of the tutor\'s price. You\'ll receive a confirmation email with the session details.',
       },
       {
         question: 'Can I cancel a booking?',
         answer:
-          'Yes, you can cancel a booking from your student dashboard. Cancellation policies vary by tutor — some offer free cancellation up to 24 hours in advance, while others may have stricter policies. Check the tutor\'s cancellation policy on their profile before booking.',
+          'Yes, you can cancel a booking from your student dashboard. Each tutor sets a notice period (6 to 72 hours, 24 hours by default). Cancel before the notice period starts and you get a full refund; cancel later and you get the tutor\'s late-cancellation refund, which can be anywhere from 0% to 100%. If the tutor cancels, you always get a full refund. Check the tutor\'s cancellation policy on their profile before booking.',
       },
       {
         question: 'What subjects are available?',
@@ -77,7 +77,7 @@ const faqSections: FAQSection[] = [
       {
         question: 'Can I see my child\'s bookings and purchases?',
         answer:
-          'Yes. Once linked, your parent dashboard shows a summary of each linked student\'s activity including upcoming sessions, completed sessions, purchased resources, and total spending. Click on any student to see their full dashboard.',
+          'Yes. Once linked, your parent dashboard shows a summary of each linked student\'s activity including upcoming sessions, completed sessions, purchased resources, and total spending. You can also read their conversations with tutors, message tutors on their behalf, and book sessions or buy resources for them.',
       },
       {
         question: 'How do I unlink a student?',
@@ -102,27 +102,27 @@ const faqSections: FAQSection[] = [
       {
         question: 'How do I get paid?',
         answer:
-          'Payments are handled through Stripe Connect. When a student books and pays for a session, the funds are held by Stripe. After the session, your earnings (minus the 15% platform fee) are transferred to your connected bank account. Stripe typically processes payouts within 2–7 business days.',
+          'Payments are handled through Stripe Connect. When a student books and pays for a session, your share (the price minus the 15% platform fee) is transferred to your Stripe account straight away. Stripe then pays it out to your bank account on its standard payout schedule. If a refund is given later, it is taken back from your share and our fee in proportion.',
       },
       {
         question: 'What is Stripe Connect?',
         answer:
-          'Stripe Connect is a secure payment platform that allows FindGrinds to route payments directly to your bank account. During onboarding, you\'ll verify your identity and link your bank details. This is a one-time setup — once complete, all future payments are automatic.',
+          'Stripe Connect is a secure payment platform that allows FindGrinds to route payments directly to your bank account. During onboarding, Stripe will ask for identity information and your bank details. You need to complete this before students can book you. It\'s a one-time setup — once complete, future payments are automatic.',
       },
       {
         question: 'How do I sell resources?',
         answer:
-          'From your tutor dashboard, go to the resources section and click "Create Resource". Upload your file (PDF, images, or video), set a title, description, subject, level, and price (between \u20AC2 and \u20AC25). Resources go through a brief quality review before being published.',
+          'From your tutor dashboard, go to the resources section and click "Create Resource". Upload your file (PDF, images, or video), set a title, description, subject, level, and price (minimum \u20AC0.50). Your resource is published straight away. We may remove resources that are reported and break our Terms.',
       },
       {
         question: 'What are the subscription tiers?',
         answer:
-          'FindGrinds offers three tiers for tutors: Free (basic listing), Professional (\u20AC19/month — priority placement in search results and a verified badge), and Enterprise (\u20AC99/month — top placement, premium badge, and additional visibility features). You can upgrade or downgrade at any time from your dashboard.',
+          'FindGrinds offers three tiers for tutors: Free (standard listing), Professional (\u20AC19/month — higher placement in search results and a Featured badge), and Enterprise (\u20AC99/month — the highest placement, an Enterprise Featured badge, and the option to show your organisation name and website). Featured badges show a subscription, not a verification. Plans are billed monthly and you can cancel at any time; your plan stays active until the end of the period you have paid for.',
       },
       {
         question: 'How do I get Garda vetted on the platform?',
         answer:
-          'Go to your tutor dashboard and find the "Garda Vetting" section. Upload a copy of your Garda vetting disclosure document (PDF or image). Our admin team will review it and, once approved, a verified badge will appear on your profile. This helps build trust with students and parents.',
+          'Go to your tutor dashboard and find the "Garda Vetting" section. Upload a copy of your Garda vetting disclosure document (PDF or image). Our admin team will review it and, once approved, a Garda vetted badge will appear on your profile. Garda vetting is optional on FindGrinds. This helps build trust with students and parents.',
       },
     ],
   },
@@ -132,22 +132,22 @@ const faqSections: FAQSection[] = [
       {
         question: 'What payment methods are accepted?',
         answer:
-          'We accept all major credit and debit cards (Visa, Mastercard, American Express) through our secure payment partner, Stripe. All payments are processed in euros (\u20AC).',
+          'We accept credit and debit cards through our secure payment partner, Stripe. All payments are processed in euros (\u20AC).',
       },
       {
         question: 'What is the platform fee?',
         answer:
-          'FindGrinds charges a 15% platform fee on session bookings and resource purchases. This covers payment processing, platform maintenance, customer support, and the tools we provide for tutors and students. The fee is deducted automatically — tutors receive 85% of each transaction.',
+          'FindGrinds charges a 15% platform fee on session bookings and resource purchases. This covers payment processing, platform maintenance, customer support, and the tools we provide for tutors and students. The fee is taken from the tutor\'s earnings — tutors receive 85% of each transaction, and students and parents pay no booking fee on top. Sessions with a student who signed up through the tutor\'s own invite link (or whose parent did) have no platform fee if scheduled before 1 July 2027.',
       },
       {
         question: 'How do refunds work?',
         answer:
-          'If a session is cancelled within the tutor\'s cancellation policy window, you\'ll receive a full refund. Refunds for resources are handled on a case-by-case basis — contact us at support@findgrinds.ie if you have an issue with a purchased resource. Refunds are processed back to your original payment method and typically appear within 5–10 business days.',
+          'If the tutor cancels, or you cancel before the tutor\'s notice period starts, you\'ll receive a full refund. Later cancellations get the tutor\'s late-cancellation refund. If a tutor doesn\'t show up or a session was seriously below what was advertised, you can raise a dispute from your dashboard after the session and our team will review it. If a purchased resource is faulty or not as described, report it from your dashboard and we\'ll review it. Refunds go back to the card you paid with and usually appear within 5–10 business days.',
       },
       {
         question: 'When do tutors receive their earnings?',
         answer:
-          'After a session is completed or a resource is purchased, the tutor\'s share (85% of the transaction) is sent to their connected bank account via Stripe. Stripe processes payouts on a rolling basis, typically within 2–7 business days depending on your bank.',
+          'When a student pays for a session or buys a resource, the tutor\'s share (85% of the transaction) is transferred to their Stripe account at the time of payment. Stripe then pays it out to the tutor\'s bank account on its standard payout schedule.',
       },
     ],
   },
@@ -157,17 +157,17 @@ const faqSections: FAQSection[] = [
       {
         question: 'How do I delete my account?',
         answer:
-          'Go to your dashboard settings and find the "Account" section. Under GDPR options, you\'ll find a "Delete Account" button. This permanently removes all your personal data from our systems in compliance with GDPR. Note: this action cannot be undone.',
+          'Go to your dashboard settings and find the "Account" section. Under GDPR options, you\'ll find a "Delete Account" button. You\'ll be asked to confirm by email. Your personal data is then removed or anonymised as described in our Privacy Policy. Note: this action cannot be undone.',
       },
       {
         question: 'How do I export my data?',
         answer:
-          'Under your dashboard settings, find the GDPR section and click "Export My Data". We\'ll compile all the personal data we hold about you — profile information, session history, and payment records — into a downloadable format. This is your right under GDPR Article 20.',
+          'Under your dashboard settings, find the GDPR section and click "Export My Data". We\'ll compile all the personal data we hold about you — profile information, session history, and payment records — into a downloadable JSON file. This is your right under GDPR Article 20.',
       },
       {
         question: 'How is my data protected?',
         answer:
-          'We take data protection seriously. All data is encrypted in transit (HTTPS) and at rest. Passwords are hashed using bcrypt. Payment information is handled entirely by Stripe — we never store your card details. We comply with GDPR and Irish data protection law. See our Privacy Policy for full details.',
+          'We take data protection seriously. All data is encrypted in transit (HTTPS). Passwords are hashed using bcrypt. Payment information is handled entirely by Stripe — we never store your card details. We comply with GDPR and Irish data protection law. See our Privacy Policy for full details.',
       },
     ],
   },

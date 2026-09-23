@@ -10,7 +10,6 @@ import { Avatar } from '@/components/ui/Avatar';
 import {
   Search,
   Filter,
-  Star,
   Download,
   FileText,
   Video,
@@ -117,7 +116,7 @@ export default function ResourcesPage() {
               Revision Resources
             </h1>
             <p className="text-[#5D6D7E]">
-              High-quality notes, solutions, and study materials from top tutors
+              Notes, solutions, and study materials created and sold by tutors on FindGrinds
             </p>
           </div>
 
@@ -251,14 +250,9 @@ export default function ResourcesPage() {
 
                           {/* Stats */}
                           <div className="flex items-center justify-between text-sm mt-auto mb-3">
-                            <div className="flex items-center gap-1">
-                              <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-                              <span className="font-medium text-[#2C3E50]">{Number(resource.rating).toFixed(1)}</span>
-                              <span className="text-[#95A5A6]">({resource.reviewCount || 0})</span>
-                            </div>
                             <div className="flex items-center gap-1 text-[#5D6D7E]">
                               <Download className="w-4 h-4" />
-                              <span>{resource.salesCount || 0}</span>
+                              <span>{resource.salesCount || 0} sold</span>
                             </div>
                           </div>
 

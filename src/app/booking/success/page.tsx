@@ -135,11 +135,11 @@ function BookingSuccessContent() {
             },
             {
               title: 'Arrange meeting location',
-              description: 'Your tutor will contact you to confirm where to meet',
+              description: 'Agree where to meet with your tutor through FindGrinds messages. We recommend a public place.',
             },
             {
               title: 'Attend your session',
-              description: 'Meet your tutor at the agreed location at the scheduled time',
+              description: 'Meet your tutor at the agreed place at the scheduled time',
             },
           ],
         };
@@ -155,12 +155,12 @@ function BookingSuccessContent() {
               description: "We've sent you a confirmation with class details",
             },
             {
-              title: 'Receive class information',
-              description: "You'll get details about the location and other participants",
+              title: 'Group classes are online',
+              description: 'Join the video call from your dashboard when it\'s time',
             },
             {
               title: 'Join the class',
-              description: 'Attend the group session at the scheduled time',
+              description: 'Your video call opens right on FindGrinds, no extra apps needed',
             },
           ],
         };

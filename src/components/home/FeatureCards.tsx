@@ -6,25 +6,25 @@ const features = [
   {
     icon: CreditCard,
     title: 'Secure Payments',
-    description: 'All payments and identity verification are handled securely by Stripe. FindGrinds never processes your payment details or personal ID.',
+    description: 'All payments are handled securely by Stripe. FindGrinds never sees or stores your card details.',
     color: '#2D9B6E',
   },
   {
     icon: Users,
-    title: 'ID-Verified Tutors',
-    description: 'Every tutor is verified through Stripe\'s identity checks. Browse qualified tutors across all Junior and Leaving Cert subjects.',
+    title: 'Reviews & Garda Vetting',
+    description: 'Read reviews from students who have had sessions, and look for the Garda vetted badge, shown once we\'ve approved a tutor\'s vetting document. Browse tutors across Junior and Leaving Cert subjects.',
     color: '#3498DB',
   },
   {
     icon: BookOpen,
     title: 'Buy & Sell Resources',
-    description: 'Access notes, past papers, and revision guides created by top tutors. Tutors earn from every sale.',
+    description: 'Access notes, past papers, and revision guides created by tutors on FindGrinds. Tutors earn from every sale.',
     color: '#D4A574',
   },
   {
     icon: Calendar,
     title: 'Flexible Booking',
-    description: 'Book sessions that fit your schedule. Choose 1:1, group, or video grinds.',
+    description: 'Book sessions that fit your schedule. Choose 1:1 grinds online or in person, or join an online group session.',
     color: '#E74C3C',
   },
 ];
@@ -38,7 +38,7 @@ export function FeatureCards() {
             Why Choose FindGrinds?
           </h2>
           <p className="text-lg text-[#5D6D7E] max-w-2xl mx-auto">
-            We make finding quality grinds simple, trusted, and effective.
+            We make finding the right grinds simple and straightforward.
           </p>
         </div>
 

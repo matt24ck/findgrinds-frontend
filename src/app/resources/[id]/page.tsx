@@ -9,7 +9,6 @@ import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { Avatar } from '@/components/ui/Avatar';
 import {
-  Star,
   Download,
   FileText,
   ChevronLeft,
@@ -48,6 +47,8 @@ export default function ResourceDetailPage() {
   const [error, setError] = useState<string | null>(null);
   const [isPurchasing, setIsPurchasing] = useState(false);
   const [isPurchased, setIsPurchased] = useState(false);
+  const [acceptImmediateAccess, setAcceptImmediateAccess] = useState(false);
+  const [purchaseError, setPurchaseError] = useState<string | null>(null);
   const [hasReported, setHasReported] = useState(false);
   const [showReportModal, setShowReportModal] = useState(false);
   const [reportReason, setReportReason] = useState('');
@@ -108,7 +109,9 @@ export default function ResourceDetailPage() {
   }, [resourceId]);
 
   const handlePurchase = async () => {
+    if (!acceptImmediateAccess) return;
     setIsPurchasing(true);
+    setPurchaseError(null);
     try {
       const token = localStorage.getItem('token');
       if (!token) {
@@ -123,6 +126,7 @@ export default function ResourceDetailPage() {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
+        body: JSON.stringify({ acceptImmediateAccess }),
       });
 
       const data = await response.json();
@@ -137,6 +141,7 @@ export default function ResourceDetailPage() {
       }
     } catch (err: any) {
       console.error('Purchase error:', err);
+      setPurchaseError(err instanceof Error ? err.message : 'Failed to start checkout');
       setIsPurchasing(false);
     }
   };
@@ -244,11 +249,6 @@ export default function ResourceDetailPage() {
 
                   {/* Stats */}
                   <div className="flex flex-wrap items-center gap-4 text-sm mb-6">
-                    <div className="flex items-center gap-1">
-                      <Star className="w-5 h-5 text-yellow-400 fill-yellow-400" />
-                      <span className="font-bold text-[#2C3E50]">{resource.rating}</span>
-                      <span className="text-[#95A5A6]">({resource.reviewCount} reviews)</span>
-                    </div>
                     <div className="flex items-center gap-1 text-[#5D6D7E]">
                       <Download className="w-4 h-4" />
                       <span>{resource.salesCount} purchases</span>
@@ -298,15 +298,32 @@ export default function ResourceDetailPage() {
                     )}
                   </div>
                 ) : (
-                  <Button
-                    className="w-full"
-                    size="lg"
-                    onClick={handlePurchase}
-                    isLoading={isPurchasing}
-                  >
-                    <ShoppingCart className="w-5 h-5 mr-2" />
-                    Buy Now
-                  </Button>
+                  <div className="space-y-3">
+                    <label className="flex items-start gap-2 text-xs text-[#5D6D7E] cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={acceptImmediateAccess}
+                        onChange={(e) => setAcceptImmediateAccess(e.target.checked)}
+                        className="mt-0.5 accent-[#2D9B6E]"
+                      />
+                      <span>
+                        I want immediate access to this resource and understand that I lose my 14-day right of
+                        withdrawal once it is available to download. See our{' '}
+                        <Link href="/terms" className="text-[#2D9B6E] hover:underline">Terms</Link>.
+                      </span>
+                    </label>
+                    <Button
+                      className="w-full"
+                      size="lg"
+                      onClick={handlePurchase}
+                      isLoading={isPurchasing}
+                      disabled={!acceptImmediateAccess}
+                    >
+                      <ShoppingCart className="w-5 h-5 mr-2" />
+                      Buy Now
+                    </Button>
+                    {purchaseError && <p className="text-xs text-center text-red-500">{purchaseError}</p>}
+                  </div>
                 )}
 
                 {/* Features */}
@@ -317,7 +334,7 @@ export default function ResourceDetailPage() {
                   </div>
                   <div className="flex items-center gap-3 text-sm text-[#5D6D7E]">
                     <Clock className="w-5 h-5 text-[#2D9B6E]" />
-                    <span>Lifetime access</span>
+                    <span>Re-download any time</span>
                   </div>
                   <div className="flex items-center gap-3 text-sm text-[#5D6D7E]">
                     <Shield className="w-5 h-5 text-[#2D9B6E]" />
@@ -365,7 +382,7 @@ export default function ResourceDetailPage() {
               </button>
             </div>
             <p className="text-sm text-[#5D6D7E] mb-4">
-              If this resource is not as advertised, you can report it and request a refund.
+              If this resource is faulty or not as described, you can report it and request a refund. Our team will review your report and decide whether a refund is due.
             </p>
             <div className="space-y-4">
               <div>

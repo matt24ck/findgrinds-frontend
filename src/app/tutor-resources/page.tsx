@@ -25,25 +25,25 @@ const resourceTypes = [
     icon: FileText,
     name: 'Study Notes',
     description: 'Comprehensive notes for specific topics or chapters',
-    priceRange: '€5 - €15',
+    priceRange: 'You set the price',
   },
   {
     icon: FileSpreadsheet,
     name: 'Exam Papers & Solutions',
     description: 'Past exam papers with worked solutions',
-    priceRange: '€10 - €25',
+    priceRange: 'You set the price',
   },
   {
     icon: Presentation,
     name: 'Revision Guides',
     description: 'Full subject revision guides and summaries',
-    priceRange: '€15 - €35',
+    priceRange: 'You set the price',
   },
   {
     icon: BookOpen,
     name: 'Workbooks',
     description: 'Practice problems and exercises with answers',
-    priceRange: '€10 - €20',
+    priceRange: 'You set the price',
   },
 ];
 
@@ -66,7 +66,7 @@ const benefits = [
   {
     icon: BarChart3,
     title: 'Track Performance',
-    description: 'See which resources are selling, read reviews, and optimize your offerings.',
+    description: 'See how many times each resource has sold and refine your offerings.',
   },
 ];
 
@@ -85,7 +85,7 @@ export default function TutorResourcesPage() {
                   Sell Your Study Resources
                 </h1>
                 <p className="text-xl text-white/90 mb-8">
-                  Turn your teaching materials into passive income. Upload notes, exam guides, and more - students across Ireland are waiting to learn from you.
+                  Turn your teaching materials into passive income. Upload notes, exam guides, and more - and reach students across Ireland.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4">
                   <Link href="/become-tutor">
@@ -108,7 +108,7 @@ export default function TutorResourcesPage() {
                       <FileText className="w-8 h-8" />
                       <div>
                         <p className="font-semibold">LC Maths Higher - Complete Notes</p>
-                        <p className="text-white/70 text-sm">Sold 234 times</p>
+                        <p className="text-white/70 text-sm">Example listing</p>
                       </div>
                       <span className="ml-auto font-bold">€19</span>
                     </div>
@@ -116,7 +116,7 @@ export default function TutorResourcesPage() {
                       <FileSpreadsheet className="w-8 h-8" />
                       <div>
                         <p className="font-semibold">Biology Exam Solutions 2018-2024</p>
-                        <p className="text-white/70 text-sm">Sold 156 times</p>
+                        <p className="text-white/70 text-sm">Example listing</p>
                       </div>
                       <span className="ml-auto font-bold">€25</span>
                     </div>
@@ -124,7 +124,7 @@ export default function TutorResourcesPage() {
                       <BookOpen className="w-8 h-8" />
                       <div>
                         <p className="font-semibold">Irish Oral Prep Guide</p>
-                        <p className="text-white/70 text-sm">Sold 89 times</p>
+                        <p className="text-white/70 text-sm">Example listing</p>
                       </div>
                       <span className="ml-auto font-bold">€12</span>
                     </div>
@@ -155,7 +155,7 @@ export default function TutorResourcesPage() {
                 </div>
                 <h3 className="text-lg font-bold text-[#2C3E50] mb-2">Upload Your Resources</h3>
                 <p className="text-[#5D6D7E]">
-                  Upload PDFs, documents, or other files. Add a title, description, and set your price.
+                  Upload a PDF, image (JPEG, PNG, WebP) or MP4 video up to 100MB. Add a title, description, and set your price (minimum €0.50).
                 </p>
               </div>
 
@@ -166,9 +166,9 @@ export default function TutorResourcesPage() {
                 <div className="w-8 h-8 bg-[#2D9B6E] text-white rounded-full flex items-center justify-center mx-auto mb-4 font-bold">
                   2
                 </div>
-                <h3 className="text-lg font-bold text-[#2C3E50] mb-2">We Review & Publish</h3>
+                <h3 className="text-lg font-bold text-[#2C3E50] mb-2">Publish Instantly</h3>
                 <p className="text-[#5D6D7E]">
-                  Our team reviews your resource for quality, then publishes it to the marketplace.
+                  Your resource goes live on the marketplace straight away. Buyers can report problems, and our team may remove resources that break our Terms.
                 </p>
               </div>
 
@@ -179,9 +179,9 @@ export default function TutorResourcesPage() {
                 <div className="w-8 h-8 bg-[#2D9B6E] text-white rounded-full flex items-center justify-center mx-auto mb-4 font-bold">
                   3
                 </div>
-                <h3 className="text-lg font-bold text-[#2C3E50] mb-2">Earn 70% of Sales</h3>
+                <h3 className="text-lg font-bold text-[#2C3E50] mb-2">Earn 85% of Sales</h3>
                 <p className="text-[#5D6D7E]">
-                  You keep 70% of every sale. Payments are sent to your bank account monthly.
+                  You keep 85% of every sale. Your share goes to your Stripe account at the time of purchase and is paid out to your bank on Stripe&apos;s payout schedule.
                 </p>
               </div>
             </div>
@@ -193,7 +193,7 @@ export default function TutorResourcesPage() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
               <h2 className="text-3xl font-bold text-[#2C3E50] mb-4">What Can You Sell?</h2>
-              <p className="text-[#5D6D7E]">Popular resource types that students are looking for</p>
+              <p className="text-[#5D6D7E]">Some of the resource types you could sell</p>
             </div>
 
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -240,24 +240,24 @@ export default function TutorResourcesPage() {
             <div className="bg-gradient-to-br from-[#2C3E50] to-[#34495E] rounded-2xl p-8 md:p-12 text-white">
               <div className="text-center mb-8">
                 <h2 className="text-2xl md:text-3xl font-bold mb-4">Earning Potential</h2>
-                <p className="text-white/80">See what you could earn selling resources</p>
+                <p className="text-white/80">Illustrative examples of what you could earn selling resources</p>
               </div>
 
               <div className="grid md:grid-cols-3 gap-6 text-center">
                 <div className="bg-white/10 rounded-xl p-6">
-                  <p className="text-3xl font-bold mb-2">€350</p>
+                  <p className="text-3xl font-bold mb-2">€425</p>
                   <p className="text-white/70 text-sm">10 sales/month at €50 average</p>
-                  <p className="text-xs text-white/50 mt-2">(70% = €35 × 10)</p>
+                  <p className="text-xs text-white/50 mt-2">(85% = €42.50 × 10)</p>
                 </div>
                 <div className="bg-white/10 rounded-xl p-6 ring-2 ring-[#2D9B6E]">
-                  <p className="text-3xl font-bold mb-2">€875</p>
+                  <p className="text-3xl font-bold mb-2">€1,062.50</p>
                   <p className="text-white/70 text-sm">25 sales/month at €50 average</p>
-                  <p className="text-xs text-white/50 mt-2">(70% = €35 × 25)</p>
+                  <p className="text-xs text-white/50 mt-2">(85% = €42.50 × 25)</p>
                 </div>
                 <div className="bg-white/10 rounded-xl p-6">
-                  <p className="text-3xl font-bold mb-2">€1,750</p>
+                  <p className="text-3xl font-bold mb-2">€2,125</p>
                   <p className="text-white/70 text-sm">50 sales/month at €50 average</p>
-                  <p className="text-xs text-white/50 mt-2">(70% = €35 × 50)</p>
+                  <p className="text-xs text-white/50 mt-2">(85% = €42.50 × 50)</p>
                 </div>
               </div>
             </div>
@@ -271,7 +271,7 @@ export default function TutorResourcesPage() {
               Ready to Start Selling?
             </h2>
             <p className="text-[#5D6D7E] mb-8 max-w-2xl mx-auto">
-              Join hundreds of tutors already earning passive income on FindGrinds. Sign up today and upload your first resource.
+              Sign up today and upload your first resource.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/become-tutor">

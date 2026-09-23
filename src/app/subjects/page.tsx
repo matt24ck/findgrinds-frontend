@@ -121,7 +121,7 @@ export default function SubjectsPage() {
                 Find Tutors by Subject
               </h1>
               <p className="text-xl text-white/90 mb-8">
-                Browse all Junior and Leaving Cert subjects and find expert tutors ready to help you succeed
+                Browse Junior and Leaving Cert subjects and find tutors ready to help you succeed
               </p>
               <div className="relative max-w-xl mx-auto">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -173,7 +173,7 @@ export default function SubjectsPage() {
               Can't find your subject?
             </h2>
             <p className="text-[#5D6D7E] mb-8 max-w-2xl mx-auto">
-              We're always adding new tutors and subjects. Let us know what you're looking for and we'll help you find the right tutor.
+              We're always adding new tutors and subjects. Let us know what you're looking for and we'll see if we can help.
             </p>
             <Link href="/contact">
               <Button size="lg">Contact Us</Button>
