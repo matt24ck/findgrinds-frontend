@@ -303,9 +303,10 @@ export default function ConversationPage() {
                             </p>
                           </div>
 
-                          {/* Report button (only for received messages) */}
+                          {/* Report button (only for received messages). Always visible on touch
+                              screens, which have no hover; revealed on hover where hover exists. */}
                           {!isOwn && (
-                            <div className="absolute -right-8 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <div className="absolute -right-9 top-1/2 -translate-y-1/2 transition-opacity [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100 focus-within:opacity-100">
                               <button
                                 onClick={() => {
                                   if (activeMenuId === msg.id) {
@@ -314,7 +315,8 @@ export default function ConversationPage() {
                                     setActiveMenuId(msg.id);
                                   }
                                 }}
-                                className="p-1 text-[#95A5A6] hover:text-[#2C3E50]"
+                                aria-label="Message options"
+                                className="p-1.5 text-[#95A5A6] hover:text-[#2C3E50]"
                               >
                                 <MoreVertical className="w-4 h-4" />
                               </button>
